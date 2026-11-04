@@ -1,0 +1,6 @@
+# Cambia ORGANIZACION por el nombre de su organización en GitHub
+/backend/   @vitalia-unitec/backend
+/frontend/  @vitalia-unitec/frontend
+/db/        @vitalia-unitec/base-de-datos
+/infra/     @vitalia-unitec/infraestructura
+/docs/      @vitalia-unitec/backend
