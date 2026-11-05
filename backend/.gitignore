@@ -2,6 +2,10 @@
 __pycache__/
 *.pyc
 .env
+data/
+*.db
+*.db-wal
+*.db-shm
 .pytest_cache/
 .ruff_cache/
 .vscode/

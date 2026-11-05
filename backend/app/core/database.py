@@ -2,30 +2,32 @@ from collections.abc import Generator
 from typing import Annotated
 
 from fastapi import Depends
-from sqlalchemy import URL, create_engine
+from sqlalchemy import create_engine, event
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 
 from app.core.config import get_settings
 
 settings = get_settings()
 
-# Conexión
-url_bd = URL.create(
-    drivername="mysql+pymysql",
-    username=settings.db_user,
-    password=settings.db_password,
-    host=settings.db_host,
-    port=settings.db_port,
-    database=settings.db_name,
-    query={"charset": "utf8mb4"},
-)
+# Archivo de la base
+ruta_bd = settings.db_ruta_absoluta
+ruta_bd.parent.mkdir(parents=True, exist_ok=True)
 
 engine = create_engine(
-    url_bd,
-    pool_pre_ping=True,
-    pool_recycle=3600,
-    connect_args={"connect_timeout": 5},
+    f"sqlite:///{ruta_bd.as_posix()}",
+    connect_args={"check_same_thread": False, "timeout": 5},
 )
+
+
+# Ajustes de SQLite en cada conexión
+@event.listens_for(engine, "connect")
+def configurar_sqlite(conexion, _registro) -> None:
+    cursor = conexion.cursor()
+    cursor.execute("PRAGMA foreign_keys = ON")
+    cursor.execute("PRAGMA journal_mode = WAL")
+    cursor.execute("PRAGMA busy_timeout = 5000")
+    cursor.close()
+
 
 SessionLocal = sessionmaker(bind=engine, autoflush=False, expire_on_commit=False)
 

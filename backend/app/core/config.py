@@ -1,4 +1,5 @@
 from functools import lru_cache
+from pathlib import Path
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -13,14 +14,14 @@ class Settings(BaseSettings):
     app_zona_horaria: str = "America/Mexico_City"
 
     # Base de datos
-    db_host: str = "localhost"
-    db_port: int = 3307
-    db_user: str = "vitalia"
-    db_password: str = "vitalia123"
-    db_name: str = "vitalia"
+    db_ruta: str = "data/vitalia.db"
 
     # CORS
     cors_origenes: list[str] = ["http://localhost:3000", "http://localhost:5173"]
+
+    @property
+    def db_ruta_absoluta(self) -> Path:
+        return Path(self.db_ruta).expanduser().resolve()
 
 
 @lru_cache
