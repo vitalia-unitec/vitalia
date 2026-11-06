@@ -9,6 +9,9 @@ from app.core.config import get_settings
 from app.core.errors import registrar_manejadores
 from app.core.modelos import crear_tablas
 from app.modules.auth.router import router as auth_router
+from app.modules.categorias.router import router as categorias_router
+from app.modules.clinicas.router import router as clinicas_router
+from app.modules.clinicas.router_negocio import router as negocio_router
 from app.modules.salud.router import router as salud_router
 from app.modules.usuarios.router import router as usuarios_router
 
@@ -30,7 +33,7 @@ def crear_app() -> FastAPI:
     app = FastAPI(
         title=settings.app_nombre,
         description="Backend del directorio veterinario Vitalia",
-        version="0.2.0",
+        version="0.3.0",
         docs_url="/docs",
         redoc_url=None,
         lifespan=ciclo_de_vida,
@@ -52,6 +55,9 @@ def crear_app() -> FastAPI:
     app.include_router(salud_router, prefix="/api/v1")
     app.include_router(auth_router, prefix="/api/v1")
     app.include_router(usuarios_router, prefix="/api/v1")
+    app.include_router(categorias_router, prefix="/api/v1")
+    app.include_router(clinicas_router, prefix="/api/v1")
+    app.include_router(negocio_router, prefix="/api/v1")
 
     return app
 
