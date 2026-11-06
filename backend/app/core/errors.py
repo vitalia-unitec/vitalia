@@ -39,6 +39,21 @@ class Conflicto(AppError):
         super().__init__("CONFLICTO", mensaje, 409)
 
 
+class TokenInvalido(AppError):
+    def __init__(self, mensaje: str = "Tu sesión no es válida o ya venció"):
+        super().__init__("TOKEN_INVALIDO", mensaje, 401)
+
+
+class CredencialesInvalidas(AppError):
+    def __init__(self, mensaje: str = "Correo o contraseña incorrectos"):
+        super().__init__("CREDENCIALES_INVALIDAS", mensaje, 401)
+
+
+class DemasiadasPeticiones(AppError):
+    def __init__(self, mensaje: str = "Demasiados intentos, espera unos minutos"):
+        super().__init__("DEMASIADAS_PETICIONES", mensaje, 429)
+
+
 # Manejadores globales
 def registrar_manejadores(app: FastAPI) -> None:
     @app.exception_handler(AppError)
@@ -48,7 +63,10 @@ def registrar_manejadores(app: FastAPI) -> None:
     @app.exception_handler(RequestValidationError)
     async def manejar_validacion(_: Request, exc: RequestValidationError) -> JSONResponse:
         detalles = [
-            {"campo": ".".join(str(p) for p in e["loc"][1:]), "mensaje": e["msg"]}
+            {
+                "campo": ".".join(str(p) for p in e["loc"][1:]),
+                "mensaje": e["msg"].removeprefix("Value error, "),
+            }
             for e in exc.errors()
         ]
         return JSONResponse(

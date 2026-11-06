@@ -1,7 +1,10 @@
 from functools import lru_cache
 from pathlib import Path
 
+from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+SECRETO_DE_EJEMPLO = "cambia-esto-por-un-secreto-largo-de-32-caracteres-o-mas"
 
 
 class Settings(BaseSettings):
@@ -16,12 +19,24 @@ class Settings(BaseSettings):
     # Base de datos
     db_ruta: str = "data/vitalia.db"
 
+    # Autenticación
+    jwt_secret: str = SECRETO_DE_EJEMPLO
+    jwt_expira_horas: int = 8
+    jwt_algoritmo: str = "HS256"
+
     # CORS
     cors_origenes: list[str] = ["http://localhost:3000", "http://localhost:5173"]
 
     @property
     def db_ruta_absoluta(self) -> Path:
         return Path(self.db_ruta).expanduser().resolve()
+
+    @model_validator(mode="after")
+    def revisar_secreto(self) -> "Settings":
+        if self.app_entorno != "local":
+            if self.jwt_secret == SECRETO_DE_EJEMPLO or len(self.jwt_secret) < 32:
+                raise ValueError("JWT_SECRET debe ser propio y tener 32 caracteres o más")
+        return self
 
 
 @lru_cache
