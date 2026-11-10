@@ -6,6 +6,7 @@ from sqlalchemy import create_engine, event
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 
 from app.core.config import get_settings
+from app.core.texto import normalizar
 
 settings = get_settings()
 
@@ -27,6 +28,7 @@ def configurar_sqlite(conexion, _registro) -> None:
     cursor.execute("PRAGMA journal_mode = WAL")
     cursor.execute("PRAGMA busy_timeout = 5000")
     cursor.close()
+    conexion.create_function("normalizar", 1, normalizar, deterministic=True)
 
 
 SessionLocal = sessionmaker(bind=engine, autoflush=False, expire_on_commit=False)
