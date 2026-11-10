@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 
 from app.core.errors import AppError, Conflicto, NoEncontrado, SinPermiso
 from app.core.geo import distancia_km
+from app.core.paginacion import Paginacion
 from app.core.tiempo import ahora_local
 from app.modules.categorias import repository as categorias_repository
 from app.modules.clinicas import repository
@@ -11,6 +12,7 @@ from app.modules.clinicas.schemas import (
     ClinicaDetalleSalida,
     ClinicaEntrada,
     ClinicaNegocioSalida,
+    ClinicaResumenSalida,
     HorariosEntrada,
     ServicioEntrada,
 )
@@ -20,18 +22,13 @@ MAX_SERVICIOS = 50
 
 
 # Armar la respuesta de una clínica
-def armar_detalle(
-    clinica: Clinica,
-    lat: float | None = None,
-    lng: float | None = None,
-    para_negocio: bool = False,
-) -> dict:
+def _datos_resumen(clinica: Clinica, lat: float | None, lng: float | None) -> dict:
     estado = estado_apertura(clinica.horarios, clinica.urgencias_24h, ahora_local())
     distancia = None
     if lat is not None and lng is not None:
         distancia = round(distancia_km(lat, lng, clinica.lat, clinica.lng), 1)
 
-    datos = {
+    return {
         "id": clinica.id,
         "nombre": clinica.nombre,
         "tipos": clinica.tipos,
@@ -49,6 +46,21 @@ def armar_detalle(
         "servicios_destacados": [s.nombre for s in clinica.servicios[:3]],
         "lat": clinica.lat,
         "lng": clinica.lng,
+    }
+
+
+def armar_resumen(clinica: Clinica, lat: float | None = None, lng: float | None = None) -> dict:
+    return ClinicaResumenSalida.model_validate(_datos_resumen(clinica, lat, lng)).a_json()
+
+
+def armar_detalle(
+    clinica: Clinica,
+    lat: float | None = None,
+    lng: float | None = None,
+    para_negocio: bool = False,
+) -> dict:
+    datos = {
+        **_datos_resumen(clinica, lat, lng),
         "descripcion": clinica.descripcion,
         "direccion": {
             "calle": clinica.calle,
@@ -69,6 +81,19 @@ def armar_detalle(
     if para_negocio:
         return ClinicaNegocioSalida.model_validate({**datos, "activa": clinica.activa}).a_json()
     return ClinicaDetalleSalida.model_validate(datos).a_json()
+
+
+# Búsqueda pública
+def _por_calificacion(clinica: Clinica) -> tuple:
+    sin_calificacion = clinica.calificacion_prom is None
+    return (sin_calificacion, -(clinica.calificacion_prom or 0), -clinica.total_resenas, clinica.id)
+
+
+def buscar(db: Session, pag: Paginacion) -> tuple[list[dict], int]:
+    clinicas = repository.listar_activas(db)
+    clinicas.sort(key=_por_calificacion)
+    pagina = clinicas[pag.desde : pag.desde + pag.por_pagina]
+    return [armar_resumen(c) for c in pagina], len(clinicas)
 
 
 # Consultas públicas

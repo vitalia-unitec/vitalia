@@ -4,6 +4,7 @@ from fastapi import APIRouter, Query
 
 from app.core.database import DbSesion
 from app.core.errors import AppError
+from app.core.paginacion import ParametrosPagina
 from app.core.responses import ok
 from app.core.rutas import IdRuta
 from app.modules.clinicas import service
@@ -13,6 +14,12 @@ router = APIRouter(prefix="/clinicas", tags=["Clínicas"])
 
 Latitud = Annotated[float | None, Query(ge=-90, le=90, description="Tu latitud")]
 Longitud = Annotated[float | None, Query(ge=-180, le=180, description="Tu longitud")]
+
+
+@router.get("", summary="Buscar clínicas")
+def buscar_clinicas(db: DbSesion, pag: ParametrosPagina) -> dict:
+    datos, total = service.buscar(db, pag)
+    return ok(datos, pag.meta(total))
 
 
 @router.get("/{clinica_id}", summary="Detalle completo de una clínica")

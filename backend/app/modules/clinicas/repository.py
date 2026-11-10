@@ -8,6 +8,11 @@ def obtener(db: Session, clinica_id: int) -> Clinica | None:
     return db.get(Clinica, clinica_id)
 
 
+def listar_activas(db: Session) -> list[Clinica]:
+    consulta = select(Clinica).where(Clinica.activa.is_(True))
+    return list(db.scalars(consulta))
+
+
 def listar_de_propietario(db: Session, propietario_id: int) -> list[Clinica]:
     consulta = select(Clinica).where(Clinica.propietario_id == propietario_id).order_by(Clinica.id)
     return list(db.scalars(consulta))
