@@ -14,7 +14,7 @@ router = APIRouter(prefix="/clinicas", tags=["Clínicas"])
 @router.get("", summary="Buscar clínicas")
 def buscar_clinicas(db: DbSesion, filtros: ParametrosBusqueda, pag: ParametrosPagina) -> dict:
     datos, total = service.buscar(db, filtros, pag)
-    return ok(datos, pag.meta(total))
+    return ok(datos, {**pag.meta(total), "busqueda": filtros.meta()})
 
 
 @router.get("/{clinica_id}", summary="Detalle completo de una clínica")

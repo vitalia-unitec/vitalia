@@ -90,13 +90,28 @@ def _por_calificacion(clinica: Clinica) -> tuple:
     return (sin_calificacion, -(clinica.calificacion_prom or 0), -clinica.total_resenas, clinica.id)
 
 
+def _por_resenas(clinica: Clinica) -> tuple:
+    return (-clinica.total_resenas, -(clinica.calificacion_prom or 0), clinica.id)
+
+
+def _esta_abierta(clinica: Clinica) -> bool:
+    return estado_apertura(clinica.horarios, clinica.urgencias_24h, ahora_local()).abierto
+
+
 def buscar(db: Session, filtros: FiltrosBusqueda, pag: Paginacion) -> tuple[list[dict], int]:
     clinicas = repository.buscar_activas(db, filtros)
 
+    distancias = {}
     if filtros.tiene_ubicacion:
         distancias = {c.id: distancia_km(filtros.lat, filtros.lng, c.lat, c.lng) for c in clinicas}
         clinicas = [c for c in clinicas if distancias[c.id] <= filtros.radio_km]
+    if filtros.abierto_ahora:
+        clinicas = [c for c in clinicas if _esta_abierta(c)]
+
+    if filtros.orden == "distancia":
         clinicas.sort(key=lambda c: (distancias[c.id], c.id))
+    elif filtros.orden == "resenas":
+        clinicas.sort(key=_por_resenas)
     else:
         clinicas.sort(key=_por_calificacion)
 

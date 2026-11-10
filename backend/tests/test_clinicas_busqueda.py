@@ -1,10 +1,16 @@
+from datetime import datetime
+from zoneinfo import ZoneInfo
+
 from app.core.database import SessionLocal
 from app.core.geo import distancia_km, rectangulo
+from app.modules.clinicas import service
 from app.modules.clinicas.models import Clinica
 from tests.conftest import DATOS_CLINICA
 
 URL = "/api/v1/clinicas"
 URL_NEGOCIO = "/api/v1/negocio/clinicas"
+
+SIN_UBICACION = {"lat": None, "lng": None, "radioKm": None}
 
 CAMPOS_RESUMEN = {
     "id",
@@ -39,7 +45,13 @@ def test_busqueda_sin_clinicas(client):
     assert respuesta.status_code == 200
     cuerpo = respuesta.json()
     assert cuerpo["data"] == []
-    assert cuerpo["meta"] == {"pagina": 1, "porPagina": 10, "total": 0, "totalPaginas": 0}
+    assert cuerpo["meta"] == {
+        "pagina": 1,
+        "porPagina": 10,
+        "total": 0,
+        "totalPaginas": 0,
+        "busqueda": SIN_UBICACION,
+    }
 
 
 def test_busqueda_regresa_resumen(client, crear_clinica):
@@ -74,7 +86,8 @@ def test_busqueda_pagina(client, crear_clinica):
 
     assert len(primera["data"]) == 2
     assert len(segunda["data"]) == 1
-    assert primera["meta"] == {"pagina": 1, "porPagina": 2, "total": 3, "totalPaginas": 2}
+    assert primera["meta"]["total"] == 3
+    assert primera["meta"]["totalPaginas"] == 2
     ids = [c["id"] for c in primera["data"] + segunda["data"]]
     assert len(set(ids)) == 3
 
@@ -250,3 +263,88 @@ def test_radio_fuera_de_rango_da_400(client):
 
         assert respuesta.status_code == 400
         assert respuesta.json()["error"]["detalles"][0]["campo"] == "radioKm"
+
+
+# Abierto ahora
+ZONA = ZoneInfo("America/Mexico_City")
+LUNES_10_AM = datetime(2026, 11, 9, 10, 0, tzinfo=ZONA)
+LUNES_8_PM = datetime(2026, 11, 9, 20, 0, tzinfo=ZONA)
+
+
+def fijar_hora(monkeypatch, momento: datetime) -> None:
+    monkeypatch.setattr(service, "ahora_local", lambda: momento)
+
+
+def test_filtro_abierto_ahora(client, crear_clinica, monkeypatch):
+    con_horario, cabeceras = crear_clinica()
+    crear_clinica(cabeceras, nombre="Sin horarios")
+    crear_clinica(cabeceras, nombre="Hospital 24 horas", urgencias24h=True)
+    lunes = {"horarios": [{"diaSemana": 1, "abre": "09:00", "cierra": "18:00"}]}
+    respuesta = client.put(
+        f"{URL_NEGOCIO}/{con_horario['id']}/horarios", json=lunes, headers=cabeceras
+    )
+    assert respuesta.status_code == 200, respuesta.text
+
+    fijar_hora(monkeypatch, LUNES_10_AM)
+    abiertas = ["Clínica Veterinaria Patitas", "Hospital 24 horas"]
+    assert nombres(client, abiertoAhora="true") == abiertas
+    assert len(nombres(client)) == 3
+
+    fijar_hora(monkeypatch, LUNES_8_PM)
+    assert nombres(client, abiertoAhora="true") == ["Hospital 24 horas"]
+
+
+# Orden
+def test_orden_por_resenas(client, crear_clinica):
+    pocas, cabeceras = crear_clinica()
+    muchas, _ = crear_clinica(cabeceras, nombre="Muchas reseñas")
+    calificar(pocas["id"], 4.9, 3)
+    calificar(muchas["id"], 4.1, 80)
+
+    por_resenas = client.get(URL, params={"orden": "resenas"}).json()["data"]
+    por_calificacion = client.get(URL, params={"orden": "calificacion"}).json()["data"]
+
+    assert [c["id"] for c in por_resenas] == [muchas["id"], pocas["id"]]
+    assert [c["id"] for c in por_calificacion] == [pocas["id"], muchas["id"]]
+
+
+def test_orden_por_calificacion_con_ubicacion(client, crear_clinica):
+    cerca, cabeceras = crear_clinica()
+    lejos, _ = crear_clinica(cabeceras, nombre="Lejos pero mejor", lat=19.4071)
+    calificar(cerca["id"], 3.5, 10)
+    calificar(lejos["id"], 4.9, 10)
+
+    por_defecto = client.get(URL, params=CENTRO).json()["data"]
+    por_calificacion = client.get(URL, params={**CENTRO, "orden": "calificacion"}).json()["data"]
+
+    assert [c["id"] for c in por_defecto] == [cerca["id"], lejos["id"]]
+    assert [c["id"] for c in por_calificacion] == [lejos["id"], cerca["id"]]
+    assert por_calificacion[0]["distanciaKm"] == 3.0
+
+
+def test_orden_por_distancia_sin_ubicacion_da_400(client):
+    respuesta = client.get(URL, params={"orden": "distancia"})
+
+    assert respuesta.status_code == 400
+    assert respuesta.json()["error"]["codigo"] == "VALIDACION"
+
+
+def test_orden_desconocido_da_400(client):
+    respuesta = client.get(URL, params={"orden": "precio"})
+
+    assert respuesta.status_code == 400
+    assert respuesta.json()["error"]["detalles"][0]["campo"] == "orden"
+
+
+# Meta de la búsqueda
+def test_meta_incluye_la_busqueda_usada(client, crear_clinica):
+    crear_clinica()
+
+    con_radio = client.get(URL, params={**CENTRO, "radioKm": 8}).json()["meta"]
+    por_defecto = client.get(URL, params=CENTRO).json()["meta"]
+    sin_ubicacion = client.get(URL, params={"radioKm": 8}).json()["meta"]
+
+    assert con_radio["busqueda"] == {"lat": 19.3801, "lng": -99.1702, "radioKm": 8}
+    assert por_defecto["busqueda"]["radioKm"] == 5
+    assert sin_ubicacion["busqueda"] == SIN_UBICACION
+    assert con_radio["total"] == 1
