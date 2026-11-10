@@ -6,6 +6,7 @@ from app.core.paginacion import Paginacion
 from app.core.tiempo import ahora_local
 from app.modules.categorias import repository as categorias_repository
 from app.modules.clinicas import repository
+from app.modules.clinicas.filtros import FiltrosBusqueda
 from app.modules.clinicas.horario import estado_apertura
 from app.modules.clinicas.models import Clinica, ClinicaTipo, Horario, ServicioClinica
 from app.modules.clinicas.schemas import (
@@ -89,8 +90,8 @@ def _por_calificacion(clinica: Clinica) -> tuple:
     return (sin_calificacion, -(clinica.calificacion_prom or 0), -clinica.total_resenas, clinica.id)
 
 
-def buscar(db: Session, pag: Paginacion) -> tuple[list[dict], int]:
-    clinicas = repository.listar_activas(db)
+def buscar(db: Session, filtros: FiltrosBusqueda, pag: Paginacion) -> tuple[list[dict], int]:
+    clinicas = repository.buscar_activas(db, filtros)
     clinicas.sort(key=_por_calificacion)
     pagina = clinicas[pag.desde : pag.desde + pag.por_pagina]
     return [armar_resumen(c) for c in pagina], len(clinicas)

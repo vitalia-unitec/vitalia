@@ -1,5 +1,6 @@
 from app.core.database import SessionLocal
 from app.modules.clinicas.models import Clinica
+from tests.conftest import DATOS_CLINICA
 
 URL = "/api/v1/clinicas"
 URL_NEGOCIO = "/api/v1/negocio/clinicas"
@@ -89,3 +90,91 @@ def test_busqueda_ordena_por_calificacion(client, crear_clinica):
     assert [c["id"] for c in data] == [mejor["id"], buena["id"], sin_resenas["id"]]
     assert data[0]["calificacion"] == 4.8
     assert data[2]["calificacion"] is None
+
+
+# Filtros
+def nombres(client, **params) -> list[str]:
+    respuesta = client.get(URL, params=params)
+    assert respuesta.status_code == 200, respuesta.text
+    return sorted(c["nombre"] for c in respuesta.json()["data"])
+
+
+def test_q_busca_en_nombre_sin_importar_acentos_ni_mayusculas(client, crear_clinica):
+    _, cabeceras = crear_clinica()
+    crear_clinica(cabeceras, nombre="Hospital Animal Sur")
+
+    assert nombres(client, q="clinica") == ["Clínica Veterinaria Patitas"]
+    assert nombres(client, q="PATITAS") == ["Clínica Veterinaria Patitas"]
+    assert nombres(client, q="gatos") == []
+
+
+def test_q_busca_en_colonia(client, crear_clinica):
+    _, cabeceras = crear_clinica()
+    otra_direccion = {**DATOS_CLINICA["direccion"], "colonia": "Nápoles"}
+    crear_clinica(cabeceras, nombre="Vet Nápoles", direccion=otra_direccion)
+
+    assert nombres(client, q="del valle") == ["Clínica Veterinaria Patitas"]
+    assert nombres(client, q="napoles") == ["Vet Nápoles"]
+
+
+def test_q_trata_los_comodines_como_texto(client, crear_clinica):
+    crear_clinica()
+
+    assert nombres(client, q="%%") == []
+    assert nombres(client, q="__") == []
+
+
+def test_q_de_una_letra_da_400(client):
+    respuesta = client.get(URL, params={"q": "a"})
+
+    assert respuesta.status_code == 400
+    assert respuesta.json()["error"]["detalles"][0]["campo"] == "q"
+
+
+def test_filtro_por_tipo(client, crear_clinica):
+    _, cabeceras = crear_clinica()
+    crear_clinica(cabeceras, nombre="Estética Pelos", tipos=["estetica", "hospedaje"])
+
+    assert nombres(client, tipo="estetica") == ["Estética Pelos"]
+    assert nombres(client, tipo="hospedaje") == ["Estética Pelos"]
+    assert nombres(client, tipo="adiestramiento") == []
+
+
+def test_tipo_desconocido_da_400(client):
+    respuesta = client.get(URL, params={"tipo": "zoologico"})
+
+    assert respuesta.status_code == 400
+    assert respuesta.json()["error"]["codigo"] == "VALIDACION"
+
+
+def test_filtro_por_categoria(client, crear_clinica):
+    con_vacunas, cabeceras = crear_clinica()
+    crear_clinica(cabeceras, nombre="Sin servicios")
+    servicios = f"{URL_NEGOCIO}/{con_vacunas['id']}/servicios"
+    for nombre in ("Vacuna antirrábica", "Vacuna múltiple"):
+        respuesta = client.post(
+            servicios, json={"categoriaId": 3, "nombre": nombre}, headers=cabeceras
+        )
+        assert respuesta.status_code == 201, respuesta.text
+
+    assert nombres(client, categoria="vacunas") == ["Clínica Veterinaria Patitas"]
+    assert nombres(client, categoria="cirugia") == []
+    assert nombres(client, categoria="no-existe") == []
+
+
+def test_filtro_urgencias(client, crear_clinica):
+    _, cabeceras = crear_clinica()
+    crear_clinica(cabeceras, nombre="Hospital 24 horas", urgencias24h=True)
+
+    assert nombres(client, urgencias="true") == ["Hospital 24 horas"]
+    assert len(nombres(client, urgencias="false")) == 2
+
+
+def test_filtros_combinados(client, crear_clinica):
+    _, cabeceras = crear_clinica()
+    crear_clinica(cabeceras, nombre="Hospital Patitas", tipos=["hospital"], urgencias24h=True)
+    crear_clinica(cabeceras, nombre="Hospital Central", tipos=["hospital"])
+
+    assert nombres(client, q="patitas", tipo="hospital", urgencias="true") == ["Hospital Patitas"]
+    cuerpo = client.get(URL, params={"tipo": "hospital"}).json()
+    assert cuerpo["meta"]["total"] == 2

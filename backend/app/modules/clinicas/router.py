@@ -8,6 +8,7 @@ from app.core.paginacion import ParametrosPagina
 from app.core.responses import ok
 from app.core.rutas import IdRuta
 from app.modules.clinicas import service
+from app.modules.clinicas.filtros import ParametrosBusqueda
 from app.modules.clinicas.schemas import ServicioSalida
 
 router = APIRouter(prefix="/clinicas", tags=["Clínicas"])
@@ -17,8 +18,8 @@ Longitud = Annotated[float | None, Query(ge=-180, le=180, description="Tu longit
 
 
 @router.get("", summary="Buscar clínicas")
-def buscar_clinicas(db: DbSesion, pag: ParametrosPagina) -> dict:
-    datos, total = service.buscar(db, pag)
+def buscar_clinicas(db: DbSesion, filtros: ParametrosBusqueda, pag: ParametrosPagina) -> dict:
+    datos, total = service.buscar(db, filtros, pag)
     return ok(datos, pag.meta(total))
 
 
