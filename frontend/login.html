@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vítalia - Ingresar y Registrarse</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        body {
+            background-color: #F8F7F3;
+            color: #2D2D2D;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background: #F8F7F3;
+            padding: 40px;
+            border-radius: 16px;
+            border: 1px solid #6BAF8F;
+            box-shadow: 0 4px 20px rgba(45, 45, 45, 0.05);
+            width: 100%;
+            max-width: 450px;
+        }
+        .logo-area {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        .logo-area h1 {
+            color: #2E7D6B;
+            font-size: 28px;
+            font-weight: 700;
+        }
+        .logo-area p {
+            color: #6BAF8F;
+            font-size: 14px;
+        }
+        .tabs {
+            display: flex;
+            margin-bottom: 24px;
+            border-bottom: 2px solid #6BAF8F;
+        }
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            cursor: pointer;
+            font-weight: 500;
+            color: #2D2D2D;
+            transition: 0.3s;
+        }
+        .tab.active {
+            color: #2E7D6B;
+            border-bottom: 2px solid #2E7D6B;
+            margin-bottom: -2px;
+        }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: #2D2D2D;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            background-color: #FFFFFF;
+            border: 1px solid #6BAF8F;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            color: #2D2D2D;
+            transition: 0.3s;
+        }
+        .form-group input:focus, .form-group select:focus {
+            border-color: #2E7D6B;
+            box-shadow: 0 0 0 3px rgba(107, 175, 143, 0.2);
+        }
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #2E7D6B;
+            color: #FFFFFF;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+        .btn:hover {
+            background-color: #6BAF8F;
+            color: #2D2D2D;
+        }
+        .btn-accent {
+            background-color: #D9859F;
+            color: #FFFFFF;
+        }
+        .btn-accent:hover {
+            background-color: #2E7D6B;
+        }
+        .form-section {
+            display: none;
+        }
+        .form-section.active {
+            display: block;
+        }
+        .alert-error {
+            background-color: #F8F7F3;
+            border: 1px solid #D9859F;
+            color: #2D2D2D;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            margin-bottom: 15px;
+            display: none;
+        }
+        .helper-text {
+            font-size: 11px;
+            color: #2D2D2D;
+            opacity: 0.8;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="logo-area">
+            <h1>Vítalia</h1>
+            <p>Todo para el bienestar de tu mascota</p>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('login')">Ingresar</div>
+            <div class="tab" onclick="switchTab('register')">Registrarse</div>
+        </div>
+
+        <!-- 1. INICIAR SESIÓN (POST /auth/login) -->
+        <div id="login-section" class="form-section active">
+            <div id="login-error" class="alert-error"></div>
+            <form id="form-login" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label>Correo electrónico</label>
+                    <input type="email" id="login-email" placeholder="tu@correo.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Contraseña</label>
+                    <input type="password" id="login-password" placeholder="••••••••" required>
+                </div>
+                <button type="submit" id="btn-login" class="btn">Ingresar</button>
+            </form>
+        </div>
+
+        <!-- 2. REGISTRARSE (POST /auth/registro) -->
+        <div id="register-section" class="form-section">
+            <div id="register-error" class="alert-error"></div>
+            <form id="form-register" onsubmit="handleRegister(event)">
+                <div class="form-group">
+                    <label>Nombre completo o de la Clínica</label>
+                    <input type="text" id="reg-name" placeholder="Tu nombre" required>
+                </div>
+                <div class="form-group">
+                    <label>Tipo de Usuario (Rol)</label>
+                    <select id="reg-role" required>
+                        <option value="" disabled selected>Selecciona tu rol</option>
+                        <option value="dueno">Dueño de mascota</option>
+                        <option value="clinica">Clínica veterinaria</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Correo electrónico</label>
+                    <input type="email" id="reg-email" placeholder="tu@correo.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Contraseña</label>
+                    <input type="password" id="reg-password" placeholder="••••••••" required>
+                    <div class="helper-text">Mínimo 6 caracteres, una mayúscula y un número.</div>
+                </div>
+                <button type="submit" id="btn-register" class="btn btn-accent">Registrarse</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tabName) {
+            const loginSection = document.getElementById('login-section');
+            const registerSection = document.getElementById('register-section');
+            const tabs = document.querySelectorAll('.tab');
+
+            tabs.forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.alert-error').forEach(e => e.style.display = 'none');
+
+            if (tabName === 'login') {
+                loginSection.classList.add('active');
+                registerSection.classList.remove('active');
+                tabs[0].classList.add('active');
+            } else {
+                registerSection.classList.add('active');
+                loginSection.classList.remove('active');
+                tabs[1].classList.add('active');
+            }
+        }
+
+        async function handleLogin(event) {
+            event.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const errorBox = document.getElementById('login-error');
+            const btn = document.getElementById('btn-login');
+
+            errorBox.style.display = 'none';
+            btn.innerText = 'Validando...';
+            btn.disabled = true;
+
+            try {
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                const mockResponse = {
+                    success: true,
+                    token: "eyJhbGciOiJIUzI1NiIsIn...", 
+                    role: email.includes("clinica") ? "clinica" : "dueno"
+                };
+
+                localStorage.setItem('token', mockResponse.token);
+                localStorage.setItem('userRole', mockResponse.role);
+
+                if (mockResponse.role === 'dueno') {
+                    window.location.href = 'carnet.html';
+                } else {
+                    alert('Bienvenido módulo Clínica. Redirigiendo a panel de veterinaria...');
+                }
+
+            } catch (error) {
+                errorBox.innerText = 'Credenciales incorrectas o error de conexión con el servidor.';
+                errorBox.style.display = 'block';
+                btn.innerText = 'Ingresar';
+                btn.disabled = false;
+            }
+        }
+
+        async function handleRegister(event) {
+            event.preventDefault();
+            const name = document.getElementById('reg-name').value;
+            const role = document.getElementById('reg-role').value;
+            const email = document.getElementById('reg-email').value;
+            const password = document.getElementById('reg-password').value;
+            const errorBox = document.getElementById('register-error');
+            const btn = document.getElementById('btn-register');
+
+            errorBox.style.display = 'none';
+
+            const passwordRegex = /^(?=.*[A-Z])(?=.*\d).{6,}$/;
+            if (!passwordRegex.test(password)) {
+                errorBox.innerText = 'La contraseña debe tener al menos 6 caracteres, una letra mayúscula y un número.';
+                errorBox.style.display = 'block';
+                return;
+            }
+
+            btn.innerText = 'Registrando...';
+            btn.disabled = true;
+
+            try {
+                await new Promise(resolve => setTimeout(resolve, 1000));
+
+                alert('¡Registro exitoso! Ahora puedes iniciar sesión.');
+                switchTab('login');
+                document.getElementById('form-register').reset();
+            } catch (error) {
+                errorBox.innerText = 'No se pudo completar el registro. Intenta de nuevo.';
+                errorBox.style.display = 'block';
+            } finally {
+                btn.innerText = 'Registrarse';
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>
