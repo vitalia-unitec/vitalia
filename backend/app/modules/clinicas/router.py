@@ -5,7 +5,6 @@ from fastapi import APIRouter, Query
 from app.core.database import DbSesion
 from app.core.errors import AppError
 from app.core.responses import ok
-from app.modules.auth.dependencies import UsuarioOpcional
 from app.modules.clinicas import service
 from app.modules.clinicas.schemas import ServicioSalida
 
@@ -19,14 +18,13 @@ Longitud = Annotated[float | None, Query(ge=-180, le=180, description="Tu longit
 def ver_clinica(
     clinica_id: int,
     db: DbSesion,
-    usuario: UsuarioOpcional,
     lat: Latitud = None,
     lng: Longitud = None,
 ) -> dict:
     if (lat is None) != (lng is None):
         raise AppError("VALIDACION", "lat y lng deben enviarse juntos", 400)
     clinica = service.obtener_publica(db, clinica_id)
-    return ok(service.armar_detalle(clinica, lat, lng, usuario))
+    return ok(service.armar_detalle(clinica, lat, lng))
 
 
 @router.get("/{clinica_id}/servicios", summary="Servicios con precio de una clínica")

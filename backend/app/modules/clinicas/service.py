@@ -24,7 +24,6 @@ def armar_detalle(
     clinica: Clinica,
     lat: float | None = None,
     lng: float | None = None,
-    usuario: Usuario | None = None,
     para_negocio: bool = False,
 ) -> dict:
     estado = estado_apertura(clinica.horarios, clinica.urgencias_24h, ahora_local())
@@ -50,7 +49,6 @@ def armar_detalle(
         "servicios_destacados": [s.nombre for s in clinica.servicios[:3]],
         "lat": clinica.lat,
         "lng": clinica.lng,
-        "es_favorito": None if usuario is None else False,
         "descripcion": clinica.descripcion,
         "direccion": {
             "calle": clinica.calle,

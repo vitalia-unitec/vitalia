@@ -10,7 +10,7 @@ def test_detalle_publico(client, crear_clinica):
     data = respuesta.json()["data"]
     assert data["nombre"] == "Clínica Veterinaria Patitas"
     assert data["distanciaKm"] is None
-    assert data["esFavorito"] is None
+    assert "esFavorito" not in data
     assert "activa" not in data
 
 
@@ -30,14 +30,6 @@ def test_detalle_con_solo_latitud(client, crear_clinica):
     respuesta = client.get(f"/api/v1/clinicas/{clinica['id']}", params={"lat": 19.38})
 
     assert respuesta.status_code == 400
-
-
-def test_detalle_con_sesion_llena_es_favorito(client, crear_clinica, encabezados):
-    clinica, _ = crear_clinica()
-
-    respuesta = client.get(f"/api/v1/clinicas/{clinica['id']}", headers=encabezados())
-
-    assert respuesta.json()["data"]["esFavorito"] is False
 
 
 def test_clinica_24_horas_siempre_abierta(client, crear_clinica):

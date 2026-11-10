@@ -136,7 +136,6 @@ class ClinicaResumenSalida(EsquemaBase):
     servicios_destacados: list[str]
     lat: float
     lng: float
-    es_favorito: bool | None
 
     @field_serializer("cierra_a", "abre_a")
     def serializar_hora(self, valor: time | None) -> str | None:
