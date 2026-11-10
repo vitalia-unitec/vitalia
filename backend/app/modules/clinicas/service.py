@@ -92,9 +92,16 @@ def _por_calificacion(clinica: Clinica) -> tuple:
 
 def buscar(db: Session, filtros: FiltrosBusqueda, pag: Paginacion) -> tuple[list[dict], int]:
     clinicas = repository.buscar_activas(db, filtros)
-    clinicas.sort(key=_por_calificacion)
+
+    if filtros.tiene_ubicacion:
+        distancias = {c.id: distancia_km(filtros.lat, filtros.lng, c.lat, c.lng) for c in clinicas}
+        clinicas = [c for c in clinicas if distancias[c.id] <= filtros.radio_km]
+        clinicas.sort(key=lambda c: (distancias[c.id], c.id))
+    else:
+        clinicas.sort(key=_por_calificacion)
+
     pagina = clinicas[pag.desde : pag.desde + pag.por_pagina]
-    return [armar_resumen(c) for c in pagina], len(clinicas)
+    return [armar_resumen(c, filtros.lat, filtros.lng) for c in pagina], len(clinicas)
 
 
 # Consultas públicas

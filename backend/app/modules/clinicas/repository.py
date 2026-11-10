@@ -1,6 +1,7 @@
 from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session
 
+from app.core.geo import rectangulo
 from app.core.texto import normalizar
 from app.modules.categorias.models import Categoria
 from app.modules.clinicas.filtros import FiltrosBusqueda
@@ -29,6 +30,12 @@ def buscar_activas(db: Session, filtros: FiltrosBusqueda) -> list[Clinica]:
         consulta = consulta.where(Clinica.servicios.any(de_la_categoria))
     if filtros.urgencias:
         consulta = consulta.where(Clinica.urgencias_24h.is_(True))
+    if filtros.tiene_ubicacion:
+        lat_min, lat_max, lng_min, lng_max = rectangulo(filtros.lat, filtros.lng, filtros.radio_km)
+        consulta = consulta.where(
+            Clinica.lat.between(lat_min, lat_max),
+            Clinica.lng.between(lng_min, lng_max),
+        )
 
     return list(db.scalars(consulta))
 

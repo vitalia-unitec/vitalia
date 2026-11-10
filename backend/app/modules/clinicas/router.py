@@ -1,20 +1,14 @@
-from typing import Annotated
-
-from fastapi import APIRouter, Query
+from fastapi import APIRouter
 
 from app.core.database import DbSesion
-from app.core.errors import AppError
 from app.core.paginacion import ParametrosPagina
 from app.core.responses import ok
 from app.core.rutas import IdRuta
 from app.modules.clinicas import service
-from app.modules.clinicas.filtros import ParametrosBusqueda
+from app.modules.clinicas.filtros import Latitud, Longitud, ParametrosBusqueda, revisar_ubicacion
 from app.modules.clinicas.schemas import ServicioSalida
 
 router = APIRouter(prefix="/clinicas", tags=["Clínicas"])
-
-Latitud = Annotated[float | None, Query(ge=-90, le=90, description="Tu latitud")]
-Longitud = Annotated[float | None, Query(ge=-180, le=180, description="Tu longitud")]
 
 
 @router.get("", summary="Buscar clínicas")
@@ -30,8 +24,7 @@ def ver_clinica(
     lat: Latitud = None,
     lng: Longitud = None,
 ) -> dict:
-    if (lat is None) != (lng is None):
-        raise AppError("VALIDACION", "lat y lng deben enviarse juntos", 400)
+    revisar_ubicacion(lat, lng)
     clinica = service.obtener_publica(db, clinica_id)
     return ok(service.armar_detalle(clinica, lat, lng))
 

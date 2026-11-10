@@ -1,4 +1,5 @@
 from app.core.database import SessionLocal
+from app.core.geo import distancia_km, rectangulo
 from app.modules.clinicas.models import Clinica
 from tests.conftest import DATOS_CLINICA
 
@@ -178,3 +179,74 @@ def test_filtros_combinados(client, crear_clinica):
     assert nombres(client, q="patitas", tipo="hospital", urgencias="true") == ["Hospital Patitas"]
     cuerpo = client.get(URL, params={"tipo": "hospital"}).json()
     assert cuerpo["meta"]["total"] == 2
+
+
+# Ubicación
+CENTRO = {"lat": 19.3801, "lng": -99.1702}
+
+
+def test_rectangulo_contiene_al_circulo():
+    lat_min, lat_max, lng_min, lng_max = rectangulo(19.3801, -99.1702, 5)
+
+    assert distancia_km(19.3801, -99.1702, lat_max, -99.1702) >= 5
+    assert distancia_km(19.3801, -99.1702, lat_min, -99.1702) >= 5
+    assert distancia_km(19.3801, -99.1702, 19.3801, lng_max) >= 5
+    assert distancia_km(19.3801, -99.1702, 19.3801, lng_min) >= 5
+    assert distancia_km(19.3801, -99.1702, lat_max, -99.1702) < 5.2
+
+
+def test_busqueda_por_radio_ordena_por_distancia(client, crear_clinica):
+    _, cabeceras = crear_clinica()
+    crear_clinica(cabeceras, nombre="A tres km", lat=19.4071)
+    crear_clinica(cabeceras, nombre="A veinte km", lat=19.5601)
+
+    cerca = client.get(URL, params=CENTRO).json()
+    lejos = client.get(URL, params={**CENTRO, "radioKm": 30}).json()
+
+    assert [c["nombre"] for c in cerca["data"]] == ["Clínica Veterinaria Patitas", "A tres km"]
+    assert [c["distanciaKm"] for c in cerca["data"]] == [0.0, 3.0]
+    assert cerca["meta"]["total"] == 2
+    assert [c["nombre"] for c in lejos["data"]][-1] == "A veinte km"
+    assert lejos["meta"]["total"] == 3
+
+
+def test_busqueda_descarta_la_esquina_del_rectangulo(client, crear_clinica):
+    _, cabeceras = crear_clinica(lat=19.4161, lng=-99.1322)
+    lat_min, lat_max, lng_min, lng_max = rectangulo(CENTRO["lat"], CENTRO["lng"], 5)
+
+    assert lat_min <= 19.4161 <= lat_max
+    assert lng_min <= -99.1322 <= lng_max
+    assert nombres(client, **CENTRO) == []
+    assert nombres(client, **CENTRO, radioKm=6) == ["Clínica Veterinaria Patitas"]
+
+
+def test_ubicacion_se_combina_con_los_filtros(client, crear_clinica):
+    _, cabeceras = crear_clinica()
+    crear_clinica(cabeceras, nombre="Hospital cercano", tipos=["hospital"], lat=19.3901)
+    crear_clinica(cabeceras, nombre="Hospital lejano", tipos=["hospital"], lat=19.9001)
+
+    assert nombres(client, **CENTRO, tipo="hospital") == ["Hospital cercano"]
+
+
+def test_radio_sin_ubicacion_se_ignora(client, crear_clinica):
+    crear_clinica()
+
+    data = client.get(URL, params={"radioKm": 1}).json()["data"]
+
+    assert len(data) == 1
+    assert data[0]["distanciaKm"] is None
+
+
+def test_lat_sin_lng_da_400(client):
+    respuesta = client.get(URL, params={"lat": 19.38})
+
+    assert respuesta.status_code == 400
+    assert respuesta.json()["error"]["mensaje"] == "lat y lng deben enviarse juntos"
+
+
+def test_radio_fuera_de_rango_da_400(client):
+    for radio in (0, 51):
+        respuesta = client.get(URL, params={**CENTRO, "radioKm": radio})
+
+        assert respuesta.status_code == 400
+        assert respuesta.json()["error"]["detalles"][0]["campo"] == "radioKm"
