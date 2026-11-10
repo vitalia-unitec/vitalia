@@ -12,3 +12,7 @@ def a_hora_local(fecha: datetime) -> datetime:
     if fecha.tzinfo is None:
         fecha = fecha.replace(tzinfo=UTC)
     return fecha.astimezone(ZoneInfo(get_settings().app_zona_horaria))
+
+
+def ahora_local() -> datetime:
+    return a_hora_local(ahora_utc())
