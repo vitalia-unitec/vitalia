@@ -1,7 +1,8 @@
 from sqlalchemy.orm import Session
 
-from app.core.errors import CredencialesInvalidas
+from app.core.errors import Conflicto, CredencialesInvalidas
 from app.core.security import hashear_password, verificar_password
+from app.modules.clinicas import repository as clinicas_repository
 from app.modules.usuarios import repository
 from app.modules.usuarios.models import Usuario
 from app.modules.usuarios.schemas import ActualizarPerfil, CambiarPassword
@@ -23,5 +24,7 @@ def cambiar_password(db: Session, usuario: Usuario, datos: CambiarPassword) -> N
 
 
 def borrar_cuenta(db: Session, usuario: Usuario) -> None:
-    # En las etapas 4 y 6 se agregan las reglas de clínicas registradas y reseñas
+    if usuario.rol == "clinica" and clinicas_repository.contar_activas_de(db, usuario.id):
+        raise Conflicto("Primero da de baja tus clínicas")
+    # En la etapa 6 se agrega la regla de las reseñas
     repository.borrar(db, usuario)

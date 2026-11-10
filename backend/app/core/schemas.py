@@ -1,10 +1,14 @@
 from pydantic import BaseModel, ConfigDict
-from pydantic.alias_generators import to_camel
+
+
+def a_camel(nombre: str) -> str:
+    primera, *resto = nombre.split("_")
+    return primera + "".join(parte[:1].upper() + parte[1:] for parte in resto)
 
 
 class EsquemaBase(BaseModel):
     model_config = ConfigDict(
-        alias_generator=to_camel,
+        alias_generator=a_camel,
         populate_by_name=True,
         from_attributes=True,
         str_strip_whitespace=True,

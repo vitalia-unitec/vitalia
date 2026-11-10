@@ -23,6 +23,6 @@ def revisar_salud(db: DbSesion) -> dict:
             "api": "funcionando",
             "baseDatos": estado_bd,
             "entorno": settings.app_entorno,
-            "version": "0.2.0",
+            "version": "0.3.0",
         }
     )
