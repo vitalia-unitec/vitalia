@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, Response, status
 
 from app.core.database import DbSesion
 from app.core.responses import ok
+from app.core.rutas import IdRuta
 from app.modules.auth.dependencies import requerir_rol
 from app.modules.clinicas import repository, service
 from app.modules.clinicas.schemas import (
@@ -34,14 +35,14 @@ def registrar_clinica(datos: ClinicaEntrada, usuario: UsuarioClinica, db: DbSesi
 
 
 @router.get("/{clinica_id}", summary="Ver mi clínica con datos internos")
-def ver_mi_clinica(clinica_id: int, usuario: UsuarioClinica, db: DbSesion) -> dict:
+def ver_mi_clinica(clinica_id: IdRuta, usuario: UsuarioClinica, db: DbSesion) -> dict:
     clinica = service.obtener_propia(db, clinica_id, usuario)
     return ok(service.armar_detalle(clinica, para_negocio=True))
 
 
 @router.put("/{clinica_id}", summary="Editar datos generales")
 def editar_clinica(
-    clinica_id: int, datos: ClinicaEntrada, usuario: UsuarioClinica, db: DbSesion
+    clinica_id: IdRuta, datos: ClinicaEntrada, usuario: UsuarioClinica, db: DbSesion
 ) -> dict:
     clinica = service.obtener_propia(db, clinica_id, usuario)
     clinica = service.editar(db, clinica, datos)
@@ -49,7 +50,7 @@ def editar_clinica(
 
 
 @router.delete("/{clinica_id}", status_code=status.HTTP_204_NO_CONTENT, summary="Dar de baja")
-def dar_de_baja(clinica_id: int, usuario: UsuarioClinica, db: DbSesion) -> Response:
+def dar_de_baja(clinica_id: IdRuta, usuario: UsuarioClinica, db: DbSesion) -> Response:
     clinica = service.obtener_propia(db, clinica_id, usuario)
     service.dar_de_baja(db, clinica)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
@@ -58,7 +59,7 @@ def dar_de_baja(clinica_id: int, usuario: UsuarioClinica, db: DbSesion) -> Respo
 # Horarios
 @router.put("/{clinica_id}/horarios", summary="Reemplazar todos los horarios")
 def reemplazar_horarios(
-    clinica_id: int, datos: HorariosEntrada, usuario: UsuarioClinica, db: DbSesion
+    clinica_id: IdRuta, datos: HorariosEntrada, usuario: UsuarioClinica, db: DbSesion
 ) -> dict:
     clinica = service.obtener_propia(db, clinica_id, usuario)
     horarios = service.reemplazar_horarios(db, clinica, datos)
@@ -70,7 +71,7 @@ def reemplazar_horarios(
     "/{clinica_id}/servicios", status_code=status.HTTP_201_CREATED, summary="Agregar servicio"
 )
 def agregar_servicio(
-    clinica_id: int, datos: ServicioEntrada, usuario: UsuarioClinica, db: DbSesion
+    clinica_id: IdRuta, datos: ServicioEntrada, usuario: UsuarioClinica, db: DbSesion
 ) -> dict:
     clinica = service.obtener_propia(db, clinica_id, usuario)
     servicio = service.agregar_servicio(db, clinica, datos)
@@ -79,8 +80,8 @@ def agregar_servicio(
 
 @router.put("/{clinica_id}/servicios/{servicio_id}", summary="Editar servicio")
 def editar_servicio(
-    clinica_id: int,
-    servicio_id: int,
+    clinica_id: IdRuta,
+    servicio_id: IdRuta,
     datos: ServicioEntrada,
     usuario: UsuarioClinica,
     db: DbSesion,
@@ -96,7 +97,7 @@ def editar_servicio(
     summary="Quitar servicio",
 )
 def borrar_servicio(
-    clinica_id: int, servicio_id: int, usuario: UsuarioClinica, db: DbSesion
+    clinica_id: IdRuta, servicio_id: IdRuta, usuario: UsuarioClinica, db: DbSesion
 ) -> Response:
     clinica = service.obtener_propia(db, clinica_id, usuario)
     service.borrar_servicio(db, clinica, servicio_id)

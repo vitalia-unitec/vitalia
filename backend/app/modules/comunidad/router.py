@@ -3,6 +3,7 @@ from fastapi import APIRouter, Response, status
 from app.core.database import DbSesion
 from app.core.paginacion import ParametrosPagina
 from app.core.responses import ok
+from app.core.rutas import IdRuta
 from app.modules.auth.dependencies import UsuarioActual, UsuarioOpcional
 from app.modules.comunidad import repository, service
 from app.modules.comunidad.schemas import ComentarioEntrada, PublicacionEntrada
@@ -19,7 +20,7 @@ def listar_publicaciones(db: DbSesion, usuario: UsuarioOpcional, pag: Parametros
 
 
 @router.get("/{publicacion_id}", summary="Una publicación")
-def ver_publicacion(publicacion_id: int, db: DbSesion, usuario: UsuarioOpcional) -> dict:
+def ver_publicacion(publicacion_id: IdRuta, db: DbSesion, usuario: UsuarioOpcional) -> dict:
     publicacion = service.obtener_publicacion(db, publicacion_id)
     return ok(service.armar_publicacion(publicacion, usuario))
 
@@ -32,7 +33,7 @@ def publicar(datos: PublicacionEntrada, usuario: UsuarioActual, db: DbSesion) ->
 
 @router.put("/{publicacion_id}", summary="Editar mi publicación")
 def editar(
-    publicacion_id: int, datos: PublicacionEntrada, usuario: UsuarioActual, db: DbSesion
+    publicacion_id: IdRuta, datos: PublicacionEntrada, usuario: UsuarioActual, db: DbSesion
 ) -> dict:
     publicacion = service.obtener_publicacion(db, publicacion_id)
     publicacion = service.editar(db, publicacion, usuario, datos)
@@ -42,7 +43,7 @@ def editar(
 @router.delete(
     "/{publicacion_id}", status_code=status.HTTP_204_NO_CONTENT, summary="Borrar publicación"
 )
-def borrar(publicacion_id: int, usuario: UsuarioActual, db: DbSesion) -> Response:
+def borrar(publicacion_id: IdRuta, usuario: UsuarioActual, db: DbSesion) -> Response:
     publicacion = service.obtener_publicacion(db, publicacion_id)
     service.borrar(db, publicacion, usuario)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
@@ -51,7 +52,7 @@ def borrar(publicacion_id: int, usuario: UsuarioActual, db: DbSesion) -> Respons
 # Comentarios
 @router.get("/{publicacion_id}/comentarios", summary="Comentarios, el más antiguo primero")
 def listar_comentarios(
-    publicacion_id: int, db: DbSesion, usuario: UsuarioOpcional, pag: ParametrosPagina
+    publicacion_id: IdRuta, db: DbSesion, usuario: UsuarioOpcional, pag: ParametrosPagina
 ) -> dict:
     service.obtener_publicacion(db, publicacion_id)
     comentarios, total = repository.listar_comentarios(
@@ -65,7 +66,7 @@ def listar_comentarios(
     "/{publicacion_id}/comentarios", status_code=status.HTTP_201_CREATED, summary="Comentar"
 )
 def comentar(
-    publicacion_id: int, datos: ComentarioEntrada, usuario: UsuarioActual, db: DbSesion
+    publicacion_id: IdRuta, datos: ComentarioEntrada, usuario: UsuarioActual, db: DbSesion
 ) -> dict:
     publicacion = service.obtener_publicacion(db, publicacion_id)
     comentario = service.comentar(db, publicacion, usuario, datos)
@@ -78,7 +79,7 @@ def comentar(
     summary="Borrar comentario",
 )
 def borrar_comentario(
-    publicacion_id: int, comentario_id: int, usuario: UsuarioActual, db: DbSesion
+    publicacion_id: IdRuta, comentario_id: IdRuta, usuario: UsuarioActual, db: DbSesion
 ) -> Response:
     publicacion = service.obtener_publicacion(db, publicacion_id)
     service.borrar_comentario(db, publicacion, comentario_id, usuario)
