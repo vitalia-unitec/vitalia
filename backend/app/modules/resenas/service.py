@@ -96,10 +96,18 @@ def editar(db: Session, resena: Resena, usuario: Usuario, datos: ResenaEntrada) 
 
 
 # Borrar
-def borrar(db: Session, resena: Resena, usuario: Usuario) -> None:
-    _revisar_autor(resena, usuario)
+def _borrar(db: Session, resena: Resena) -> None:
     db.delete(resena)
     db.flush()
 
     _recalcular_de(db, resena)
     db.commit()
+
+
+def borrar(db: Session, resena: Resena, usuario: Usuario) -> None:
+    _revisar_autor(resena, usuario)
+    _borrar(db, resena)
+
+
+def borrar_como_admin(db: Session, resena: Resena) -> None:
+    _borrar(db, resena)

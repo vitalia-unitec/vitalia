@@ -16,6 +16,7 @@ from app.modules.usuarios.models import Usuario
 router = APIRouter(tags=["Reseñas"])
 
 UsuarioDueno = Annotated[Usuario, Depends(requerir_rol("dueno"))]
+UsuarioAdmin = Annotated[Usuario, Depends(requerir_rol("admin"))]
 
 
 # Reseñas de una clínica
@@ -62,4 +63,17 @@ def editar_resena(
 def borrar_resena(resena_id: IdRuta, usuario: UsuarioActual, db: DbSesion) -> Response:
     resena = service.obtener(db, resena_id)
     service.borrar(db, resena, usuario)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+# Moderación
+@router.delete(
+    "/admin/resenas/{resena_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Borrar una reseña ofensiva",
+    tags=["Admin"],
+)
+def moderar_resena(resena_id: IdRuta, admin: UsuarioAdmin, db: DbSesion) -> Response:
+    resena = service.obtener(db, resena_id)
+    service.borrar_como_admin(db, resena)
     return Response(status_code=status.HTTP_204_NO_CONTENT)

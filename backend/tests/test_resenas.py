@@ -236,3 +236,51 @@ def test_resena_inexistente(client, encabezados):
     respuesta = client.delete("/api/v1/resenas/999", headers=encabezados())
 
     assert respuesta.status_code == 404
+
+
+# Parte 4: moderación y cuentas borradas
+def test_admin_borra_una_resena_ofensiva(client, crear_clinica, encabezados, encabezados_admin):
+    clinica, _ = crear_clinica()
+    buena, ofensiva = dejar_resenas(client, clinica["id"], encabezados, [5, 1])
+
+    respuesta = client.delete(
+        f"/api/v1/admin/resenas/{ofensiva['id']}", headers=encabezados_admin()
+    )
+
+    assert respuesta.status_code == 204
+    detalle = client.get(f"/api/v1/clinicas/{clinica['id']}").json()["data"]
+    assert detalle["calificacion"] == 5.0
+    assert detalle["totalResenas"] == 1
+
+
+def test_solo_un_admin_modera(client, crear_clinica, encabezados):
+    clinica, _ = crear_clinica()
+    resena = dejar_resenas(client, clinica["id"], encabezados, [1])[0]
+
+    respuesta = client.delete(f"/api/v1/admin/resenas/{resena['id']}", headers=resena["cabeceras"])
+
+    assert respuesta.status_code == 403
+
+
+def test_el_admin_no_puede_editar_resenas_ajenas(
+    client, crear_clinica, encabezados, encabezados_admin
+):
+    clinica, _ = crear_clinica()
+    resena = dejar_resenas(client, clinica["id"], encabezados, [1])[0]
+
+    respuesta = client.put(
+        f"/api/v1/resenas/{resena['id']}", json={"calificacion": 5}, headers=encabezados_admin()
+    )
+
+    assert respuesta.status_code == 403
+
+
+def test_resena_de_cuenta_borrada_sale_como_usuario_eliminado(client, crear_clinica, encabezados):
+    clinica, _ = crear_clinica()
+    resena = dejar_resenas(client, clinica["id"], encabezados, [4])[0]
+
+    client.delete("/api/v1/me", headers=resena["cabeceras"])
+
+    listado = client.get(url_resenas(clinica["id"])).json()
+    assert listado["data"][0]["autor"] == {"id": None, "nombre": "Usuario eliminado"}
+    assert listado["meta"]["resumen"]["total"] == 1
