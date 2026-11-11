@@ -13,6 +13,7 @@ from app.modules.categorias.router import router as categorias_router
 from app.modules.clinicas.router import router as clinicas_router
 from app.modules.clinicas.router_negocio import router as negocio_router
 from app.modules.comunidad.router import router as comunidad_router
+from app.modules.resenas.router import router as resenas_router
 from app.modules.salud.router import router as salud_router
 from app.modules.usuarios.router import router as usuarios_router
 
@@ -60,6 +61,7 @@ def crear_app() -> FastAPI:
     app.include_router(clinicas_router, prefix="/api/v1")
     app.include_router(negocio_router, prefix="/api/v1")
     app.include_router(comunidad_router, prefix="/api/v1")
+    app.include_router(resenas_router, prefix="/api/v1")
 
     return app
 
