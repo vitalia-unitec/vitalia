@@ -57,3 +57,7 @@ def requerir_rol(*roles: str) -> Callable[[Usuario], Usuario]:
         return usuario
 
     return revisar
+
+
+UsuarioDueno = Annotated[Usuario, Depends(requerir_rol("dueno"))]
+UsuarioAdmin = Annotated[Usuario, Depends(requerir_rol("admin"))]

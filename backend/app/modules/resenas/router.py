@@ -1,22 +1,23 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Query, Response, status
+from fastapi import APIRouter, Query, Response, status
 
 from app.core.database import DbSesion
 from app.core.paginacion import ParametrosPagina
 from app.core.responses import ok
 from app.core.rutas import IdRuta
-from app.modules.auth.dependencies import UsuarioActual, UsuarioOpcional, requerir_rol
+from app.modules.auth.dependencies import (
+    UsuarioActual,
+    UsuarioAdmin,
+    UsuarioDueno,
+    UsuarioOpcional,
+)
 from app.modules.clinicas import service as clinicas_service
 from app.modules.resenas import repository, service
 from app.modules.resenas.repository import OrdenResenas
 from app.modules.resenas.schemas import ResenaEntrada
-from app.modules.usuarios.models import Usuario
 
 router = APIRouter(tags=["Reseñas"])
-
-UsuarioDueno = Annotated[Usuario, Depends(requerir_rol("dueno"))]
-UsuarioAdmin = Annotated[Usuario, Depends(requerir_rol("admin"))]
 
 
 # Reseñas de una clínica
