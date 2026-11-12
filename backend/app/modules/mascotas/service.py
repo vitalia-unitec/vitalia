@@ -1,7 +1,8 @@
 from sqlalchemy.orm import Session
 
-from app.core.errors import Conflicto, NoEncontrado
-from app.modules.mascotas import repository
+from app.core.errors import AppError, Conflicto, NoEncontrado
+from app.modules.clinicas.models import Clinica
+from app.modules.mascotas import mensaje, repository
 from app.modules.mascotas.models import Mascota
 from app.modules.mascotas.schemas import MascotaEntrada
 from app.modules.usuarios.models import Usuario
@@ -29,3 +30,20 @@ def editar(db: Session, mascota: Mascota, datos: MascotaEntrada) -> Mascota:
         setattr(mascota, campo, valor)
     repository.guardar(db, mascota)
     return mascota
+
+
+def armar_mensaje_whatsapp(mascota: Mascota, clinica: Clinica) -> dict:
+    if not clinica.whatsapp:
+        raise AppError("VALIDACION", "Esta clínica no tiene WhatsApp registrado", 400)
+
+    texto = mensaje.armar_texto(
+        clinica=clinica.nombre,
+        nombre=mascota.nombre,
+        especie=mascota.especie,
+        sexo=mascota.sexo,
+        raza=mascota.raza,
+        edad_anios=mascota.edad_anios,
+        edad_meses=mascota.edad_meses,
+        color=mascota.color,
+    )
+    return {"texto": texto, "url": mensaje.armar_url(clinica.whatsapp, texto)}

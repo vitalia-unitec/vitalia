@@ -1,14 +1,19 @@
-from fastapi import APIRouter, Response, status
+from typing import Annotated
+
+from fastapi import APIRouter, Query, Response, status
 
 from app.core.database import DbSesion
 from app.core.responses import ok
-from app.core.rutas import IdRuta
+from app.core.rutas import ID_MAXIMO, IdRuta
 from app.modules.auth.dependencies import UsuarioDueno
+from app.modules.clinicas import service as clinicas_service
 from app.modules.mascotas import repository, service
 from app.modules.mascotas.models import Mascota
 from app.modules.mascotas.schemas import MascotaEntrada, MascotaSalida
 
 router = APIRouter(prefix="/me/mascotas", tags=["Mis mascotas"])
+
+ClinicaIdQuery = Annotated[int, Query(alias="clinicaId", ge=1, le=ID_MAXIMO)]
 
 
 def _salida(mascota: Mascota) -> dict:
@@ -43,3 +48,12 @@ def borrar_mascota(mascota_id: IdRuta, usuario: UsuarioDueno, db: DbSesion) -> R
     mascota = service.obtener_mia(db, mascota_id, usuario)
     repository.borrar(db, mascota)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@router.get("/{mascota_id}/mensaje-whatsapp", summary="Texto y link de WhatsApp con el carnet")
+def mensaje_whatsapp(
+    mascota_id: IdRuta, clinica_id: ClinicaIdQuery, usuario: UsuarioDueno, db: DbSesion
+) -> dict:
+    mascota = service.obtener_mia(db, mascota_id, usuario)
+    clinica = clinicas_service.obtener_publica(db, clinica_id)
+    return ok(service.armar_mensaje_whatsapp(mascota, clinica))
