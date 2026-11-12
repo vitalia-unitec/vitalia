@@ -3,6 +3,7 @@ from typing import Annotated
 from fastapi import APIRouter, Query, Response, status
 
 from app.core.database import DbSesion
+from app.core.fotos import ArchivoFoto
 from app.core.responses import ok
 from app.core.rutas import ID_MAXIMO, IdRuta
 from app.modules.auth.dependencies import UsuarioDueno
@@ -46,8 +47,14 @@ def editar_mascota(
 @router.delete("/{mascota_id}", status_code=status.HTTP_204_NO_CONTENT, summary="Borrar carnet")
 def borrar_mascota(mascota_id: IdRuta, usuario: UsuarioDueno, db: DbSesion) -> Response:
     mascota = service.obtener_mia(db, mascota_id, usuario)
-    repository.borrar(db, mascota)
+    service.borrar(db, mascota)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@router.post("/{mascota_id}/foto", summary="Subir o cambiar la foto")
+def subir_foto(mascota_id: IdRuta, foto: ArchivoFoto, usuario: UsuarioDueno, db: DbSesion) -> dict:
+    mascota = service.obtener_mia(db, mascota_id, usuario)
+    return ok(_salida(service.cambiar_foto(db, mascota, foto)))
 
 
 @router.get("/{mascota_id}/mensaje-whatsapp", summary="Texto y link de WhatsApp con el carnet")

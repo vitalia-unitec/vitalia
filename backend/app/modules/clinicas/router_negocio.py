@@ -1,8 +1,9 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, File, Response, UploadFile, status
+from fastapi import APIRouter, Depends, Response, status
 
 from app.core.database import DbSesion
+from app.core.fotos import ArchivoFoto
 from app.core.responses import ok
 from app.core.rutas import IdRuta
 from app.modules.auth.dependencies import requerir_rol
@@ -20,7 +21,6 @@ from app.modules.usuarios.models import Usuario
 router = APIRouter(prefix="/negocio/clinicas", tags=["Negocio"])
 
 UsuarioClinica = Annotated[Usuario, Depends(requerir_rol("clinica"))]
-ArchivoFoto = Annotated[UploadFile, File(alias="foto", description="JPG, PNG o WebP de hasta 5 MB")]
 
 
 # Clínicas

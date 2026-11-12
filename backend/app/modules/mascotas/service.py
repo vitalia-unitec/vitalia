@@ -1,6 +1,8 @@
+from fastapi import UploadFile
 from sqlalchemy.orm import Session
 
 from app.core.errors import AppError, Conflicto, NoEncontrado
+from app.core.fotos import borrar_foto, guardar_foto
 from app.modules.clinicas.models import Clinica
 from app.modules.mascotas import mensaje, repository
 from app.modules.mascotas.models import Mascota
@@ -30,6 +32,30 @@ def editar(db: Session, mascota: Mascota, datos: MascotaEntrada) -> Mascota:
         setattr(mascota, campo, valor)
     repository.guardar(db, mascota)
     return mascota
+
+
+def borrar(db: Session, mascota: Mascota) -> None:
+    ruta = mascota.foto_url
+    repository.borrar(db, mascota)
+    borrar_foto(ruta)
+
+
+# La foto nueva reemplaza a la anterior
+def cambiar_foto(db: Session, mascota: Mascota, archivo: UploadFile) -> Mascota:
+    anterior = mascota.foto_url
+    mascota.foto_url = guardar_foto(archivo, "mascotas")
+    try:
+        repository.guardar(db, mascota)
+    except Exception:
+        db.rollback()
+        borrar_foto(mascota.foto_url)
+        raise
+    borrar_foto(anterior)
+    return mascota
+
+
+def rutas_de_fotos_de_dueno(db: Session, dueno_id: int) -> list[str]:
+    return [m.foto_url for m in repository.listar_de_dueno(db, dueno_id) if m.foto_url]
 
 
 def armar_mensaje_whatsapp(mascota: Mascota, clinica: Clinica) -> dict:

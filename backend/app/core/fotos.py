@@ -1,12 +1,16 @@
 import secrets
 from pathlib import Path
+from typing import Annotated
 
-from fastapi import UploadFile
+from fastapi import File, UploadFile
 
 from app.core.config import get_settings
 from app.core.errors import ArchivoInvalido
 
 TAMANO_MAXIMO = 5 * 1024 * 1024
+
+# Archivo que llega en el campo foto de un formulario multipart
+ArchivoFoto = Annotated[UploadFile, File(alias="foto", description="JPG, PNG o WebP de hasta 5 MB")]
 
 
 # El formato se decide por los primeros bytes del archivo, no por su nombre
