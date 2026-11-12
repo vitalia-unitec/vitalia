@@ -72,6 +72,19 @@ class ServicioClinica(Base):
     categoria: Mapped[Categoria] = relationship(lazy="joined")
 
 
+# Fotos de la galería; la de orden 1 es la principal
+class FotoClinica(Base):
+    __tablename__ = "fotos_clinica"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    clinica_id: Mapped[int] = mapped_column(
+        ForeignKey("clinicas.id", ondelete="CASCADE"), index=True
+    )
+    ruta: Mapped[str] = mapped_column(String(200))
+    orden: Mapped[int] = mapped_column(Integer)
+    creado_en: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=ahora_utc)
+
+
 # Clínica
 class Clinica(Base):
     __tablename__ = "clinicas"
@@ -120,6 +133,9 @@ class Clinica(Base):
         cascade="all, delete-orphan",
         lazy="selectin",
         order_by=(ServicioClinica.categoria_id, ServicioClinica.nombre),
+    )
+    fotos: Mapped[list[FotoClinica]] = relationship(
+        cascade="all, delete-orphan", lazy="selectin", order_by=FotoClinica.orden
     )
 
     @property

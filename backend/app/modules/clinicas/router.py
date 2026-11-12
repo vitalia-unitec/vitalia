@@ -33,3 +33,9 @@ def ver_clinica(
 def ver_servicios(clinica_id: IdRuta, db: DbSesion) -> dict:
     clinica = service.obtener_publica(db, clinica_id)
     return ok([ServicioSalida.model_validate(s).a_json() for s in clinica.servicios])
+
+
+@router.get("/{clinica_id}/fotos", summary="Galería completa de una clínica")
+def ver_fotos(clinica_id: IdRuta, db: DbSesion) -> dict:
+    clinica = service.obtener_publica(db, clinica_id)
+    return ok(service.armar_fotos(clinica.fotos))
