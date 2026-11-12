@@ -6,6 +6,7 @@ CARPETA_TEMPORAL = Path(tempfile.mkdtemp())
 os.environ["DB_RUTA"] = str(CARPETA_TEMPORAL / "vitalia_test.db")
 os.environ["FOTOS_RUTA"] = str(CARPETA_TEMPORAL / "fotos")
 os.environ["FOTOS_URL_BASE"] = "http://testserver/fotos"
+os.environ["APP_ENTORNO"] = "local"
 
 import pytest  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402

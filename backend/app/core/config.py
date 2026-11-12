@@ -1,3 +1,4 @@
+import secrets
 from functools import lru_cache
 from pathlib import Path
 
@@ -12,15 +13,15 @@ class Settings(BaseSettings):
 
     # Aplicación
     app_nombre: str = "Vitalia API"
-    app_entorno: str = "local"
-    app_debug: bool = True
+    app_entorno: str = "produccion"
+    app_debug: bool = False
     app_zona_horaria: str = "America/Mexico_City"
 
     # Base de datos
     db_ruta: str = "data/vitalia.db"
 
     # Autenticación
-    jwt_secret: str = SECRETO_DE_EJEMPLO
+    jwt_secret: str = ""
     jwt_expira_horas: int = 8
     jwt_algoritmo: str = "HS256"
 
@@ -39,11 +40,19 @@ class Settings(BaseSettings):
     def fotos_ruta_absoluta(self) -> Path:
         return Path(self.fotos_ruta).expanduser().resolve()
 
+        # Fuera de local el secreto es obligatorio; en local se genera uno si falta
+
     @model_validator(mode="after")
     def revisar_secreto(self) -> "Settings":
-        if self.app_entorno != "local":
-            if self.jwt_secret == SECRETO_DE_EJEMPLO or len(self.jwt_secret) < 32:
-                raise ValueError("JWT_SECRET debe ser propio y tener 32 caracteres o más")
+        if self.app_entorno == "local":
+            if not self.jwt_secret:
+                self.jwt_secret = secrets.token_urlsafe(48)
+            return self
+        if self.jwt_secret == SECRETO_DE_EJEMPLO or len(self.jwt_secret) < 32:
+            raise ValueError(
+                "JWT_SECRET debe ser propio y tener 32 caracteres o más. "
+                "Para desarrollo copia .env.example a .env, que usa APP_ENTORNO=local"
+            )
         return self
 
 
