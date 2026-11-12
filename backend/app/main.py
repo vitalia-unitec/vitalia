@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from app.core.config import get_settings
 from app.core.errors import registrar_manejadores
@@ -53,6 +54,11 @@ def crear_app() -> FastAPI:
 
     # Errores
     registrar_manejadores(app)
+
+    # Fotos; en producción las sirve Apache
+    if settings.app_entorno == "local":
+        settings.fotos_ruta_absoluta.mkdir(parents=True, exist_ok=True)
+        app.mount("/fotos", StaticFiles(directory=settings.fotos_ruta_absoluta), name="fotos")
 
     # Rutas
     app.include_router(salud_router, prefix="/api/v1")

@@ -24,12 +24,20 @@ class Settings(BaseSettings):
     jwt_expira_horas: int = 8
     jwt_algoritmo: str = "HS256"
 
+    # Fotos
+    fotos_ruta: str = "data/fotos"
+    fotos_url_base: str = "http://localhost:8000/fotos"
+
     # CORS
     cors_origenes: list[str] = ["http://localhost:3000", "http://localhost:5173"]
 
     @property
     def db_ruta_absoluta(self) -> Path:
         return Path(self.db_ruta).expanduser().resolve()
+
+    @property
+    def fotos_ruta_absoluta(self) -> Path:
+        return Path(self.fotos_ruta).expanduser().resolve()
 
     @model_validator(mode="after")
     def revisar_secreto(self) -> "Settings":

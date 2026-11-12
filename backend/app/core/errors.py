@@ -54,6 +54,11 @@ class DemasiadasPeticiones(AppError):
         super().__init__("DEMASIADAS_PETICIONES", mensaje, 429)
 
 
+class ArchivoInvalido(AppError):
+    def __init__(self, mensaje: str = "El archivo no es una foto válida"):
+        super().__init__("ARCHIVO_INVALIDO", mensaje, 400)
+
+
 # Manejadores globales
 def registrar_manejadores(app: FastAPI) -> None:
     @app.exception_handler(AppError)
