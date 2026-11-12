@@ -4,24 +4,11 @@ from pydantic import Field, field_serializer
 
 from app.core.schemas import EsquemaBase
 from app.core.tiempo import a_hora_local
-from app.modules.usuarios.models import Usuario
+from app.modules.usuarios.schemas import AutorSalida
 
 
 def _fecha(valor: datetime | None) -> str | None:
     return a_hora_local(valor).isoformat(timespec="seconds") if valor else None
-
-
-class AutorSalida(EsquemaBase):
-    id: int | None
-    nombre: str
-
-    @classmethod
-    def desde_usuario(cls, usuario: Usuario | None) -> "AutorSalida":
-        if usuario is None:
-            return cls(id=None, nombre="Usuario eliminado")
-        partes = usuario.nombre.split()
-        nombre = partes[0] if len(partes) == 1 else f"{partes[0]} {partes[1][0]}."
-        return cls(id=usuario.id, nombre=nombre)
 
 
 # Entradas

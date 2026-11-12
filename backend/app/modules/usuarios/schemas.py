@@ -5,6 +5,7 @@ from pydantic import EmailStr, Field, field_serializer, field_validator
 
 from app.core.schemas import EsquemaBase
 from app.core.tiempo import a_hora_local
+from app.modules.usuarios.models import Usuario
 
 PATRON_TELEFONO = r"^\d{10}$"
 
@@ -45,3 +46,17 @@ class CambiarPassword(EsquemaBase):
     @classmethod
     def revisar_password(cls, valor: str) -> str:
         return validar_password(valor)
+
+
+# Autor de una reseña, publicación o comentario, con nombre corto
+class AutorSalida(EsquemaBase):
+    id: int | None
+    nombre: str
+
+    @classmethod
+    def desde_usuario(cls, usuario: Usuario | None) -> "AutorSalida":
+        if usuario is None:
+            return cls(id=None, nombre="Usuario eliminado")
+        partes = usuario.nombre.split()
+        nombre = partes[0] if len(partes) == 1 else f"{partes[0]} {partes[1][0]}."
+        return cls(id=usuario.id, nombre=nombre)

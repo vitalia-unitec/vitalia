@@ -26,5 +26,5 @@ def cambiar_password(db: Session, usuario: Usuario, datos: CambiarPassword) -> N
 def borrar_cuenta(db: Session, usuario: Usuario) -> None:
     if usuario.rol == "clinica" and clinicas_repository.contar_activas_de(db, usuario.id):
         raise Conflicto("Primero da de baja tus clínicas")
-    # En la etapa 6 se agrega la regla de las reseñas
+
     repository.borrar(db, usuario)

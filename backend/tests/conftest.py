@@ -6,11 +6,13 @@ os.environ["DB_RUTA"] = str(Path(tempfile.mkdtemp()) / "vitalia_test.db")
 
 import pytest  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
+from sqlalchemy import select  # noqa: E402
 
-from app.core.database import Base, engine  # noqa: E402
+from app.core.database import Base, SessionLocal, engine  # noqa: E402
 from app.core.modelos import crear_tablas  # noqa: E402
 from app.main import app  # noqa: E402
 from app.modules.auth.limitador import limitador_login  # noqa: E402
+from app.modules.usuarios.models import Usuario  # noqa: E402
 
 DATOS_DUENO = {
     "nombre": "Rosa Martínez",
@@ -70,6 +72,19 @@ DATOS_CLINICA = {
     "sitioWeb": None,
     "urgencias24h": False,
 }
+
+
+@pytest.fixture
+def encabezados_admin(encabezados):
+    def _encabezados_admin(email: str = "admin@mail.com") -> dict:
+        cabeceras = encabezados(email=email, nombre="Admin Vitalia")
+        with SessionLocal() as db:
+            admin = db.scalar(select(Usuario).where(Usuario.email == email))
+            admin.rol = "admin"
+            db.commit()
+        return cabeceras
+
+    return _encabezados_admin
 
 
 @pytest.fixture
