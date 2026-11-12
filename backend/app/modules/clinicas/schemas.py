@@ -166,3 +166,12 @@ class ClinicaDetalleSalida(ClinicaResumenSalida):
 
 class ClinicaNegocioSalida(ClinicaDetalleSalida):
     activa: bool
+
+
+# Lo que manda el admin
+class VerificacionEntrada(EsquemaBase):
+    verificada: bool
+
+
+class EstadoEntrada(EsquemaBase):
+    activa: bool

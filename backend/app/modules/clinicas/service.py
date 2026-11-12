@@ -243,6 +243,26 @@ def borrar_servicio(db: Session, clinica: Clinica, servicio_id: int) -> None:
     db.commit()
 
 
+# Panel de admin
+def obtener_para_admin(db: Session, clinica_id: int) -> Clinica:
+    clinica = repository.obtener(db, clinica_id)
+    if clinica is None:
+        raise NoEncontrado("La clínica no existe")
+    return clinica
+
+
+def marcar_verificada(db: Session, clinica: Clinica, verificada: bool) -> Clinica:
+    clinica.verificada = verificada
+    repository.guardar(db, clinica)
+    return clinica
+
+
+def cambiar_estado(db: Session, clinica: Clinica, activa: bool) -> Clinica:
+    clinica.activa = activa
+    repository.guardar(db, clinica)
+    return clinica
+
+
 # Fotos
 def _renumerar(clinica: Clinica) -> None:
     for posicion, foto in enumerate(clinica.fotos, start=1):
