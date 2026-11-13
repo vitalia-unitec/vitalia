@@ -1,6 +1,8 @@
+from fastapi import UploadFile
 from sqlalchemy.orm import Session
 
 from app.core.errors import AppError, Conflicto, NoEncontrado, SinPermiso
+from app.core.fotos import borrar_foto, guardar_foto, url_publica
 from app.core.geo import distancia_km
 from app.core.paginacion import Paginacion
 from app.core.tiempo import ahora_local
@@ -8,21 +10,34 @@ from app.modules.categorias import repository as categorias_repository
 from app.modules.clinicas import repository
 from app.modules.clinicas.filtros import FiltrosBusqueda
 from app.modules.clinicas.horario import estado_apertura
-from app.modules.clinicas.models import Clinica, ClinicaTipo, Horario, ServicioClinica
+from app.modules.clinicas.models import (
+    Clinica,
+    ClinicaTipo,
+    FotoClinica,
+    Horario,
+    ServicioClinica,
+)
 from app.modules.clinicas.schemas import (
     ClinicaDetalleSalida,
     ClinicaEntrada,
     ClinicaNegocioSalida,
     ClinicaResumenSalida,
+    FotoSalida,
     HorariosEntrada,
     ServicioEntrada,
 )
 from app.modules.usuarios.models import Usuario
 
 MAX_SERVICIOS = 50
+MAX_FOTOS = 10
+FOTOS_EN_DETALLE = 5
 
 
 # Armar la respuesta de una clínica
+def armar_fotos(fotos: list[FotoClinica]) -> list[dict]:
+    return [FotoSalida(id=f.id, url=url_publica(f.ruta), orden=f.orden).a_json() for f in fotos]
+
+
 def _datos_resumen(clinica: Clinica, lat: float | None, lng: float | None) -> dict:
     estado = estado_apertura(clinica.horarios, clinica.urgencias_24h, ahora_local())
     distancia = None
@@ -43,7 +58,7 @@ def _datos_resumen(clinica: Clinica, lat: float | None, lng: float | None) -> di
         "abre_a": estado.abre_a,
         "urgencias_24h": clinica.urgencias_24h,
         "verificada": clinica.verificada,
-        "foto_principal": None,
+        "foto_principal": url_publica(clinica.fotos[0].ruta) if clinica.fotos else None,
         "servicios_destacados": [s.nombre for s in clinica.servicios[:3]],
         "lat": clinica.lat,
         "lng": clinica.lng,
@@ -75,7 +90,7 @@ def armar_detalle(
         "whatsapp": clinica.whatsapp,
         "sitio_web": clinica.sitio_web,
         "horarios": clinica.horarios,
-        "fotos": [],
+        "fotos": armar_fotos(clinica.fotos[:FOTOS_EN_DETALLE]),
         "servicios": clinica.servicios,
     }
 
@@ -226,3 +241,70 @@ def borrar_servicio(db: Session, clinica: Clinica, servicio_id: int) -> None:
     servicio = _buscar_servicio(clinica, servicio_id)
     clinica.servicios.remove(servicio)
     db.commit()
+
+
+# Panel de admin
+def obtener_para_admin(db: Session, clinica_id: int) -> Clinica:
+    clinica = repository.obtener(db, clinica_id)
+    if clinica is None:
+        raise NoEncontrado("La clínica no existe")
+    return clinica
+
+
+def marcar_verificada(db: Session, clinica: Clinica, verificada: bool) -> Clinica:
+    clinica.verificada = verificada
+    repository.guardar(db, clinica)
+    return clinica
+
+
+def cambiar_estado(db: Session, clinica: Clinica, activa: bool) -> Clinica:
+    clinica.activa = activa
+    repository.guardar(db, clinica)
+    return clinica
+
+
+# Fotos
+def _renumerar(clinica: Clinica) -> None:
+    for posicion, foto in enumerate(clinica.fotos, start=1):
+        foto.orden = posicion
+
+
+def agregar_foto(db: Session, clinica: Clinica, archivo: UploadFile) -> FotoClinica:
+    if len(clinica.fotos) >= MAX_FOTOS:
+        raise Conflicto(f"Una clínica puede tener máximo {MAX_FOTOS} fotos")
+
+    ruta = guardar_foto(archivo, "clinicas")
+    foto = FotoClinica(ruta=ruta, orden=len(clinica.fotos) + 1)
+    clinica.fotos.append(foto)
+    try:
+        db.commit()
+    except Exception:
+        db.rollback()
+        borrar_foto(ruta)
+        raise
+    db.refresh(foto)
+    return foto
+
+
+def reordenar_fotos(db: Session, clinica: Clinica, ids: list[int]) -> list[FotoClinica]:
+    por_id = {foto.id: foto for foto in clinica.fotos}
+    if len(set(ids)) != len(ids) or set(ids) != set(por_id):
+        raise AppError("VALIDACION", "Envía una vez el id de cada foto de la clínica", 400)
+
+    for posicion, foto_id in enumerate(ids, start=1):
+        por_id[foto_id].orden = posicion
+    db.commit()
+    db.refresh(clinica)
+    return clinica.fotos
+
+
+def borrar_foto_de_clinica(db: Session, clinica: Clinica, foto_id: int) -> None:
+    foto = next((f for f in clinica.fotos if f.id == foto_id), None)
+    if foto is None:
+        raise NoEncontrado("La foto no existe en esta clínica")
+
+    ruta = foto.ruta
+    clinica.fotos.remove(foto)
+    _renumerar(clinica)
+    db.commit()
+    borrar_foto(ruta)

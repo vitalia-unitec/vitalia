@@ -3,6 +3,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Response, status
 
 from app.core.database import DbSesion
+from app.core.fotos import ArchivoFoto
 from app.core.responses import ok
 from app.core.rutas import IdRuta
 from app.modules.auth.dependencies import requerir_rol
@@ -11,6 +12,7 @@ from app.modules.clinicas.schemas import (
     ClinicaEntrada,
     HorarioSalida,
     HorariosEntrada,
+    OrdenFotosEntrada,
     ServicioEntrada,
     ServicioSalida,
 )
@@ -101,4 +103,35 @@ def borrar_servicio(
 ) -> Response:
     clinica = service.obtener_propia(db, clinica_id, usuario)
     service.borrar_servicio(db, clinica, servicio_id)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+# Fotos
+@router.post("/{clinica_id}/fotos", status_code=status.HTTP_201_CREATED, summary="Subir foto")
+def subir_foto(
+    clinica_id: IdRuta, foto: ArchivoFoto, usuario: UsuarioClinica, db: DbSesion
+) -> dict:
+    clinica = service.obtener_propia(db, clinica_id, usuario)
+    nueva = service.agregar_foto(db, clinica, foto)
+    return ok(service.armar_fotos([nueva])[0])
+
+
+@router.put("/{clinica_id}/fotos/orden", summary="Reordenar fotos")
+def reordenar_fotos(
+    clinica_id: IdRuta, datos: OrdenFotosEntrada, usuario: UsuarioClinica, db: DbSesion
+) -> dict:
+    clinica = service.obtener_propia(db, clinica_id, usuario)
+    return ok(service.armar_fotos(service.reordenar_fotos(db, clinica, datos.ids)))
+
+
+@router.delete(
+    "/{clinica_id}/fotos/{foto_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Borrar foto",
+)
+def borrar_foto(
+    clinica_id: IdRuta, foto_id: IdRuta, usuario: UsuarioClinica, db: DbSesion
+) -> Response:
+    clinica = service.obtener_propia(db, clinica_id, usuario)
+    service.borrar_foto_de_clinica(db, clinica, foto_id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)

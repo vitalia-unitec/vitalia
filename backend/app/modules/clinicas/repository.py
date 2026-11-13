@@ -40,6 +40,29 @@ def buscar_activas(db: Session, filtros: FiltrosBusqueda) -> list[Clinica]:
     return list(db.scalars(consulta))
 
 
+def listar_para_admin(
+    db: Session,
+    verificada: bool | None,
+    activa: bool | None,
+    q: str | None,
+    desde: int,
+    limite: int,
+) -> tuple[list[Clinica], int]:
+    condiciones = []
+    if verificada is not None:
+        condiciones.append(Clinica.verificada.is_(verificada))
+    if activa is not None:
+        condiciones.append(Clinica.activa.is_(activa))
+    if q:
+        condiciones.append(func.normalizar(Clinica.nombre).contains(normalizar(q), autoescape=True))
+
+    total = db.scalar(select(func.count(Clinica.id)).where(*condiciones)) or 0
+    consulta = (
+        select(Clinica).where(*condiciones).order_by(Clinica.id.desc()).offset(desde).limit(limite)
+    )
+    return list(db.scalars(consulta)), total
+
+
 def listar_de_propietario(db: Session, propietario_id: int) -> list[Clinica]:
     consulta = select(Clinica).where(Clinica.propietario_id == propietario_id).order_by(Clinica.id)
     return list(db.scalars(consulta))

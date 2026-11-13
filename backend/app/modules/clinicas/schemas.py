@@ -142,6 +142,17 @@ class ClinicaResumenSalida(EsquemaBase):
         return _hhmm(valor)
 
 
+# Fotos
+class FotoSalida(EsquemaBase):
+    id: int
+    url: str
+    orden: int
+
+
+class OrdenFotosEntrada(EsquemaBase):
+    ids: list[int] = Field(min_length=1, max_length=10)
+
+
 class ClinicaDetalleSalida(ClinicaResumenSalida):
     descripcion: str | None
     direccion: DireccionSalida
@@ -149,9 +160,18 @@ class ClinicaDetalleSalida(ClinicaResumenSalida):
     whatsapp: str | None
     sitio_web: str | None
     horarios: list[HorarioSalida]
-    fotos: list[dict]
+    fotos: list[FotoSalida]
     servicios: list[ServicioSalida]
 
 
 class ClinicaNegocioSalida(ClinicaDetalleSalida):
+    activa: bool
+
+
+# Lo que manda el admin
+class VerificacionEntrada(EsquemaBase):
+    verificada: bool
+
+
+class EstadoEntrada(EsquemaBase):
     activa: bool

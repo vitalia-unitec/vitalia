@@ -1,7 +1,8 @@
 from typing import Literal
 
-from pydantic import Field, field_validator
+from pydantic import Field, field_serializer, field_validator
 
+from app.core.fotos import url_publica
 from app.core.schemas import EsquemaBase
 
 Especie = Literal["perro", "gato", "ave", "conejo", "reptil", "otro"]
@@ -33,3 +34,8 @@ class MascotaSalida(EsquemaBase):
     edad_meses: int | None
     color: str | None
     foto_url: str | None
+
+    # En la base se guarda la ruta relativa; aquí sale la URL completa
+    @field_serializer("foto_url")
+    def serializar_foto(self, valor: str | None) -> str | None:
+        return url_publica(valor)
