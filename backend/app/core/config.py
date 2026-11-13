@@ -40,8 +40,7 @@ class Settings(BaseSettings):
     def fotos_ruta_absoluta(self) -> Path:
         return Path(self.fotos_ruta).expanduser().resolve()
 
-        # Fuera de local el secreto es obligatorio; en local se genera uno si falta
-
+    # Fuera de local el secreto es obligatorio; en local se genera uno si falta
     @model_validator(mode="after")
     def revisar_secreto(self) -> "Settings":
         if self.app_entorno == "local":
