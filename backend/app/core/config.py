@@ -6,6 +6,7 @@ from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 SECRETO_DE_EJEMPLO = "cambia-esto-por-un-secreto-largo-de-32-caracteres-o-mas"
+VERSION_API = "1.0.0"
 
 
 class Settings(BaseSettings):
