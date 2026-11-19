@@ -2,7 +2,7 @@ import getpass
 import sys
 
 from app.core.database import SessionLocal
-from app.core.modelos import crear_tablas
+from app.core.modelos import preparar_base
 from app.core.security import hashear_password
 from app.modules.usuarios import repository
 from app.modules.usuarios.models import Usuario
@@ -10,7 +10,7 @@ from app.modules.usuarios.schemas import validar_password
 
 
 def main() -> None:
-    crear_tablas()
+    preparar_base()
     nombre = input("Nombre del admin: ").strip()
     email = input("Correo del admin: ").strip().lower()
     password = getpass.getpass("Contraseña: ")

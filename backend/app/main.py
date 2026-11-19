@@ -8,7 +8,7 @@ from fastapi.staticfiles import StaticFiles
 
 from app.core.config import get_settings
 from app.core.errors import registrar_manejadores
-from app.core.modelos import crear_tablas
+from app.core.modelos import preparar_base
 from app.modules.auth.router import router as auth_router
 from app.modules.categorias.router import router as categorias_router
 from app.modules.clinicas.router import router as clinicas_router
@@ -30,7 +30,7 @@ logging.basicConfig(
 
 @asynccontextmanager
 async def ciclo_de_vida(_: FastAPI) -> AsyncIterator[None]:
-    crear_tablas()
+    preparar_base()
     yield
 
 
