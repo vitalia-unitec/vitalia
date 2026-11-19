@@ -6,7 +6,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from app.core.config import get_settings
+from app.core.config import VERSION_API, get_settings
 from app.core.errors import registrar_manejadores
 from app.core.modelos import preparar_base
 from app.modules.auth.router import router as auth_router
@@ -38,7 +38,7 @@ def crear_app() -> FastAPI:
     app = FastAPI(
         title=settings.app_nombre,
         description="Backend del directorio veterinario Vitalia",
-        version="0.3.0",
+        version=VERSION_API,
         docs_url="/docs",
         redoc_url=None,
         lifespan=ciclo_de_vida,
