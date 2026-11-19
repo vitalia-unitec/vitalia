@@ -152,7 +152,7 @@ def obtener_propia(db: Session, clinica_id: int, usuario: Usuario) -> Clinica:
     return clinica
 
 
-def _aplicar_datos(clinica: Clinica, datos: ClinicaEntrada) -> None:
+def aplicar_datos(clinica: Clinica, datos: ClinicaEntrada) -> None:
     clinica.nombre = datos.nombre
     clinica.descripcion = datos.descripcion
     clinica.calle = datos.direccion.calle
@@ -178,13 +178,13 @@ def _aplicar_datos(clinica: Clinica, datos: ClinicaEntrada) -> None:
 
 def crear(db: Session, usuario: Usuario, datos: ClinicaEntrada) -> Clinica:
     clinica = Clinica(propietario_id=usuario.id)
-    _aplicar_datos(clinica, datos)
+    aplicar_datos(clinica, datos)
     repository.guardar(db, clinica)
     return clinica
 
 
 def editar(db: Session, clinica: Clinica, datos: ClinicaEntrada) -> Clinica:
-    _aplicar_datos(clinica, datos)
+    aplicar_datos(clinica, datos)
     repository.guardar(db, clinica)
     return clinica
 
