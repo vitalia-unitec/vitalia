@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 
 from app.core.config import get_settings
 from app.core.database import SessionLocal
-from app.core.modelos import crear_tablas
+from app.core.modelos import preparar_base
 from app.core.security import hashear_password
 from app.modules.clinicas.models import Clinica, ClinicaTipo, Horario, ServicioClinica
 from app.modules.usuarios.models import Usuario
@@ -157,7 +157,7 @@ def main() -> None:
     if get_settings().app_entorno != "local" and not opciones.forzar:
         sys.exit("Este script solo corre con APP_ENTORNO=local; usa --forzar si estás seguro")
 
-    crear_tablas()
+    preparar_base()
     with SessionLocal() as db:
         creadas = sembrar(db, opciones.cantidad)
     print(f"Clínicas de demostración en la base: {creadas}")
