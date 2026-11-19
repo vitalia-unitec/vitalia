@@ -72,8 +72,12 @@ def fila_a_entrada(fila: dict[str, str]) -> ClinicaEntrada:
     )
 
 
-# Una clínica es la misma si coincide el nombre y el código postal
-def ya_existe(db: Session, datos: ClinicaEntrada) -> bool: ...  # Lo escribes tú en el paso 2.4
+def ya_existe(db: Session, datos: ClinicaEntrada) -> bool:
+    consulta = select(Clinica.id).where(
+        func.lower(Clinica.nombre) == datos.nombre.lower(),
+        Clinica.codigo_postal == datos.direccion.codigo_postal,
+    )
+    return db.scalar(consulta) is not None
 
 
 def validar(filas: list[dict[str, str]]) -> tuple[list[ClinicaEntrada], list[str]]:
@@ -127,11 +131,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
-
-def ya_existe(db: Session, datos: ClinicaEntrada) -> bool:
-    consulta = select(Clinica.id).where(
-        func.lower(Clinica.nombre) == datos.nombre.lower(),
-        Clinica.codigo_postal == datos.direccion.codigo_postal,
-    )
-    return db.scalar(consulta) is not None
