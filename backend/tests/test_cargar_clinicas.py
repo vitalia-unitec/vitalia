@@ -63,7 +63,7 @@ def test_volver_a_cargar_no_duplica_nombres_con_mayusculas_acentuadas(client, tm
     cargar_archivo(archivo)
 
     assert cargar_archivo(archivo) == (0, 1)
-    
+
 
 def test_una_fila_mala_reporta_su_numero(client, tmp_path):
     archivo = tmp_path / "clinicas.csv"
