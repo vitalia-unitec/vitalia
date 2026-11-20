@@ -59,8 +59,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // =====================================
 
     function mostrarEdad(mascota) {
-        const anios = mascota.edad_anios;
-        const meses = mascota.edad_meses;
+        const anios = mascota.edadAnios;
+        const meses = mascota.edadMeses;
 
         if (anios == null && meses == null) {
             return "Edad no registrada";
@@ -205,8 +205,8 @@ document.addEventListener("DOMContentLoaded", () => {
     function calcularEdadDesdeNacimiento(fechaTexto) {
         if (!fechaTexto) {
             return {
-                edad_anios: null,
-                edad_meses: null
+                edadAnios: null,
+                edadMeses: null
             };
         }
 
@@ -239,18 +239,18 @@ document.addEventListener("DOMContentLoaded", () => {
             );
         }
 
-        const edad_anios = Math.floor(mesesTotales / 12);
-        const edad_meses = mesesTotales % 12;
+        const edadAnios = Math.floor(mesesTotales / 12);
+        const edadMeses = mesesTotales % 12;
 
-        if (edad_anios > 40) {
+        if (edadAnios > 40) {
             throw new Error(
                 "La edad no puede superar 40 años."
             );
         }
 
         return {
-            edad_anios,
-            edad_meses
+            edadAnios,
+            edadMeses
         };
     }
 
@@ -320,8 +320,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 especie,
                 raza: raza || null,
                 sexo,
-                edad_anios: edad.edad_anios,
-                edad_meses: edad.edad_meses,
+                edadAnios: edad.edadAnios,
+                edadMeses: edad.edadMeses,
                 color: null
             };
 

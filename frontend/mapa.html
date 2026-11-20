@@ -28,14 +28,14 @@
     <!-- Leaflet CSS -->
     <link
         rel="stylesheet"
-        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoakG5Vq+0n0xE="
+        crossorigin="">
 
     <!-- Estilos Vitalia -->
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/mapa.css">
 
-    <!-- Estilos para garantizar que
-         Leaflet se muestre correctamente -->
     <style>
         #mapaVeterinarias {
             display: block;
@@ -226,7 +226,6 @@
 <main class="container-fluid px-3 px-lg-5 py-4">
 
     <!-- ENCABEZADO DE PÁGINA -->
-
     <section class="mb-4">
 
         <div
@@ -267,7 +266,6 @@
     <section class="row g-4">
 
         <!-- LISTA DE VETERINARIAS -->
-
         <div class="col-lg-4">
 
             <div class="panel-veterinarias">
@@ -285,12 +283,11 @@
                     Cargando resultados...
                 </p>
 
-                <!-- Las tarjetas se generan
-                     desde mapa.js -->
-
+                <!-- Tarjetas generadas desde mapa.js -->
                 <div
                     id="listaVeterinariasMapa"
-                    class="lista-veterinarias">
+                    class="lista-veterinarias"
+                    aria-live="polite">
                 </div>
 
             </div>
@@ -298,7 +295,6 @@
         </div>
 
         <!-- MAPA INTERACTIVO -->
-
         <div class="col-lg-8">
 
             <div class="panel-mapa">
@@ -324,7 +320,6 @@
                 </div>
 
                 <!-- Mapa Leaflet -->
-
                 <div
                     id="mapaVeterinarias"
                     role="region"
@@ -400,6 +395,9 @@
     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
     crossorigin="">
 </script>
+
+<!-- API de Vitalia -->
+<script src="js/api.js"></script>
 
 <!-- Mapa de veterinarias -->
 <script src="js/mapa.js"></script>

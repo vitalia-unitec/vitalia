@@ -41,22 +41,22 @@ document.addEventListener("DOMContentLoaded", () => {
     function obtenerEdad(mascota) {
         const partes = [];
 
-        if (mascota.edad_anios != null &&
-            mascota.edad_anios > 0) {
+        if (mascota.edadAnios != null &&
+            mascota.edadAnios > 0) {
             partes.push(
-                `${mascota.edad_anios} ${
-                    mascota.edad_anios === 1
+                `${mascota.edadAnios} ${
+                    mascota.edadAnios === 1
                         ? "año"
                         : "años"
                 }`
             );
         }
 
-        if (mascota.edad_meses != null &&
-            mascota.edad_meses > 0) {
+        if (mascota.edadMeses != null &&
+            mascota.edadMeses > 0) {
             partes.push(
-                `${mascota.edad_meses} ${
-                    mascota.edad_meses === 1
+                `${mascota.edadMeses} ${
+                    mascota.edadMeses === 1
                         ? "mes"
                         : "meses"
                 }`
@@ -67,8 +67,8 @@ document.addEventListener("DOMContentLoaded", () => {
             return partes.join(" y ");
         }
 
-        if (mascota.edad_anios === 0 ||
-            mascota.edad_meses === 0) {
+        if (mascota.edadAnios === 0 ||
+            mascota.edadMeses === 0) {
             return "0 meses";
         }
 
@@ -100,11 +100,11 @@ document.addEventListener("DOMContentLoaded", () => {
         avatar.style.flexShrink = "0";
         avatar.style.overflow = "hidden";
 
-        if (mascota.foto_url) {
+        if (mascota.fotoUrl) {
 
             const imagen = document.createElement("img");
 
-            imagen.src = mascota.foto_url;
+            imagen.src = mascota.fotoUrl;
             imagen.alt = `Foto de ${mascota.nombre}`;
 
             imagen.style.width = "100%";
