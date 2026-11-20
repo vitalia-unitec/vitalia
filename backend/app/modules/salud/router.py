@@ -2,7 +2,7 @@ from fastapi import APIRouter
 from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 
-from app.core.config import get_settings
+from app.core.config import VERSION_API, get_settings
 from app.core.database import DbSesion
 from app.core.responses import ok
 
@@ -23,6 +23,6 @@ def revisar_salud(db: DbSesion) -> dict:
             "api": "funcionando",
             "baseDatos": estado_bd,
             "entorno": settings.app_entorno,
-            "version": "0.1.0",
+            "version": VERSION_API,
         }
     )
