@@ -57,6 +57,14 @@ def test_volver_a_cargar_no_duplica(client, tmp_path):
     assert cargar_archivo(archivo) == (0, 1)
 
 
+def test_volver_a_cargar_no_duplica_nombres_con_mayusculas_acentuadas(client, tmp_path):
+    archivo = tmp_path / "clinicas.csv"
+    escribir_csv(archivo, [{**PATITAS, "nombre": "Veterinaria San Ángel"}])
+    cargar_archivo(archivo)
+
+    assert cargar_archivo(archivo) == (0, 1)
+    
+
 def test_una_fila_mala_reporta_su_numero(client, tmp_path):
     archivo = tmp_path / "clinicas.csv"
     escribir_csv(archivo, [PATITAS, {**PATITAS, "nombre": "Otra", "telefono": "123"}])
