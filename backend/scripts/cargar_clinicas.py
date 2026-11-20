@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 
 from app.core.database import SessionLocal
 from app.core.modelos import preparar_base
+from app.core.texto import normalizar
 from app.modules.clinicas.models import Clinica
 from app.modules.clinicas.schemas import ClinicaEntrada
 from app.modules.clinicas.service import aplicar_datos
@@ -74,7 +75,7 @@ def fila_a_entrada(fila: dict[str, str]) -> ClinicaEntrada:
 
 def ya_existe(db: Session, datos: ClinicaEntrada) -> bool:
     consulta = select(Clinica.id).where(
-        func.lower(Clinica.nombre) == datos.nombre.lower(),
+        func.normalizar(Clinica.nombre) == normalizar(datos.nombre),
         Clinica.codigo_postal == datos.direccion.codigo_postal,
     )
     return db.scalar(consulta) is not None
