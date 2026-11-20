@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para Negocios</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+        body { font-family: 'Poppins', sans-serif; margin: 0; text-align: center; background-color: #F8F7F3; color: #2D2D2D; }
+        .hero { background-color: #2E7D6B; color: #F8F7F3; padding: 80px 20px; transition: 0.3s; }
+        .hero h1 { font-size: 2.5em; margin-bottom: 15px; font-weight: 700; }
+        .btn-primary {
+            background-color: #6BAF8F; color: white; padding: 15px 35px; font-size: 1.1em; font-weight: 600;
+            border-radius: 30px; border: none; cursor: pointer; transition: 0.3s; margin-top: 20px;
+        }
+        .btn-primary:hover { background-color: #1a4f43; }
+        .input-email {
+            padding: 15px 20px; font-size: 1em; border-radius: 30px; border: none; width: 250px;
+            font-family: 'Poppins', sans-serif; outline: none; margin-right: 10px;
+        }
+        .features { display: flex; justify-content: center; flex-wrap: wrap; gap: 20px; padding: 60px 20px; }
+        .feature-card { background: white; padding: 30px 20px; border-radius: 12px; width: 250px; border-top: 4px solid #D9B59F; }
+        .feature-card h3 { color: #2E7D6B; margin-top: 0; }
+        
+        /* Ocultar elementos dinámicos por defecto */
+        #bloque-formulario, #bloque-exito { display: none; margin-top: 30px; }
+    </style>
+</head>
+<body>
+    <div class="hero" id="hero-section">
+        <h1>Haz crecer tu Veterinaria</h1>
+        <p>Conecta con dueños de mascotas cerca de ti y gestiona tus citas.</p>
+        
+        <button id="btn-iniciar" class="btn-primary">Empezar ahora</button>
+        
+        <form id="bloque-formulario">
+            <input type="email" id="email-input" class="input-email" placeholder="tu@correo.com" required>
+            <button type="submit" class="btn-primary">Registrar mi negocio</button>
+        </form>
+
+        <div id="bloque-exito">
+            <h2>¡Registro Exitoso! 🎉</h2>
+            <p>Hemos enviado un enlace de confirmación a tu correo. Revisa tu bandeja de entrada.</p>
+        </div>
+    </div>
+
+    <div class="features">
+        <div class="feature-card"><h3>Mayor Visibilidad</h3><p>Aparece en nuestro mapa interactivo.</p></div>
+        <div class="feature-card"><h3>Gestión de Citas</h3><p>Recibe solicitudes en tu panel.</p></div>
+        <div class="feature-card"><h3>Reputación</h3><p>Construye confianza con reseñas.</p></div>
+    </div>
+
+    <script>
+        document.getElementById('btn-iniciar').addEventListener('click', function() {
+            this.style.display = 'none'; // Oculta el botón inicial
+            document.getElementById('bloque-formulario').style.display = 'block'; // Muestra el form
+            document.getElementById('email-input').focus();
+        });
+
+        document.getElementById('bloque-formulario').addEventListener('submit', function(e) {
+            e.preventDefault(); // Evita que la página recargue
+            this.style.display = 'none'; // Oculta el formulario
+            document.getElementById('bloque-exito').style.display = 'block'; // Muestra el éxito
+            document.getElementById('hero-section').style.backgroundColor = '#6BAF8F'; // Cambia el fondo
+        });
+    </script>
+</body>
+</html>
