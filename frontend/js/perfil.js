@@ -1,9 +1,13 @@
 
 /* =========================================
-   VITALIA - MI PERFIL
+   VITALIA - MI PERFIL CON FASTAPI
 ========================================= */
 
 document.addEventListener("DOMContentLoaded", () => {
+
+    // =====================================
+    // ELEMENTOS DEL HTML
+    // =====================================
 
     const vistaInvitado =
         document.getElementById("vistaInvitado");
@@ -21,30 +25,28 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("btnCerrarSesion");
 
     // =====================================
-    // CONFIGURACIÓN
+    // MENSAJES
     // =====================================
 
-    const MODO_DEMO = true;
+    function mostrarMensaje(texto, tipo = "text-muted") {
+        if (!mensajePerfil) return;
 
-    const usuarioDemo = {
-        nombre: "María",
-        apellido: "García",
-        correo: "maria@ejemplo.com",
-        telefono: "5512345678"
-    };
+        mensajePerfil.textContent = texto;
+        mensajePerfil.className =
+            `small mt-3 mb-0 ${tipo}`;
+    }
 
     // =====================================
     // VISTA DE INVITADO
     // =====================================
 
     function mostrarInvitado() {
+        if (vistaInvitado) {
+            vistaInvitado.classList.remove("d-none");
+        }
 
-        vistaInvitado.classList.remove("d-none");
-
-        perfilUsuario.classList.add("d-none");
-
-        if (typeof limpiarCarnetsPerfil === "function") {
-            limpiarCarnetsPerfil();
+        if (perfilUsuario) {
+            perfilUsuario.classList.add("d-none");
         }
     }
 
@@ -53,115 +55,97 @@ document.addEventListener("DOMContentLoaded", () => {
     // =====================================
 
     function mostrarUsuario(usuario) {
-
-        vistaInvitado.classList.add("d-none");
-
-        perfilUsuario.classList.remove("d-none");
-
-        document.getElementById("nombre").value =
-            usuario.nombre || "";
-
-        document.getElementById("apellido").value =
-            usuario.apellido || "";
-
-        document.getElementById("correo").value =
-            usuario.correo || "";
-
-        document.getElementById("telefono").value =
-            usuario.telefono || "";
-
-        // Mostrar carnets de demostración
-        if (MODO_DEMO) {
-
-            if (
-                typeof cargarCarnetsDemoPerfil === "function"
-            ) {
-                cargarCarnetsDemoPerfil();
-            }
-
-        } else {
-
-            // Pendiente: obtener mascotas reales
-            // desde el backend.
-
-            if (
-                typeof limpiarCarnetsPerfil === "function"
-            ) {
-                limpiarCarnetsPerfil();
-            }
+        if (vistaInvitado) {
+            vistaInvitado.classList.add("d-none");
         }
+
+        if (perfilUsuario) {
+            perfilUsuario.classList.remove("d-none");
+        }
+
+        const nombreCompleto =
+            (usuario.nombre || "").trim();
+
+        const partesNombre =
+            nombreCompleto.split(/\s+/);
+
+        const primerNombre =
+            partesNombre.shift() || "";
+
+        const apellidos =
+            partesNombre.join(" ");
+
+        const nombre =
+            document.getElementById("nombre");
+
+        const apellido =
+            document.getElementById("apellido");
+
+        const correo =
+            document.getElementById("correo");
+
+        const telefono =
+            document.getElementById("telefono");
+
+        if (nombre) {
+            nombre.value = primerNombre;
+        }
+
+        if (apellido) {
+            apellido.value = apellidos;
+        }
+
+        if (correo) {
+            correo.value = usuario.email || "";
+        }
+
+        if (telefono) {
+            telefono.value = usuario.telefono || "";
+        }
+
+        // Los carnets se administran por separado
+        // desde carnet-preview-perfil.js.
+        // No eliminamos ni sobrescribimos sus tarjetas.
     }
 
     // =====================================
-    // CONSULTAR SESIÓN
+    // CONSULTAR SESIÓN REAL
     // =====================================
 
     async function cargarSesion() {
+        const token =
+            typeof obtenerToken === "function"
+                ? obtenerToken()
+                : null;
 
-        if (MODO_DEMO) {
-
-            const sesion =
-                typeof obtenerUsuarioActual === "function"
-                    ? obtenerUsuarioActual()
-                    : null;
-
-            if (sesion) {
-
-                mostrarUsuario({
-                    ...usuarioDemo,
-                    ...sesion
-                });
-
-            } else {
-
-                mostrarInvitado();
-            }
-
+        if (!token) {
+            mostrarInvitado();
             return;
         }
 
-        // Endpoint provisional.
-        // Confirmar con backend.
-
         try {
+            const usuario =
+                await consultarUsuarioActual();
 
-            const respuesta = await fetch(
-                "/api/usuarios/me",
-                {
-                    method: "GET",
-                    credentials: "include",
-                    headers: {
-                        "Accept": "application/json"
-                    }
-                }
-            );
-
-            if (
-                respuesta.status === 401 ||
-                respuesta.status === 403
-            ) {
+            if (!usuario) {
                 mostrarInvitado();
                 return;
             }
 
-            if (!respuesta.ok) {
-                throw new Error(
-                    "No se pudo consultar la sesión."
-                );
-            }
-
-            const usuario = await respuesta.json();
-
             mostrarUsuario(usuario);
 
         } catch (error) {
-
             console.error(
-                "Error al consultar sesión:",
+                "Error al consultar el perfil:",
                 error
             );
 
             mostrarInvitado();
+
+            mostrarMensaje(
+                "No fue posible verificar tu sesión.",
+                "text-danger"
+            );
         }
     }
 
@@ -169,159 +153,42 @@ document.addEventListener("DOMContentLoaded", () => {
     // GUARDAR INFORMACIÓN PERSONAL
     // =====================================
 
-    formPerfil.addEventListener(
-        "submit",
-        async (evento) => {
+    if (formPerfil) {
+        formPerfil.addEventListener(
+            "submit",
+            async (evento) => {
+                evento.preventDefault();
 
-            evento.preventDefault();
+                mostrarMensaje("");
 
-            mensajePerfil.textContent = "";
-
-            mensajePerfil.className =
-                "small mt-3 mb-0";
-
-            if (!formPerfil.checkValidity()) {
-
-                formPerfil.reportValidity();
-                return;
-            }
-
-            const datosActualizados = {
-
-                nombre:
-                    document.getElementById("nombre")
-                        .value.trim(),
-
-                apellido:
-                    document.getElementById("apellido")
-                        .value.trim(),
-
-                telefono:
-                    document.getElementById("telefono")
-                        .value.trim()
-
-            };
-
-            // Modo demostración
-            if (MODO_DEMO) {
-
-                mensajePerfil.textContent =
-                    "Vista de demostración: los cambios no se han guardado.";
-
-                mensajePerfil.classList.add(
-                    "text-muted"
-                );
-
-                console.log(
-                    "Datos de prueba:",
-                    datosActualizados
-                );
-
-                return;
-            }
-
-            // Backend real (ruta provisional)
-            try {
-
-                const respuesta = await fetch(
-                    "/api/usuarios/me",
-                    {
-                        method: "PATCH",
-                        credentials: "include",
-                        headers: {
-                            "Content-Type": "application/json",
-                            "Accept": "application/json"
-                        },
-                        body: JSON.stringify(
-                            datosActualizados
-                        )
-                    }
-                );
-
-                if (
-                    respuesta.status === 401 ||
-                    respuesta.status === 403
-                ) {
-                    mostrarInvitado();
+                if (!formPerfil.checkValidity()) {
+                    formPerfil.reportValidity();
                     return;
                 }
 
-                if (!respuesta.ok) {
-                    throw new Error(
-                        "No se pudieron guardar los cambios."
-                    );
-                }
+                // Pendiente de confirmar el endpoint
+                // de actualización del perfil.
 
-                mensajePerfil.textContent =
-                    "Tus cambios se guardaron correctamente.";
-
-                mensajePerfil.classList.add(
-                    "text-success"
-                );
-
-            } catch (error) {
-
-                console.error(
-                    "Error al actualizar perfil:",
-                    error
-                );
-
-                mensajePerfil.textContent =
-                    "No fue posible guardar los cambios. Intenta nuevamente.";
-
-                mensajePerfil.classList.add(
-                    "text-danger"
+                mostrarMensaje(
+                    "La consulta de tu perfil está conectada. La edición estará disponible cuando integremos el endpoint correspondiente.",
+                    "text-muted"
                 );
             }
-        }
-    );
+        );
+    }
 
     // =====================================
     // CERRAR SESIÓN
     // =====================================
 
-    btnCerrarSesion.addEventListener(
-        "click",
-        async () => {
-
-            if (MODO_DEMO) {
-
+    if (btnCerrarSesion) {
+        btnCerrarSesion.addEventListener(
+            "click",
+            () => {
                 cerrarSesionDemo();
-                return;
             }
-
-            // Endpoint provisional de backend
-            try {
-
-                const respuesta = await fetch(
-                    "/api/auth/logout",
-                    {
-                        method: "POST",
-                        credentials: "include"
-                    }
-                );
-
-                if (!respuesta.ok) {
-                    throw new Error(
-                        "No se pudo cerrar sesión."
-                    );
-                }
-
-                window.location.href = "index.html";
-
-            } catch (error) {
-
-                console.error(
-                    "Error al cerrar sesión:",
-                    error
-                );
-
-                alert(
-                    "No fue posible cerrar sesión. Intenta nuevamente."
-                );
-            }
-        }
-    );
+        );
+    }
 
     // =====================================
     // INICIAR PÁGINA

@@ -1,6 +1,6 @@
 
 /* =========================================
-   VITALIA - MIS MASCOTAS
+   VITALIA - MIS MASCOTAS CON FASTAPI
 ========================================= */
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -27,34 +27,18 @@ document.addEventListener("DOMContentLoaded", () => {
     const mensajeMascotas =
         document.getElementById("mensajeMascotas");
 
+    let mascotas = [];
+
     // =====================================
-    // MODO DEMOSTRACIÓN
+    // MENSAJES
     // =====================================
 
-    // Mantener los mismos valores que perfil.js.
-    // Estas variables NO representan una sesión real.
+    function mostrarMensaje(texto, tipo = "text-danger") {
+        if (!mensajeMascotas) return;
 
-    const MODO_DEMO = true;
-    const DEMO_USUARIO_REGISTRADO = false;
-
-    // Mascotas ficticias para probar el diseño.
-
-    let mascotas = [
-        {
-            id: 1,
-            nombre: "Luna",
-            especie: "Perro",
-            raza: "Golden Retriever",
-            nacimiento: "2023-05-12"
-        },
-        {
-            id: 2,
-            nombre: "Milo",
-            especie: "Gato",
-            raza: "Siamés",
-            nacimiento: "2024-08-20"
-        }
-    ];
+        mensajeMascotas.textContent = texto;
+        mensajeMascotas.className = `mt-3 ${tipo}`;
+    }
 
     // =====================================
     // MOSTRAR VISTAS
@@ -68,46 +52,48 @@ document.addEventListener("DOMContentLoaded", () => {
     function mostrarUsuario() {
         vistaInvitado.classList.add("d-none");
         vistaMascotas.classList.remove("d-none");
-
-        mostrarMascotas();
     }
 
     // =====================================
-    // CALCULAR EDAD
+    // FORMATO DE EDAD
     // =====================================
 
-    function calcularEdad(fechaNacimiento) {
+    function mostrarEdad(mascota) {
+        const anios = mascota.edad_anios;
+        const meses = mascota.edad_meses;
 
-        if (!fechaNacimiento) {
+        if (anios == null && meses == null) {
             return "Edad no registrada";
         }
 
-        const hoy = new Date();
-        const nacimiento = new Date(
-            fechaNacimiento + "T00:00:00"
-        );
+        const partes = [];
 
-        let edad = hoy.getFullYear() -
-                   nacimiento.getFullYear();
-
-        const diferenciaMeses =
-            hoy.getMonth() - nacimiento.getMonth();
-
-        if (
-            diferenciaMeses < 0 ||
-            (diferenciaMeses === 0 &&
-             hoy.getDate() < nacimiento.getDate())
-        ) {
-            edad--;
+        if (anios != null) {
+            partes.push(
+                `${anios} ${anios === 1 ? "año" : "años"}`
+            );
         }
 
-        if (edad < 0) {
-            return "Fecha no válida";
+        if (meses != null && meses > 0) {
+            partes.push(
+                `${meses} ${meses === 1 ? "mes" : "meses"}`
+            );
         }
 
-        return edad === 1
-            ? "1 año"
-            : `${edad} años`;
+        return partes.join(" y ") || "0 meses";
+    }
+
+    function mostrarEspecie(especie) {
+        const especies = {
+            perro: "Perro",
+            gato: "Gato",
+            ave: "Ave",
+            conejo: "Conejo",
+            reptil: "Reptil",
+            otro: "Otro"
+        };
+
+        return especies[especie] || especie;
     }
 
     // =====================================
@@ -115,23 +101,18 @@ document.addEventListener("DOMContentLoaded", () => {
     // =====================================
 
     function mostrarMascotas() {
-
         listaMascotas.replaceChildren();
 
         if (mascotas.length === 0) {
-
             estadoSinMascotas.classList.remove("d-none");
             return;
         }
 
         estadoSinMascotas.classList.add("d-none");
 
-        mascotas.forEach((mascota) => {
-
+        mascotas.forEach(mascota => {
             const columna = document.createElement("div");
-
-            columna.className =
-                "col-12 col-sm-6 col-lg-4";
+            columna.className = "col-12 col-sm-6 col-lg-4";
 
             const tarjeta = document.createElement("div");
             tarjeta.className = "tarjeta-mascota";
@@ -141,9 +122,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const icono = document.createElement("i");
 
-            if (mascota.especie === "Perro") {
+            if (mascota.especie === "perro") {
                 icono.className = "bi bi-heart-fill";
-            } else if (mascota.especie === "Gato") {
+            } else if (mascota.especie === "gato") {
                 icono.className = "bi bi-heart";
             } else {
                 icono.className = "bi bi-stars";
@@ -159,13 +140,12 @@ document.addEventListener("DOMContentLoaded", () => {
             detalle.className = "detalle-mascota";
 
             detalle.textContent = [
-                mascota.especie,
+                mostrarEspecie(mascota.especie),
                 mascota.raza || "Raza no registrada",
-                calcularEdad(mascota.nacimiento)
+                mostrarEdad(mascota)
             ].join(" · ");
 
             const botonCarnet = document.createElement("a");
-
             botonCarnet.className = "btn-carnet";
 
             botonCarnet.href =
@@ -190,11 +170,95 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // =====================================
+    // CONSULTAR MASCOTAS REALES
+    // =====================================
+
+    async function cargarMascotas() {
+        try {
+            mostrarMensaje("Cargando mascotas...", "text-muted");
+
+            const datos = await apiRequest("/me/mascotas", {
+                method: "GET"
+            });
+
+            mascotas = Array.isArray(datos) ? datos : [];
+
+            mostrarMascotas();
+            mostrarMensaje("");
+
+        } catch (error) {
+            console.error("Error al cargar mascotas:", error);
+
+            listaMascotas.replaceChildren();
+            estadoSinMascotas.classList.add("d-none");
+
+            mostrarMensaje(
+                "No fue posible cargar tus mascotas. Comprueba la conexión con el servidor."
+            );
+        }
+    }
+
+    // =====================================
+    // CALCULAR EDAD DESDE FECHA
+    // =====================================
+
+    function calcularEdadDesdeNacimiento(fechaTexto) {
+        if (!fechaTexto) {
+            return {
+                edad_anios: null,
+                edad_meses: null
+            };
+        }
+
+        const nacimiento = new Date(
+            `${fechaTexto}T00:00:00`
+        );
+
+        const hoy = new Date();
+
+        if (
+            Number.isNaN(nacimiento.getTime()) ||
+            nacimiento > hoy
+        ) {
+            throw new Error(
+                "La fecha de nacimiento no es válida."
+            );
+        }
+
+        let mesesTotales =
+            (hoy.getFullYear() - nacimiento.getFullYear()) * 12 +
+            (hoy.getMonth() - nacimiento.getMonth());
+
+        if (hoy.getDate() < nacimiento.getDate()) {
+            mesesTotales--;
+        }
+
+        if (mesesTotales < 0) {
+            throw new Error(
+                "La fecha de nacimiento no puede ser futura."
+            );
+        }
+
+        const edad_anios = Math.floor(mesesTotales / 12);
+        const edad_meses = mesesTotales % 12;
+
+        if (edad_anios > 40) {
+            throw new Error(
+                "La edad no puede superar 40 años."
+            );
+        }
+
+        return {
+            edad_anios,
+            edad_meses
+        };
+    }
+
+    // =====================================
     // REGISTRAR MASCOTA
     // =====================================
 
-    formMascota.addEventListener("submit", (evento) => {
-
+    formMascota.addEventListener("submit", async evento => {
         evento.preventDefault();
 
         if (!formMascota.checkValidity()) {
@@ -202,98 +266,138 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        const nombre =
-            document.getElementById("nombreMascota").value.trim();
+        const nombre = document
+            .getElementById("nombreMascota")
+            .value.trim();
 
-        const especie =
-            document.getElementById("especieMascota").value;
+        const especie = document
+            .getElementById("especieMascota")
+            .value.trim().toLowerCase();
 
-        const raza =
-            document.getElementById("razaMascota").value.trim();
+        const raza = document
+            .getElementById("razaMascota")
+            .value.trim();
 
-        const nacimiento =
-            document.getElementById("nacimientoMascota").value;
+        const nacimiento = document
+            .getElementById("nacimientoMascota")
+            .value;
 
-        if (!nombre) {
-            mensajeMascotas.textContent =
-                "Debes ingresar el nombre de tu mascota.";
+        const campoSexo = document.getElementById("sexoMascota");
+
+        if (!campoSexo) {
+            mostrarMensaje(
+                "Falta agregar el campo Sexo al formulario."
+            );
             return;
         }
 
-        if (nacimiento) {
+        const sexo = campoSexo.value.trim().toLowerCase();
 
-            const fecha = new Date(nacimiento + "T00:00:00");
-
-            if (fecha > new Date()) {
-
-                mensajeMascotas.textContent =
-                    "La fecha de nacimiento no puede ser futura.";
-
-                mensajeMascotas.className =
-                    "mt-3 text-danger";
-
-                return;
-            }
-        }
-
-        if (!MODO_DEMO) {
-
-            mensajeMascotas.textContent =
-                "El registro real estará disponible al conectar la API.";
-
-            mensajeMascotas.className =
-                "mt-3 text-muted";
-
+        if (!["macho", "hembra"].includes(sexo)) {
+            mostrarMensaje(
+                "Selecciona si tu mascota es macho o hembra."
+            );
             return;
         }
 
-        const nuevaMascota = {
-            id: crypto.randomUUID(),
-            nombre,
-            especie,
-            raza,
-            nacimiento
-        };
+        const especiesValidas = [
+            "perro", "gato", "ave",
+            "conejo", "reptil", "otro"
+        ];
 
-        mascotas.push(nuevaMascota);
+        if (!especiesValidas.includes(especie)) {
+            mostrarMensaje(
+                "Selecciona una especie válida."
+            );
+            return;
+        }
 
-        mostrarMascotas();
+        try {
+            const edad = calcularEdadDesdeNacimiento(nacimiento);
 
-        formMascota.reset();
+            const nuevaMascota = {
+                nombre,
+                especie,
+                raza: raza || null,
+                sexo,
+                edad_anios: edad.edad_anios,
+                edad_meses: edad.edad_meses,
+                color: null
+            };
 
-        const modalElemento =
-            document.getElementById("modalMascota");
+            mostrarMensaje(
+                "Registrando mascota...",
+                "text-muted"
+            );
 
-        const modal =
-            bootstrap.Modal.getInstance(modalElemento);
+            await apiRequest("/me/mascotas", {
+                method: "POST",
+                body: JSON.stringify(nuevaMascota)
+            });
 
-        modal?.hide();
+            formMascota.reset();
 
-        mensajeMascotas.textContent =
-            "Mascota agregada a la demostración. " +
-            "No se ha guardado en una base de datos.";
+            const modalElemento =
+                document.getElementById("modalMascota");
 
-        mensajeMascotas.className =
-            "mt-3 text-success";
+            const modal = modalElemento
+                ? bootstrap.Modal.getInstance(modalElemento)
+                : null;
+
+            modal?.hide();
+
+            await cargarMascotas();
+
+            mostrarMensaje(
+                "¡Mascota registrada correctamente!",
+                "text-success"
+            );
+
+        } catch (error) {
+            console.error("Error al registrar mascota:", error);
+
+            mostrarMensaje(
+                error.message ||
+                "No fue posible registrar la mascota."
+            );
+        }
     });
 
     // =====================================
     // INICIAR PÁGINA
     // =====================================
 
-    if (MODO_DEMO) {
+    async function iniciarPagina() {
+        const token = typeof obtenerToken === "function"
+            ? obtenerToken()
+            : null;
 
-        if (DEMO_USUARIO_REGISTRADO) {
-            mostrarUsuario();
-        } else {
+        if (!token) {
             mostrarInvitado();
+            return;
         }
 
-    } else {
+        try {
+            const usuario = await consultarUsuarioActual();
 
-        // Hasta conectar la autenticación real,
-        // no se mostrarán datos privados.
-        mostrarInvitado();
+            if (!usuario || usuario.rol !== "dueno") {
+                mostrarInvitado();
+                return;
+            }
+
+            mostrarUsuario();
+            await cargarMascotas();
+
+        } catch (error) {
+            console.error(
+                "Error al verificar la sesión:",
+                error
+            );
+
+            mostrarInvitado();
+        }
     }
+
+    iniciarPagina();
 
 });
