@@ -3,72 +3,100 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
     <title>Vitalia | Carnet de mi mascota</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-          rel="stylesheet">
+    <!-- BOOTSTRAP -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet">
 
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
-          rel="stylesheet">
+    <!-- FUENTE POPPINS -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
-          rel="stylesheet">
+    <!-- ICONOS -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+        rel="stylesheet">
 
+    <!-- ESTILOS VITALIA -->
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/carnet.css">
 </head>
 
 <body>
 
-    <!-- ENCABEZADO -->
+    <!-- =====================================
+         ENCABEZADO
+    ===================================== -->
+
     <header class="navbar bg-white border-bottom sticky-top">
         <div class="container py-3">
 
-            <a class="navbar-brand d-flex align-items-center gap-3"
-               href="index.html">
+            <a
+                class="navbar-brand d-flex align-items-center gap-3"
+                href="index.html">
 
-                <img src="assets/img/logo-vitalia.png"
-                     alt=""
-                     class="logo-vitalia">
+                <img
+                    src="assets/img/logo-vitalia.png"
+                    alt=""
+                    class="logo-vitalia">
 
-                <img src="assets/img/nombre-vitalia.png"
-                     alt="Vitalia"
-                     class="nombre-vitalia">
+                <img
+                    src="assets/img/nombre-vitalia.png"
+                    alt="Vitalia"
+                    class="nombre-vitalia">
             </a>
 
             <div class="d-flex align-items-center gap-2">
 
-                <a href="buscar.html?urgencias=true"
-                   class="btn btn-urgencias rounded-pill">
+                <!-- URGENCIAS -->
+                <a
+                    href="buscar.html?urgencias=true"
+                    class="btn btn-urgencias rounded-pill">
+
                     <i class="bi bi-exclamation-triangle-fill me-1"></i>
                     Urgencias 24 h
                 </a>
 
-                <a href="registro.html"
-                   class="btn btn-outline-success rounded-pill auth-invitado">
+                <!-- REGISTRARSE -->
+                <a
+                    href="login.html?tab=registro"
+                    class="btn btn-outline-success rounded-pill auth-invitado">
+
                     Registrarse
                 </a>
 
-                <a href="login.html"
-                   class="btn btn-success rounded-pill auth-invitado">
+                <!-- INICIAR SESIÓN -->
+                <a
+                    href="login.html"
+                    class="btn btn-success rounded-pill auth-invitado">
+
                     Ingresar
                 </a>
 
-                <button type="button"
-                        class="btn btn-outline-success rounded-pill btn-cerrar-sesion auth-usuario"
-                        hidden>
+                <!-- CERRAR SESIÓN -->
+                <button
+                    type="button"
+                    class="btn btn-outline-success rounded-pill btn-cerrar-sesion auth-usuario"
+                    hidden>
+
                     <i class="bi bi-box-arrow-right me-1"></i>
                     Cerrar sesión
                 </button>
 
-                <button class="btn border-0"
-                        type="button"
-                        data-bs-toggle="offcanvas"
-                        data-bs-target="#menuVitalia"
-                        aria-controls="menuVitalia"
-                        aria-label="Abrir menú">
+                <!-- MENÚ -->
+                <button
+                    class="btn border-0"
+                    type="button"
+                    data-bs-toggle="offcanvas"
+                    data-bs-target="#menuVitalia"
+                    aria-controls="menuVitalia"
+                    aria-label="Abrir menú">
 
                     <i class="bi bi-list fs-2"></i>
                 </button>
@@ -77,60 +105,103 @@
         </div>
     </header>
 
-    <!-- MENÚ LATERAL -->
-    <div class="offcanvas offcanvas-end"
-         tabindex="-1"
-         id="menuVitalia"
-         aria-labelledby="tituloMenu">
+    <!-- =====================================
+         MENÚ LATERAL
+    ===================================== -->
+
+    <div
+        class="offcanvas offcanvas-end"
+        tabindex="-1"
+        id="menuVitalia"
+        aria-labelledby="tituloMenu">
 
         <div class="offcanvas-header">
-            <h5 id="tituloMenu" class="offcanvas-title fw-bold">
+
+            <h5
+                id="tituloMenu"
+                class="offcanvas-title fw-bold">
+
                 Menú Vitalia
             </h5>
 
-            <button type="button"
-                    class="btn-close"
-                    data-bs-dismiss="offcanvas"
-                    aria-label="Cerrar menú">
+            <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="offcanvas"
+                aria-label="Cerrar menú">
             </button>
+
         </div>
 
         <div class="offcanvas-body">
 
             <nav class="nav flex-column menu-vitalia">
 
-                <a href="index.html" class="menu-enlace">
+                <!-- INICIO -->
+                <a
+                    href="index.html"
+                    class="menu-enlace">
+
                     <i class="bi bi-house-door"></i>
                     <span class="menu-texto">Inicio</span>
                 </a>
 
-                <a href="buscar.html" class="menu-enlace">
+                <!-- BUSCAR VETERINARIAS -->
+                <a
+                    href="buscar.html"
+                    class="menu-enlace">
+
                     <i class="bi bi-search"></i>
-                    <span class="menu-texto">Buscar veterinarias</span>
+                    <span class="menu-texto">
+                        Buscar veterinarias
+                    </span>
                 </a>
 
-                <a href="comunidad.html" class="menu-enlace">
+                <!-- COMUNIDAD -->
+                <a
+                    href="comunidad.html"
+                    class="menu-enlace">
+
                     <i class="bi bi-people"></i>
-                    <span class="menu-texto">Comunidad</span>
+                    <span class="menu-texto">
+                        Comunidad
+                    </span>
                 </a>
 
-                <a href="negocios.html" class="menu-enlace">
+                <!-- NEGOCIOS -->
+                <a
+                    href="negocios.html"
+                    class="menu-enlace">
+
                     <i class="bi bi-building"></i>
-                    <span class="menu-texto">Para negocios</span>
+                    <span class="menu-texto">
+                        Para negocios
+                    </span>
                 </a>
 
                 <hr>
 
-                <a href="mi-perfil.html" class="menu-enlace">
+                <!-- MI PERFIL -->
+                <a
+                    href="mi-perfil.html"
+                    class="menu-enlace">
+
                     <i class="bi bi-person-circle"></i>
-                    <span class="menu-texto">Mi perfil</span>
+                    <span class="menu-texto">
+                        Mi perfil
+                    </span>
                 </a>
 
-                <a href="mis-mascotas.html"
-                   class="menu-enlace active"
-                   aria-current="page">
+                <!-- MIS MASCOTAS -->
+                <a
+                    href="mis-mascotas.html"
+                    class="menu-enlace active"
+                    aria-current="page">
+
                     <i class="bi bi-heart"></i>
-                    <span class="menu-texto">Mis mascotas</span>
+                    <span class="menu-texto">
+                        Mis mascotas
+                    </span>
                 </a>
 
             </nav>
@@ -138,19 +209,32 @@
         </div>
     </div>
 
-    <!-- CONTENIDO -->
+    <!-- =====================================
+         CONTENIDO PRINCIPAL
+    ===================================== -->
+
     <main class="container py-5 carnet-main">
 
-        <a href="mi-perfil.html" class="carnet-volver">
+        <!-- VOLVER -->
+        <a
+            href="mis-mascotas.html"
+            class="carnet-volver">
+
             <i class="bi bi-arrow-left me-2"></i>
-            Volver a Mi perfil
+            Volver a Mis mascotas
         </a>
+
+        <!-- =================================
+             TARJETA DEL CARNET
+        ================================= -->
 
         <div class="carnet-card">
 
+            <!-- ENCABEZADO DEL CARNET -->
             <div class="carnet-encabezado">
 
                 <div>
+
                     <p class="carnet-etiqueta">
                         EXPEDIENTE DE MASCOTA
                     </p>
@@ -163,149 +247,271 @@
                         Consulta y administra la información
                         de tu mascota.
                     </p>
+
                 </div>
 
                 <span class="carnet-insignia">
+
                     <i class="bi bi-journal-medical me-1"></i>
                     Carnet digital
+
                 </span>
 
             </div>
 
-            <div id="mensajeCarnet"
-                 class="alert"
-                 role="status"
-                 aria-live="polite"
-                 hidden>
+            <!-- MENSAJES -->
+            <div
+                id="mensajeCarnet"
+                class="alert"
+                role="status"
+                aria-live="polite"
+                hidden>
             </div>
 
-            <!-- FORMULARIO -->
+            <!-- =================================
+                 CONTENIDO DEL CARNET
+            ================================= -->
+
             <div class="carnet-contenido">
 
-                <!-- FOTO -->
+                <!-- =================================
+                     FOTO DE LA MASCOTA
+                ================================= -->
+
                 <div class="carnet-foto-columna">
 
                     <div class="carnet-foto-contenedor">
 
-                        <img id="fotoMascota"
-                             src="assets/img/logo-vitalia.png"
-                             alt="Fotografía de la mascota">
+                        <img
+                            id="fotoMascota"
+                            src="assets/img/logo-vitalia.png"
+                            alt="Fotografía de la mascota">
 
-                        <label for="inputFotoMascota"
-                               class="carnet-cambiar-foto"
-                               title="Cambiar fotografía">
+                        <label
+                            for="inputFotoMascota"
+                            class="carnet-cambiar-foto"
+                            title="Cambiar fotografía">
+
                             <i class="bi bi-camera-fill"></i>
                         </label>
 
                     </div>
 
-                    <input type="file"
-                           id="inputFotoMascota"
-                           accept="image/*"
-                           hidden>
+                    <input
+                        type="file"
+                        id="inputFotoMascota"
+                        accept="image/*"
+                        hidden>
 
-                    <label for="inputFotoMascota"
-                           class="carnet-enlace-foto">
+                    <label
+                        for="inputFotoMascota"
+                        class="carnet-enlace-foto">
+
                         Cambiar fotografía
                     </label>
 
-                    <span id="estadoCarnet"
-                          class="carnet-estado">
+                    <span
+                        id="estadoCarnet"
+                        class="carnet-estado">
+
                         Modo consulta
                     </span>
 
                 </div>
 
-                <!-- DATOS -->
-                <form id="formCarnet" class="carnet-formulario">
+                <!-- =================================
+                     FORMULARIO DEL CARNET
+                ================================= -->
+
+                <form
+                    id="formCarnet"
+                    class="carnet-formulario">
 
                     <div class="row g-3">
 
+                        <!-- NOMBRE -->
                         <div class="col-md-6">
-                            <label for="mascotaNombre"
-                                   class="form-label">
+
+                            <label
+                                for="mascotaNombre"
+                                class="form-label">
+
                                 Nombre
                             </label>
 
-                            <input type="text"
-                                   id="mascotaNombre"
-                                   class="form-control"
-                                   required>
+                            <input
+                                type="text"
+                                id="mascotaNombre"
+                                class="form-control"
+                                maxlength="50"
+                                required>
+
                         </div>
 
+                        <!-- SEXO -->
                         <div class="col-md-6">
-                            <label for="mascotaSexo"
-                                   class="form-label">
+
+                            <label
+                                for="mascotaSexo"
+                                class="form-label">
+
                                 Sexo
                             </label>
 
-                            <select id="mascotaSexo"
-                                    class="form-select"
-                                    required>
-                                <option value="">Seleccionar</option>
-                                <option value="Hembra">Hembra</option>
-                                <option value="Macho">Macho</option>
+                            <select
+                                id="mascotaSexo"
+                                class="form-select"
+                                required>
+
+                                <option value="">
+                                    Seleccionar
+                                </option>
+
+                                <option value="hembra">
+                                    Hembra
+                                </option>
+
+                                <option value="macho">
+                                    Macho
+                                </option>
+
                             </select>
+
                         </div>
 
+                        <!-- ESPECIE -->
                         <div class="col-md-6">
-                            <label for="mascotaEspecie"
-                                   class="form-label">
+
+                            <label
+                                for="mascotaEspecie"
+                                class="form-label">
+
                                 Especie
                             </label>
 
-                            <select id="mascotaEspecie"
-                                    class="form-select"
-                                    required>
-                                <option value="">Seleccionar</option>
-                                <option value="Perro">Perro</option>
-                                <option value="Gato">Gato</option>
-                                <option value="Otro">Otro</option>
+                            <select
+                                id="mascotaEspecie"
+                                class="form-select"
+                                required>
+
+                                <option value="">
+                                    Seleccionar
+                                </option>
+
+                                <option value="perro">
+                                    Perro
+                                </option>
+
+                                <option value="gato">
+                                    Gato
+                                </option>
+
+                                <option value="ave">
+                                    Ave
+                                </option>
+
+                                <option value="conejo">
+                                    Conejo
+                                </option>
+
+                                <option value="reptil">
+                                    Reptil
+                                </option>
+
+                                <option value="otro">
+                                    Otro
+                                </option>
+
                             </select>
+
                         </div>
 
-                        <div class="col-md-6">
-                            <label for="mascotaEdad"
-                                   class="form-label">
-                                Edad
+                        <!-- EDAD EN AÑOS -->
+                        <div class="col-md-3">
+
+                            <label
+                                for="mascotaEdadAnios"
+                                class="form-label">
+
+                                Años
                             </label>
 
-                            <input type="text"
-                                   id="mascotaEdad"
-                                   class="form-control"
-                                   placeholder="Ej. 3 años"
-                                   required>
+                            <input
+                                type="number"
+                                id="mascotaEdadAnios"
+                                class="form-control"
+                                min="0"
+                                max="40"
+                                step="1"
+                                placeholder="Ej. 3">
+
                         </div>
 
+                        <!-- EDAD EN MESES -->
+                        <div class="col-md-3">
+
+                            <label
+                                for="mascotaEdadMeses"
+                                class="form-label">
+
+                                Meses
+                            </label>
+
+                            <input
+                                type="number"
+                                id="mascotaEdadMeses"
+                                class="form-control"
+                                min="0"
+                                max="11"
+                                step="1"
+                                placeholder="Ej. 6">
+
+                        </div>
+
+                        <!-- RAZA -->
                         <div class="col-md-6">
-                            <label for="mascotaRaza"
-                                   class="form-label">
+
+                            <label
+                                for="mascotaRaza"
+                                class="form-label">
+
                                 Raza
                             </label>
 
-                            <input type="text"
-                                   id="mascotaRaza"
-                                   class="form-control"
-                                   required>
+                            <input
+                                type="text"
+                                id="mascotaRaza"
+                                class="form-control"
+                                maxlength="60">
+
                         </div>
 
+                        <!-- COLOR -->
                         <div class="col-md-6">
-                            <label for="mascotaColor"
-                                   class="form-label">
+
+                            <label
+                                for="mascotaColor"
+                                class="form-label">
+
                                 Color
                             </label>
 
-                            <input type="text"
-                                   id="mascotaColor"
-                                   class="form-control">
+                            <input
+                                type="text"
+                                id="mascotaColor"
+                                class="form-control"
+                                maxlength="40">
+
                         </div>
 
                     </div>
 
-                    <button type="submit"
-                            id="btnGuardarCarnet"
-                            class="btn btn-success rounded-pill px-4 mt-4"
-                            hidden>
+                    <!-- GUARDAR -->
+                    <button
+                        type="submit"
+                        id="btnGuardarCarnet"
+                        class="btn btn-success rounded-pill px-4 mt-4"
+                        hidden>
 
                         <i class="bi bi-check-circle me-2"></i>
                         Guardar carnet
@@ -313,23 +519,32 @@
 
                 </form>
 
-                <!-- WHATSAPP -->
+                <!-- =================================
+                     COMPARTIR POR WHATSAPP
+                ================================= -->
+
                 <aside class="carnet-whatsapp">
 
                     <div class="carnet-whatsapp-icono">
+
                         <i class="bi bi-whatsapp"></i>
+
                     </div>
 
-                    <h2>Comparte su carnet</h2>
+                    <h2>
+                        Comparte su carnet
+                    </h2>
 
                     <p>
                         Envía un resumen de la información
                         de tu mascota por WhatsApp.
                     </p>
 
-                    <button type="button"
-                            id="btnCompartirCarnet"
-                            class="btn btn-outline-success rounded-pill">
+                    <button
+                        type="button"
+                        id="btnCompartirCarnet"
+                        class="btn btn-outline-success rounded-pill">
+
                         <i class="bi bi-whatsapp me-2"></i>
                         Compartir
                     </button>
@@ -338,37 +553,52 @@
 
             </div>
 
-            <!-- ACCIONES -->
+            <!-- =================================
+                 ACCIONES DEL CARNET
+            ================================= -->
+
             <div class="carnet-acciones">
 
                 <div class="d-flex flex-wrap gap-2">
 
-                    <button type="button"
-                            id="btnCrearCarnet"
-                            class="btn btn-outline-success rounded-pill">
+                    <!-- CREAR -->
+                    <button
+                        type="button"
+                        id="btnCrearCarnet"
+                        class="btn btn-outline-success rounded-pill">
+
                         <i class="bi bi-plus-circle me-1"></i>
                         Crear
                     </button>
 
-                    <button type="button"
-                            id="btnConsultarCarnet"
-                            class="btn btn-outline-success rounded-pill">
+                    <!-- CONSULTAR -->
+                    <button
+                        type="button"
+                        id="btnConsultarCarnet"
+                        class="btn btn-outline-success rounded-pill">
+
                         <i class="bi bi-eye me-1"></i>
                         Consultar
                     </button>
 
-                    <button type="button"
-                            id="btnEditarCarnet"
-                            class="btn btn-outline-success rounded-pill">
+                    <!-- EDITAR -->
+                    <button
+                        type="button"
+                        id="btnEditarCarnet"
+                        class="btn btn-outline-success rounded-pill">
+
                         <i class="bi bi-pencil-square me-1"></i>
                         Editar
                     </button>
 
                 </div>
 
-                <button type="button"
-                        id="btnBorrarCarnet"
-                        class="btn btn-outline-danger rounded-pill">
+                <!-- BORRAR -->
+                <button
+                    type="button"
+                    id="btnBorrarCarnet"
+                    class="btn btn-outline-danger rounded-pill">
+
                     <i class="bi bi-trash me-1"></i>
                     Borrar carnet
                 </button>
@@ -379,34 +609,60 @@
 
     </main>
 
-    <!-- FOOTER -->
+    <!-- =====================================
+         FOOTER
+    ===================================== -->
+
     <footer class="py-4">
+
         <div class="container">
+
             <div class="row align-items-center g-3">
 
                 <div class="col-md-6">
+
                     <h3 class="h5 fw-bold text-white">
                         Vitalia
                     </h3>
+
                     <p class="mb-0">
                         Todo para el bienestar de tu mascota.
                     </p>
+
                 </div>
 
                 <div class="col-md-6 text-md-end">
+
                     <p class="mb-0">
                         &copy; 2026 Vitalia.
                         Todos los derechos reservados.
                     </p>
+
                 </div>
 
             </div>
+
         </div>
+
     </footer>
 
+    <!-- =====================================
+         SCRIPTS
+    ===================================== -->
+
+    <!-- BOOTSTRAP -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- API FASTAPI -->
+    <script src="js/api.js"></script>
+
+    <!-- AUTENTICACIÓN -->
     <script src="js/auth.js"></script>
+
+    <!-- CARNET -->
     <script src="js/carnet.js"></script>
+
+    <!-- MENÚ -->
     <script src="js/menu.js"></script>
 
 </body>

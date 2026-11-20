@@ -1,6 +1,6 @@
 
 /* =========================================
-   VITALIA - CARNET DIGITAL
+   VITALIA - CARNET DIGITAL CON FASTAPI
 ========================================= */
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -24,146 +24,82 @@ document.addEventListener("DOMContentLoaded", () => {
         nombre: document.getElementById("mascotaNombre"),
         sexo: document.getElementById("mascotaSexo"),
         especie: document.getElementById("mascotaEspecie"),
-        edad: document.getElementById("mascotaEdad"),
+        edadAnios: document.getElementById("mascotaEdadAnios"),
+        edadMeses: document.getElementById("mascotaEdadMeses"),
         raza: document.getElementById("mascotaRaza"),
         color: document.getElementById("mascotaColor")
     };
 
     const FOTO_DEFAULT = "assets/img/logo-vitalia.png";
 
-    // =====================================
-    // DATOS DEMO
-    // =====================================
-
-    const mascotasDemo = {
-        "1": {
-            nombre: "Luna",
-            sexo: "Hembra",
-            especie: "Perro",
-            edad: "3 años",
-            raza: "Golden Retriever",
-            color: "Dorado",
-            foto: "https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=400&q=80"
-        },
-        "2": {
-            nombre: "Milo",
-            sexo: "Macho",
-            especie: "Gato",
-            edad: "2 años",
-            raza: "Doméstico",
-            color: "Gris",
-            foto: "https://images.unsplash.com/photo-1573865526739-10659fec78a5?auto=format&fit=crop&w=400&q=80"
-        }
-    };
-
-    // =====================================
-    // IDENTIFICAR MASCOTA Y USUARIO
-    // =====================================
-
     const parametros = new URLSearchParams(
         window.location.search
     );
 
-    const idMascota = parametros.get("id") || "1";
-
-    const usuario =
-        typeof obtenerUsuarioActual === "function"
-            ? obtenerUsuarioActual()
-            : null;
-
-    const usuarioId = usuario?.correo || "demo";
-
-    const claveAlmacenamiento =
-        `vitalia_carnet_${encodeURIComponent(usuarioId)}_${encodeURIComponent(idMascota)}`;
-
+    let idMascota = parametros.get("id");
+    let mascotaActual = null;
     let modoActual = "consulta";
-    let fotoTemporal = null;
+    let fotoSeleccionada = null;
+    let fotoTemporalUrl = null;
+    let guardando = false;
 
     // =====================================
     // MENSAJES
     // =====================================
 
-    function mostrarMensaje(texto, tipo = "success") {
-
+    function mostrarMensaje(texto, tipo = "info") {
         mensaje.textContent = texto;
-
         mensaje.className = `alert alert-${tipo}`;
-
         mensaje.hidden = false;
     }
 
     function limpiarMensaje() {
         mensaje.hidden = true;
+        mensaje.textContent = "";
+    }
+
+    function obtenerError(error) {
+        return error?.message ||
+            "No fue posible completar la operación.";
     }
 
     // =====================================
-    // OBTENER DATOS
+    // VALIDAR SESIÓN
     // =====================================
 
-    function obtenerDatosGuardados() {
-
-        try {
-            const guardado = localStorage.getItem(
-                claveAlmacenamiento
-            );
-
-            return guardado
-                ? JSON.parse(guardado)
-                : null;
-
-        } catch (error) {
-
-            console.error(
-                "Error al consultar carnet:",
-                error
-            );
-
-            return null;
-        }
-    }
-
-    function obtenerMascotaInicial() {
-
-        const guardado = obtenerDatosGuardados();
-
-        if (guardado) return guardado;
-
-        if (mascotasDemo[idMascota]) {
-            return { ...mascotasDemo[idMascota] };
-        }
-
-        return {
-            nombre: "",
-            sexo: "",
-            especie: "",
-            edad: "",
-            raza: "",
-            color: "",
-            foto: FOTO_DEFAULT
-        };
+    function tieneSesion() {
+        return typeof obtenerToken === "function" &&
+            Boolean(obtenerToken());
     }
 
     // =====================================
-    // CARGAR FORMULARIO
+    // MOSTRAR DATOS
     // =====================================
 
     function cargarMascota(datos) {
+        mascotaActual = datos;
 
         campos.nombre.value = datos.nombre || "";
         campos.sexo.value = datos.sexo || "";
         campos.especie.value = datos.especie || "";
-        campos.edad.value = datos.edad || "";
+
+        campos.edadAnios.value =
+            datos.edad_anios ?? "";
+
+        campos.edadMeses.value =
+            datos.edad_meses ?? "";
+
         campos.raza.value = datos.raza || "";
         campos.color.value = datos.color || "";
 
-        foto.src = datos.foto || FOTO_DEFAULT;
-        fotoTemporal = datos.foto || FOTO_DEFAULT;
+        limpiarFotoTemporal();
+
+        foto.src = datos.foto_url || FOTO_DEFAULT;
 
         actualizarTitulo();
     }
 
     function actualizarTitulo() {
-
         const nombre = campos.nombre.value.trim();
 
         titulo.textContent = nombre
@@ -171,12 +107,29 @@ document.addEventListener("DOMContentLoaded", () => {
             : "Carnet de mi mascota";
     }
 
+    function limpiarFotoTemporal() {
+        if (fotoTemporalUrl) {
+            URL.revokeObjectURL(fotoTemporalUrl);
+            fotoTemporalUrl = null;
+        }
+
+        fotoSeleccionada = null;
+        inputFoto.value = "";
+    }
+
+    function limpiarFormulario() {
+        form.reset();
+        mascotaActual = null;
+        limpiarFotoTemporal();
+        foto.src = FOTO_DEFAULT;
+        actualizarTitulo();
+    }
+
     // =====================================
-    // CAMBIAR MODO
+    // MODOS
     // =====================================
 
     function establecerModo(modo) {
-
         modoActual = modo;
 
         const editable = modo !== "consulta";
@@ -186,8 +139,16 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         inputFoto.disabled = !editable;
-
         btnGuardar.hidden = !editable;
+
+        btnBorrar.disabled = !idMascota ||
+            modo === "creacion";
+
+        btnCompartir.disabled = !idMascota ||
+            modo === "creacion";
+
+        btnEditar.disabled = !idMascota ||
+            modo === "creacion";
 
         if (modo === "consulta") {
             estado.textContent = "Modo consulta";
@@ -199,26 +160,73 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // =====================================
-    // CREAR CARNET
+    // CONSULTAR MASCOTA
+    // =====================================
+
+    async function consultarMascota() {
+        if (!tieneSesion()) {
+            mostrarMensaje(
+                "Inicia sesión para consultar el carnet.",
+                "warning"
+            );
+            return;
+        }
+
+        if (!idMascota) {
+            limpiarFormulario();
+            establecerModo("creacion");
+            mostrarMensaje(
+                "Completa los datos para registrar una mascota.",
+                "info"
+            );
+            return;
+        }
+
+        try {
+            mostrarMensaje(
+                "Cargando información del carnet...",
+                "info"
+            );
+
+            const datos = await apiRequest(
+                `/me/mascotas/${encodeURIComponent(idMascota)}`,
+                { method: "GET" }
+            );
+
+            cargarMascota(datos);
+            establecerModo("consulta");
+            limpiarMensaje();
+
+        } catch (error) {
+            console.error("Error al consultar carnet:", error);
+
+            establecerModo("consulta");
+
+            mostrarMensaje(
+                obtenerError(error),
+                "danger"
+            );
+        }
+    }
+
+    // =====================================
+    // CREAR NUEVO CARNET
     // =====================================
 
     btnCrear.addEventListener("click", () => {
+        idMascota = null;
 
-        // Crear abre un formulario nuevo.
-        // No sobrescribe el carnet existente
-        // hasta que se presione Guardar.
+        window.history.replaceState(
+            {},
+            "",
+            "carnet.html"
+        );
 
-        form.reset();
-
-        foto.src = FOTO_DEFAULT;
-        fotoTemporal = FOTO_DEFAULT;
-
+        limpiarFormulario();
         establecerModo("creacion");
 
-        actualizarTitulo();
-
         mostrarMensaje(
-            "Completa los datos para crear un carnet de demostración.",
+            "Completa los datos para crear un nuevo carnet.",
             "info"
         );
     });
@@ -227,23 +235,23 @@ document.addEventListener("DOMContentLoaded", () => {
     // CONSULTAR
     // =====================================
 
-    btnConsultar.addEventListener("click", () => {
-
-        cargarMascota(obtenerMascotaInicial());
-
-        establecerModo("consulta");
-
-        mostrarMensaje(
-            "Estás consultando el carnet.",
-            "info"
-        );
-    });
+    btnConsultar.addEventListener(
+        "click",
+        consultarMascota
+    );
 
     // =====================================
     // EDITAR
     // =====================================
 
     btnEditar.addEventListener("click", () => {
+        if (!idMascota || !mascotaActual) {
+            mostrarMensaje(
+                "Primero debes consultar un carnet existente.",
+                "warning"
+            );
+            return;
+        }
 
         establecerModo("edicion");
 
@@ -254,11 +262,10 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // =====================================
-    // CAMBIAR FOTO
+    // SELECCIONAR FOTO
     // =====================================
 
     inputFoto.addEventListener("change", evento => {
-
         const archivo = evento.target.files[0];
 
         if (!archivo) return;
@@ -268,78 +275,209 @@ document.addEventListener("DOMContentLoaded", () => {
                 "Selecciona un archivo de imagen válido.",
                 "danger"
             );
+            inputFoto.value = "";
             return;
         }
 
-        if (archivo.size > 1024 * 1024) {
-            mostrarMensaje(
-                "Para esta demostración, la imagen debe pesar menos de 1 MB.",
-                "warning"
+        limpiarFotoTemporal();
+
+        fotoSeleccionada = archivo;
+        fotoTemporalUrl = URL.createObjectURL(archivo);
+        foto.src = fotoTemporalUrl;
+
+        mostrarMensaje(
+            "Fotografía seleccionada. Se intentará subir al guardar.",
+            "info"
+        );
+    });
+
+    // =====================================
+    // PREPARAR DATOS PARA FASTAPI
+    // =====================================
+
+    function numeroOpcional(valor, maximo, etiqueta) {
+        if (valor === "") return null;
+
+        const numero = Number(valor);
+
+        if (
+            !Number.isInteger(numero) ||
+            numero < 0 ||
+            numero > maximo
+        ) {
+            throw new Error(
+                `${etiqueta} debe estar entre 0 y ${maximo}.`
             );
-            return;
         }
 
-        const lector = new FileReader();
+        return numero;
+    }
 
-        lector.onload = () => {
-
-            fotoTemporal = lector.result;
-            foto.src = fotoTemporal;
+    function obtenerDatosFormulario() {
+        const datos = {
+            nombre: campos.nombre.value.trim(),
+            sexo: campos.sexo.value,
+            especie: campos.especie.value,
+            edad_anios: numeroOpcional(
+                campos.edadAnios.value,
+                40,
+                "La edad en años"
+            ),
+            edad_meses: numeroOpcional(
+                campos.edadMeses.value,
+                11,
+                "La edad en meses"
+            ),
+            raza: campos.raza.value.trim() || null,
+            color: campos.color.value.trim() || null
         };
 
-        lector.readAsDataURL(archivo);
-    });
+        if (!datos.nombre) {
+            throw new Error(
+                "Debes ingresar el nombre de la mascota."
+            );
+        }
+
+        if (!["macho", "hembra"].includes(datos.sexo)) {
+            throw new Error(
+                "Selecciona un sexo válido."
+            );
+        }
+
+        const especiesValidas = [
+            "perro",
+            "gato",
+            "ave",
+            "conejo",
+            "reptil",
+            "otro"
+        ];
+
+        if (!especiesValidas.includes(datos.especie)) {
+            throw new Error(
+                "Selecciona una especie válida."
+            );
+        }
+
+        return datos;
+    }
+
+    // =====================================
+    // SUBIR FOTO
+    // =====================================
+
+    async function subirFoto(mascotaId, archivo) {
+        const formData = new FormData();
+        formData.append("foto", archivo);
+
+        return await apiRequest(
+            `/me/mascotas/${encodeURIComponent(mascotaId)}/foto`,
+            {
+                method: "POST",
+                body: formData
+            }
+        );
+    }
 
     // =====================================
     // GUARDAR CARNET
     // =====================================
 
-    form.addEventListener("submit", evento => {
-
+    form.addEventListener("submit", async evento => {
         evento.preventDefault();
+
+        if (guardando) return;
+
+        if (!tieneSesion()) {
+            mostrarMensaje(
+                "Debes iniciar sesión para guardar un carnet.",
+                "warning"
+            );
+            return;
+        }
 
         if (!form.checkValidity()) {
             form.reportValidity();
             return;
         }
 
-        const datos = {
-            nombre: campos.nombre.value.trim(),
-            sexo: campos.sexo.value,
-            especie: campos.especie.value,
-            edad: campos.edad.value.trim(),
-            raza: campos.raza.value.trim(),
-            color: campos.color.value.trim(),
-            foto: fotoTemporal || FOTO_DEFAULT
-        };
-
         try {
+            const datos = obtenerDatosFormulario();
 
-            localStorage.setItem(
-                claveAlmacenamiento,
-                JSON.stringify(datos)
-            );
-
-            establecerModo("consulta");
-
-            actualizarTitulo();
+            guardando = true;
+            btnGuardar.disabled = true;
 
             mostrarMensaje(
-                "Carnet de demostración guardado en este navegador.",
-                "success"
+                "Guardando carnet...",
+                "info"
             );
+
+            const esNuevo = modoActual === "creacion" ||
+                !idMascota;
+
+            const endpoint = esNuevo
+                ? "/me/mascotas"
+                : `/me/mascotas/${encodeURIComponent(idMascota)}`;
+
+            const mascotaGuardada = await apiRequest(
+                endpoint,
+                {
+                    method: esNuevo ? "POST" : "PUT",
+                    body: JSON.stringify(datos)
+                }
+            );
+
+            idMascota = String(mascotaGuardada.id);
+
+            window.history.replaceState(
+                {},
+                "",
+                `carnet.html?id=${encodeURIComponent(idMascota)}`
+            );
+
+            let errorFoto = null;
+
+            if (fotoSeleccionada) {
+                try {
+                    await subirFoto(
+                        idMascota,
+                        fotoSeleccionada
+                    );
+                } catch (error) {
+                    errorFoto = error;
+                    console.error(
+                        "Error al subir fotografía:",
+                        error
+                    );
+                }
+            }
+
+            await consultarMascota();
+
+            if (errorFoto) {
+                mostrarMensaje(
+                    "Los datos del carnet se guardaron, pero no fue posible subir la fotografía: " +
+                    obtenerError(errorFoto),
+                    "warning"
+                );
+            } else {
+                mostrarMensaje(
+                    "¡Carnet guardado correctamente!",
+                    "success"
+                );
+            }
 
         } catch (error) {
-
-            console.error(
-                "No se pudo guardar el carnet:",
-                error
-            );
+            console.error("Error al guardar carnet:", error);
 
             mostrarMensaje(
-                "No se pudo guardar. Verifica el espacio disponible del navegador.",
+                obtenerError(error),
                 "danger"
             );
+
+        } finally {
+            guardando = false;
+            btnGuardar.disabled = false;
         }
     });
 
@@ -347,32 +485,49 @@ document.addEventListener("DOMContentLoaded", () => {
     // BORRAR CARNET
     // =====================================
 
-    btnBorrar.addEventListener("click", () => {
+    btnBorrar.addEventListener("click", async () => {
+        if (!idMascota || !mascotaActual) {
+            mostrarMensaje(
+                "No hay un carnet seleccionado para borrar.",
+                "warning"
+            );
+            return;
+        }
 
-        const nombre =
-            campos.nombre.value.trim() || "esta mascota";
+        const nombre = mascotaActual.nombre ||
+            "esta mascota";
 
-        const confirmar = window.confirm(
-            `¿Quieres borrar el carnet de ${nombre} de esta demostración?`
+        const confirmado = window.confirm(
+            `¿Quieres eliminar definitivamente a ${nombre} y su carnet de Vítalia? Esta acción no se puede deshacer.`
         );
 
-        if (!confirmar) return;
+        if (!confirmado) return;
 
-        localStorage.removeItem(claveAlmacenamiento);
+        try {
+            btnBorrar.disabled = true;
 
-        form.reset();
+            mostrarMensaje(
+                "Eliminando carnet...",
+                "info"
+            );
 
-        foto.src = FOTO_DEFAULT;
-        fotoTemporal = FOTO_DEFAULT;
+            await apiRequest(
+                `/me/mascotas/${encodeURIComponent(idMascota)}`,
+                { method: "DELETE" }
+            );
 
-        establecerModo("creacion");
+            window.location.href = "mis-mascotas.html";
 
-        actualizarTitulo();
+        } catch (error) {
+            console.error("Error al borrar carnet:", error);
 
-        mostrarMensaje(
-            "Los cambios guardados de este carnet se eliminaron del navegador. El ejemplo original seguirá disponible al volver a abrirlo.",
-            "warning"
-        );
+            mostrarMensaje(
+                obtenerError(error),
+                "danger"
+            );
+
+            btnBorrar.disabled = false;
+        }
     });
 
     // =====================================
@@ -380,20 +535,38 @@ document.addEventListener("DOMContentLoaded", () => {
     // =====================================
 
     btnCompartir.addEventListener("click", () => {
+        if (!mascotaActual || !idMascota) {
+            mostrarMensaje(
+                "Primero guarda o consulta un carnet.",
+                "warning"
+            );
+            return;
+        }
 
-        const nombre =
-            campos.nombre.value.trim() || "mi mascota";
+        const mascota = mascotaActual;
 
-        const especie = campos.especie.value;
-        const raza = campos.raza.value.trim();
-        const edad = campos.edad.value.trim();
+        const edad = [];
+
+        if (mascota.edad_anios != null) {
+            edad.push(
+                `${mascota.edad_anios} años`
+            );
+        }
+
+        if (mascota.edad_meses != null) {
+            edad.push(
+                `${mascota.edad_meses} meses`
+            );
+        }
 
         const texto = [
-            "🐾 Carnet de mascota - Vitalia",
-            `Nombre: ${nombre}`,
-            `Especie: ${especie}`,
-            `Raza: ${raza}`,
-            `Edad: ${edad}`
+            "🐾 Carnet de mascota - Vítalia",
+            `Nombre: ${mascota.nombre}`,
+            `Especie: ${mascota.especie}`,
+            `Sexo: ${mascota.sexo}`,
+            `Raza: ${mascota.raza || "No registrada"}`,
+            `Edad: ${edad.join(" y ") || "No registrada"}`,
+            `Color: ${mascota.color || "No registrado"}`
         ].join("\n");
 
         const url =
@@ -407,13 +580,20 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // =====================================
-    // INICIALIZAR
+    // INICIAR PÁGINA
     // =====================================
-
-    cargarMascota(obtenerMascotaInicial());
 
     establecerModo("consulta");
 
-    limpiarMensaje();
+    if (tieneSesion()) {
+        consultarMascota();
+    } else {
+        establecerModo("consulta");
+
+        mostrarMensaje(
+            "Inicia sesión para consultar o administrar tus carnets.",
+            "warning"
+        );
+    }
 
 });
