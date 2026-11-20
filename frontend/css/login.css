@@ -1,0 +1,198 @@
+
+/* =====================================
+   VITALIA - LOGIN Y REGISTRO
+===================================== */
+
+:root {
+    --auth-verde: #2E7D6B;
+    --auth-menta: #6BAF9F;
+    --auth-crema: #F8F7F3;
+    --auth-beige: #D9B59F;
+    --auth-texto: #2D2D2D;
+}
+
+body.pagina-auth {
+    background: var(--auth-crema);
+    color: var(--auth-texto);
+    font-family: 'Poppins', sans-serif;
+    min-height: 100vh;
+}
+
+.auth-main {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 55px 20px 75px;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 510px;
+    padding: 38px;
+    background: #FFFFFF;
+    border: 1px solid #E7E9E5;
+    border-radius: 24px;
+    box-shadow: 0 12px 35px rgba(0,0,0,0.05);
+}
+
+.auth-intro {
+    margin-bottom: 28px;
+}
+
+.auth-icono {
+    width: 72px;
+    height: 72px;
+    margin: 0 auto 17px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #E8F3EF;
+    color: var(--auth-verde);
+    border-radius: 20px;
+    font-size: 34px;
+}
+
+.auth-intro h1 {
+    color: var(--auth-verde);
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.auth-intro p {
+    color: #748079;
+    font-size: 14px;
+    margin: 0;
+}
+
+.auth-tabs {
+    display: flex;
+    border-bottom: 2px solid #E8ECE9;
+    margin-bottom: 25px;
+}
+
+.auth-tab {
+    flex: 1;
+    padding: 13px;
+    background: transparent;
+    border: none;
+    color: #737D77;
+    font-weight: 600;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+}
+
+.auth-tab.active {
+    color: var(--auth-verde);
+    border-bottom-color: var(--auth-verde);
+}
+
+.auth-card .form-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #4C5852;
+}
+
+.auth-card .form-control {
+    padding: 12px 14px;
+    border: 1px solid #DCE5DF;
+    border-radius: 12px;
+    font-size: 14px;
+}
+
+.auth-card .form-control:focus {
+    border-color: var(--auth-menta);
+    box-shadow: 0 0 0 3px rgba(107,175,159,0.16);
+}
+
+.btn-auth {
+    background: var(--auth-verde);
+    border: none;
+    border-radius: 999px;
+    color: #FFFFFF;
+    padding: 13px 20px;
+    font-weight: 600;
+    transition: background 0.2s ease;
+}
+
+.btn-auth:hover {
+    background: #246355;
+}
+
+.btn-auth:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+.selector-rol {
+    display: flex;
+    gap: 6px;
+    background: #F4F7F4;
+    border: 1px solid #E4EAE5;
+    border-radius: 14px;
+    padding: 5px;
+    margin-bottom: 23px;
+}
+
+.rol-boton {
+    flex: 1;
+    padding: 10px 8px;
+    border: none;
+    border-radius: 10px;
+    background: transparent;
+    color: #52635A;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.rol-boton.active {
+    background: var(--auth-verde);
+    color: #FFFFFF;
+}
+
+.auth-mensaje {
+    padding: 12px 14px;
+    border-radius: 12px;
+    font-size: 13px;
+    margin-bottom: 18px;
+}
+
+.auth-mensaje.error {
+    background: #FEF2F2;
+    color: #991B1B;
+    border: 1px solid #FECACA;
+}
+
+.auth-mensaje.exito {
+    background: #E8F3EF;
+    color: #246355;
+    border: 1px solid #B6D9CA;
+}
+
+.auth-pie {
+    margin: 28px 0 0;
+    font-size: 12px;
+    color: #7A8980;
+}
+
+[hidden] {
+    display: none !important;
+}
+
+@media (max-width: 576px) {
+    .auth-main {
+        padding: 30px 15px 50px;
+    }
+
+    .auth-card {
+        padding: 25px 20px;
+    }
+
+    .auth-intro h1 {
+        font-size: 24px;
+    }
+
+    .rol-boton {
+        font-size: 12px;
+    }
+}

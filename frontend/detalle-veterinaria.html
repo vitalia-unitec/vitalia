@@ -1,0 +1,357 @@
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Vitalia | Detalle de veterinaria</title>
+
+    <!-- Bootstrap -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+        rel="stylesheet">
+
+    <!-- Poppins -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Leaflet -->
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+    <!-- Vitalia -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/detalle-veterinaria.css">
+</head>
+
+<body>
+
+<!-- =====================================
+     ENCABEZADO
+===================================== -->
+
+<header class="navbar bg-white border-bottom sticky-top">
+    <div class="container py-3">
+
+        <a href="index.html"
+           class="navbar-brand d-flex align-items-center gap-3">
+
+            <img src="assets/img/logo-vitalia.png"
+                 alt=""
+                 class="logo-vitalia">
+
+            <img src="assets/img/nombre-vitalia.png"
+                 alt="Vitalia"
+                 class="nombre-vitalia">
+        </a>
+
+        <div class="d-flex align-items-center gap-2">
+
+            <a href="buscar.html?urgencias=true"
+               class="btn btn-urgencias rounded-pill">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                Urgencias 24 h
+            </a>
+
+            <a href="registro.html"
+               class="btn btn-outline-success rounded-pill">
+                Registrarse
+            </a>
+
+            <a href="login.html"
+               class="btn btn-success rounded-pill">
+                Ingresar
+            </a>
+
+            <button
+                class="btn border-0"
+                type="button"
+                data-bs-toggle="offcanvas"
+                data-bs-target="#menuVitalia"
+                aria-controls="menuVitalia"
+                aria-label="Abrir menú">
+
+                <i class="bi bi-list fs-2"></i>
+            </button>
+
+        </div>
+    </div>
+</header>
+
+<!-- =====================================
+     MENÚ LATERAL
+===================================== -->
+
+<div class="offcanvas offcanvas-end"
+     tabindex="-1"
+     id="menuVitalia"
+     aria-labelledby="tituloMenu">
+
+    <div class="offcanvas-header">
+
+        <h5 id="tituloMenu" class="offcanvas-title">
+            Menú Vitalia
+        </h5>
+
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="offcanvas"
+                aria-label="Cerrar menú">
+        </button>
+    </div>
+
+    <div class="offcanvas-body">
+
+        <nav class="nav flex-column menu-vitalia">
+
+            <a href="index.html" class="menu-enlace">
+                <i class="bi bi-house-door"></i>
+                <span class="menu-texto">Inicio</span>
+            </a>
+
+            <a href="buscar.html" class="menu-enlace">
+                <i class="bi bi-search"></i>
+                <span class="menu-texto">
+                    Buscar veterinarias
+                </span>
+            </a>
+
+            <a href="comunidad.html" class="menu-enlace">
+                <i class="bi bi-people"></i>
+                <span class="menu-texto">Comunidad</span>
+            </a>
+
+            <a href="negocios.html" class="menu-enlace">
+                <i class="bi bi-building"></i>
+                <span class="menu-texto">Para negocios</span>
+            </a>
+
+            <hr>
+
+            <a href="mi-perfil.html" class="menu-enlace">
+                <i class="bi bi-person-circle"></i>
+                <span class="menu-texto">Mi perfil</span>
+            </a>
+
+            <a href="mis-mascotas.html" class="menu-enlace">
+                <i class="bi bi-heart"></i>
+                <span class="menu-texto">Mis mascotas</span>
+            </a>
+
+        </nav>
+    </div>
+</div>
+
+<!-- =====================================
+     CONTENIDO PRINCIPAL
+===================================== -->
+
+<main class="container py-5">
+
+    <!-- Volver a búsqueda -->
+    <div class="mb-4">
+        <a href="buscar.html"
+           class="btn btn-outline-success rounded-pill">
+            <i class="bi bi-arrow-left me-2"></i>
+            Volver a buscar
+        </a>
+    </div>
+
+    <!-- Estado de carga y errores -->
+    <div id="estadoDetalle"
+         class="alert alert-light border"
+         role="status"
+         aria-live="polite">
+        Cargando información de la veterinaria...
+    </div>
+
+    <!-- Información de veterinaria -->
+    <div id="contenidoDetalle" hidden>
+
+        <!-- Imagen principal -->
+        <section class="detalle-portada mb-4">
+            <img id="imagenVeterinaria"
+                 src=""
+                 alt="Fotografía de la veterinaria"
+                 hidden>
+
+            <div id="imagenPlaceholder"
+                 class="detalle-imagen-placeholder">
+                <i class="bi bi-hospital"></i>
+                <span>Fotografía no disponible</span>
+            </div>
+        </section>
+
+        <!-- Nombre y dirección -->
+        <section class="mb-4">
+
+            <h1 id="nombreVeterinaria"
+                class="fw-bold mb-3">
+            </h1>
+
+            <p class="detalle-direccion">
+                <i class="bi bi-geo-alt me-2"></i>
+                <span id="direccionVeterinaria"></span>
+            </p>
+
+            <div id="serviciosVeterinaria"
+                 class="detalle-servicios">
+            </div>
+
+        </section>
+
+        <!-- Información y contacto -->
+        <section class="row g-4 mb-4">
+
+            <div class="col-md-6">
+
+                <article class="detalle-tarjeta h-100">
+
+                    <h2 class="h5">
+                        <i class="bi bi-clock me-2"></i>
+                        Horarios
+                    </h2>
+
+                    <p id="horariosVeterinaria"
+                       class="mb-0">
+                        Por consultar
+                    </p>
+
+                </article>
+
+            </div>
+
+            <div class="col-md-6">
+
+                <article class="detalle-tarjeta h-100">
+
+                    <h2 class="h5">
+                        <i class="bi bi-telephone me-2"></i>
+                        Contacto
+                    </h2>
+
+                    <p id="telefonoVeterinaria"
+                       class="mb-3">
+                        Por consultar
+                    </p>
+
+                    <a id="botonLlamar"
+                       href="#"
+                       class="btn btn-success rounded-pill"
+                       hidden>
+                        <i class="bi bi-telephone-fill me-2"></i>
+                        Llamar
+                    </a>
+
+                </article>
+
+            </div>
+
+        </section>
+
+        <!-- Descripción -->
+        <section class="detalle-tarjeta mb-4">
+
+            <h2 class="h5 mb-3">
+                <i class="bi bi-info-circle me-2"></i>
+                Acerca de esta veterinaria
+            </h2>
+
+            <p id="descripcionVeterinaria"
+               class="mb-0">
+                Información no disponible.
+            </p>
+
+        </section>
+
+        <!-- Mapa -->
+        <section class="detalle-tarjeta">
+
+            <div class="d-flex flex-wrap
+                        justify-content-between
+                        align-items-center gap-3 mb-3">
+
+                <h2 class="h5 mb-0">
+                    <i class="bi bi-geo-alt me-2"></i>
+                    Ubicación
+                </h2>
+
+                <a id="botonVerMapa"
+                   href="mapa.html"
+                   class="btn btn-outline-success rounded-pill">
+
+                    <i class="bi bi-map me-2"></i>
+                    Ver mapa completo
+                </a>
+
+            </div>
+
+            <div id="mapaDetalle"
+                 role="region"
+                 aria-label="Ubicación de la veterinaria">
+            </div>
+
+            <p id="mensajeUbicacion"
+               class="small text-muted mt-3 mb-0">
+            </p>
+
+        </section>
+
+    </div>
+
+</main>
+
+<!-- =====================================
+     FOOTER
+===================================== -->
+
+<footer class="py-4 mt-5">
+
+    <div class="container">
+
+        <div class="row align-items-center g-3">
+
+            <div class="col-md-6">
+                <h3 class="h5 fw-bold text-white">
+                    Vitalia
+                </h3>
+
+                <p class="mb-0">
+                    Todo para el bienestar de tu mascota.
+                </p>
+            </div>
+
+            <div class="col-md-6 text-md-end">
+                <p class="mb-0">
+                    &copy; 2026 Vitalia.
+                    Todos los derechos reservados.
+                </p>
+            </div>
+
+        </div>
+    </div>
+</footer>
+
+<!-- =====================================
+     SCRIPTS
+===================================== -->
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script src="js/detalle-veterinaria.js"></script>
+<script src="js/menu.js"></script>
+
+</body>
+</html>
