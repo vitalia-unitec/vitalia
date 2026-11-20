@@ -23,6 +23,16 @@ async function apiRequest(endpoint, options = {}) {
             { ...options, headers }
         );
 
+        // Si el token expiró o ya no es válido,
+        // cerramos la sesión y enviamos al login.
+        if (response.status === 401 && token) {
+            sessionStorage.removeItem("vitalia_token");
+            sessionStorage.removeItem("vitalia_usuario");
+
+            window.location.href = "login.html";
+            throw new Error("Tu sesión expiró. Inicia sesión nuevamente.");
+        }
+
         if (response.status === 204) {
             return null;
         }

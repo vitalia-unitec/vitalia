@@ -84,17 +84,17 @@ document.addEventListener("DOMContentLoaded", () => {
         campos.especie.value = datos.especie || "";
 
         campos.edadAnios.value =
-            datos.edad_anios ?? "";
+            datos.edadAnios ?? "";
 
         campos.edadMeses.value =
-            datos.edad_meses ?? "";
+            datos.edadMeses ?? "";
 
         campos.raza.value = datos.raza || "";
         campos.color.value = datos.color || "";
 
         limpiarFotoTemporal();
 
-        foto.src = datos.foto_url || FOTO_DEFAULT;
+        foto.src = datos.fotoUrl || FOTO_DEFAULT;
 
         actualizarTitulo();
     }
@@ -318,12 +318,12 @@ document.addEventListener("DOMContentLoaded", () => {
             nombre: campos.nombre.value.trim(),
             sexo: campos.sexo.value,
             especie: campos.especie.value,
-            edad_anios: numeroOpcional(
+            edadAnios: numeroOpcional(
                 campos.edadAnios.value,
                 40,
                 "La edad en años"
             ),
-            edad_meses: numeroOpcional(
+            edadMeses: numeroOpcional(
                 campos.edadMeses.value,
                 11,
                 "La edad en meses"
@@ -547,15 +547,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const edad = [];
 
-        if (mascota.edad_anios != null) {
+        if (mascota.edadAnios != null) {
             edad.push(
-                `${mascota.edad_anios} años`
+                `${mascota.edadAnios} años`
             );
         }
 
-        if (mascota.edad_meses != null) {
+        if (mascota.edadMeses != null) {
             edad.push(
-                `${mascota.edad_meses} meses`
+                `${mascota.edadMeses} meses`
             );
         }
 

@@ -1,475 +1,529 @@
 
 /* =========================================
    VITALIA - MAPA DE VETERINARIAS
+   Integración FastAPI + Leaflet
 ========================================= */
 
-// Cambiar a false al conectar el backend.
-const MODO_DEMO_MAPA = true;
+document.addEventListener("DOMContentLoaded", () => {
 
-// Endpoint provisional: confirmar con backend.
-const API_VETERINARIAS_MAPA = "/api/veterinarias";
+    // =====================================
+    // ELEMENTOS HTML
+    // =====================================
 
-// Coordenadas ficticias de demostración.
-// NO son ubicaciones reales de estas clínicas.
-const veterinariasDemoMapa = [
-    {
-        id: 1,
-        nombre: "Clínica Patitas Felices",
-        direccion: "Ubicación ficticia de demostración",
-        latitud: 19.4326,
-        longitud: -99.1332,
-        servicios: ["consulta", "vacunas", "urgencias"],
-        abiertoAhora: true
-    },
-    {
-        id: 2,
-        nombre: "Centro Veterinario Huellitas",
-        direccion: "Ubicación ficticia de demostración",
-        latitud: 19.4270,
-        longitud: -99.1450,
-        servicios: ["consulta", "estetica"],
-        abiertoAhora: false
-    },
-    {
-        id: 3,
-        nombre: "Hospital Veterinario AnimalCare",
-        direccion: "Ubicación ficticia de demostración",
-        latitud: 19.4400,
-        longitud: -99.1250,
-        servicios: [
-            "consulta",
-            "vacunas",
-            "urgencias",
-            "estetica"
-        ],
-        abiertoAhora: true
-    },
-    {
-        id: 4,
-        nombre: "Veterinaria Amigos Peludos",
-        direccion: "Ubicación ficticia de demostración",
-        latitud: 19.4200,
-        longitud: -99.1550,
-        servicios: ["consulta", "vacunas"],
-        abiertoAhora: true
-    }
-];
+    const listaMapa = document.getElementById(
+        "listaVeterinariasMapa"
+    );
 
-const etiquetasServiciosMapa = {
-    consulta: "Consulta general",
-    vacunas: "Vacunas",
-    urgencias: "Urgencias 24 h",
-    estetica: "Estética"
-};
+    const contadorMapa = document.getElementById(
+        "contadorMapa"
+    );
 
-// =========================================
-// ELEMENTOS HTML
-// =========================================
+    const botonCentrar = document.getElementById(
+        "botonCentrarMapa"
+    );
 
-const listaMapa = document.getElementById(
-    "listaVeterinariasMapa"
-);
+    const volverBusqueda = document.getElementById(
+        "volverBusqueda"
+    );
 
-const contadorMapa = document.getElementById(
-    "contadorMapa"
-);
+    const parametrosURL = new URLSearchParams(
+        window.location.search
+    );
 
-const botonCentrar = document.getElementById(
-    "botonCentrarMapa"
-);
+    // =====================================
+    // INICIALIZAR LEAFLET
+    // =====================================
 
-const volverBusqueda = document.getElementById(
-    "volverBusqueda"
-);
+    const mapa = L.map("mapaVeterinarias").setView(
+        [19.4326, -99.1332],
+        11
+    );
 
-// =========================================
-// PARÁMETROS DESDE BUSCAR
-// =========================================
+    L.tileLayer(
+        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+        {
+            attribution:
+                '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            maxZoom: 19
+        }
+    ).addTo(mapa);
 
-const parametrosURL = new URLSearchParams(
-    window.location.search
-);
+    const grupoMarcadores = L.featureGroup().addTo(mapa);
 
-const ubicacion = parametrosURL.get("ubicacion") || "";
+    const marcadoresPorId = new Map();
 
-const radio = parametrosURL.get("radio") || "10";
+    // =====================================
+    // PARÁMETROS DESDE BUSCAR
+    // =====================================
 
-const filtrosPermitidos = new Set([
-    "abiertoAhora",
-    "urgencias",
-    "consulta",
-    "vacunas",
-    "estetica"
-]);
+    function construirParametros() {
+        const parametros = new URLSearchParams();
 
-const filtros = (
-    parametrosURL.get("filtros") || ""
-)
-    .split(",")
-    .filter((filtro) => filtrosPermitidos.has(filtro));
+        const texto = (
+            parametrosURL.get("q") ||
+            parametrosURL.get("ubicacion") ||
+            ""
+        ).trim();
 
-// Mantener parámetros al regresar.
-const parametrosRegreso = new URLSearchParams();
+        if (texto.length >= 2) {
+            parametros.set("q", texto);
+        }
 
-if (ubicacion) {
-    parametrosRegreso.set("ubicacion", ubicacion);
-}
+        const tipo = parametrosURL.get("tipo");
+        const categoria = parametrosURL.get("categoria");
 
-parametrosRegreso.set("radio", radio);
+        if (tipo) {
+            parametros.set("tipo", tipo);
+        }
 
-if (filtros.includes("urgencias")) {
-    parametrosRegreso.set("urgencias", "true");
-}
+        if (categoria) {
+            parametros.set("categoria", categoria);
+        }
 
-if (parametrosRegreso.toString()) {
-    volverBusqueda.href =
-        `buscar.html?${parametrosRegreso.toString()}`;
-}
+        if (parametrosURL.get("urgencias") === "true") {
+            parametros.set("urgencias", "true");
+        }
 
-// =========================================
-// INICIALIZAR LEAFLET
-// =========================================
+        if (parametrosURL.get("abiertoAhora") === "true") {
+            parametros.set("abiertoAhora", "true");
+        }
 
-const mapa = L.map("mapaVeterinarias").setView(
-    [19.4326, -99.1332],
-    12
-);
+        // Aplicar radio únicamente con coordenadas.
+        const lat = parametrosURL.get("lat");
+        const lng = parametrosURL.get("lng");
 
-L.tileLayer(
-    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-    {
-        attribution:
-            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-        maxZoom: 19
-    }
-).addTo(mapa);
+        if (lat !== null && lng !== null) {
+            const latNumero = Number(lat);
+            const lngNumero = Number(lng);
 
-const grupoMarcadores = L.featureGroup().addTo(mapa);
-
-const marcadoresPorId = new Map();
-
-let veterinariasVisibles = [];
-
-// =========================================
-// MENSAJE SIN RESULTADOS
-// =========================================
-
-function mostrarMensajeMapa(mensaje) {
-    listaMapa.replaceChildren();
-
-    const contenedor = document.createElement("div");
-    contenedor.className = "mapa-sin-resultados";
-
-    const icono = document.createElement("i");
-    icono.className = "bi bi-geo-alt";
-
-    const texto = document.createElement("p");
-    texto.className = "mb-0";
-    texto.textContent = mensaje;
-
-    contenedor.append(icono, texto);
-    listaMapa.appendChild(contenedor);
-}
-
-// =========================================
-// FILTRAR VETERINARIAS
-// =========================================
-
-function filtrarVeterinariasMapa(veterinarias) {
-    return veterinarias.filter((veterinaria) => {
-        for (const filtro of filtros) {
-            if (filtro === "abiertoAhora") {
-                if (!veterinaria.abiertoAhora) {
-                    return false;
-                }
-            } else if (
-                !veterinaria.servicios.includes(filtro)
+            if (
+                Number.isFinite(latNumero) &&
+                Number.isFinite(lngNumero) &&
+                latNumero >= -90 &&
+                latNumero <= 90 &&
+                lngNumero >= -180 &&
+                lngNumero <= 180
             ) {
-                return false;
+                parametros.set("lat", String(latNumero));
+                parametros.set("lng", String(lngNumero));
+
+                const radio = Number(
+                    parametrosURL.get("radioKm") ||
+                    parametrosURL.get("radio") ||
+                    10
+                );
+
+                if (
+                    Number.isFinite(radio) &&
+                    radio >= 1 &&
+                    radio <= 50
+                ) {
+                    parametros.set("radioKm", String(radio));
+                }
             }
         }
+
+        parametros.set("pagina", "1");
+        parametros.set("porPagina", "50");
+
+        return parametros;
+    }
+
+    // =====================================
+    // REGRESAR A BUSCAR
+    // =====================================
+
+    function configurarRegreso() {
+        const parametros = new URLSearchParams();
+
+        const texto = (
+            parametrosURL.get("ubicacion") ||
+            parametrosURL.get("q") ||
+            ""
+        ).trim();
+
+        if (texto) {
+            parametros.set("ubicacion", texto);
+        }
+
+        const radio =
+            parametrosURL.get("radio") ||
+            parametrosURL.get("radioKm");
+
+        if (radio) {
+            parametros.set("radio", radio);
+        }
+
+        for (const nombre of [
+            "categoria",
+            "tipo",
+            "urgencias",
+            "abiertoAhora"
+        ]) {
+            const valor = parametrosURL.get(nombre);
+
+            if (valor !== null) {
+                parametros.set(nombre, valor);
+            }
+        }
+
+        volverBusqueda.href = parametros.toString()
+            ? `buscar.html?${parametros.toString()}`
+            : "buscar.html";
+    }
+
+    // =====================================
+    // MENSAJES
+    // =====================================
+
+    function mostrarMensajeMapa(mensaje) {
+        listaMapa.replaceChildren();
+
+        const contenedor = document.createElement("div");
+        contenedor.className = "mapa-sin-resultados";
+
+        const icono = document.createElement("i");
+        icono.className = "bi bi-geo-alt";
+
+        const texto = document.createElement("p");
+        texto.className = "mb-0";
+        texto.textContent = mensaje;
+
+        contenedor.append(icono, texto);
+        listaMapa.appendChild(contenedor);
+    }
+
+    // =====================================
+    // SELECCIONAR VETERINARIA
+    // =====================================
+
+    function seleccionarVeterinaria(id) {
+        const marcador = marcadoresPorId.get(String(id));
+
+        if (!marcador) {
+            return false;
+        }
+
+        mapa.setView(
+            marcador.getLatLng(),
+            15,
+            { animate: true }
+        );
+
+        marcador.openPopup();
+
+        document.querySelectorAll(".tarjeta-mapa")
+            .forEach((tarjeta) => {
+                tarjeta.classList.toggle(
+                    "seleccionada",
+                    tarjeta.dataset.id === String(id)
+                );
+            });
 
         return true;
-    });
-}
-
-// =========================================
-// CENTRAR MAPA EN VETERINARIA
-// =========================================
-
-function seleccionarVeterinaria(id) {
-    const marcador = marcadoresPorId.get(String(id));
-
-    if (!marcador) {
-        return;
     }
 
-    const posicion = marcador.getLatLng();
+    // =====================================
+    // CREAR TARJETAS
+    // =====================================
 
-    mapa.setView(posicion, 15, {
-        animate: true
-    });
+    function crearTarjetaMapa(veterinaria) {
+        const tarjeta = document.createElement("article");
 
-    marcador.openPopup();
+        tarjeta.className = "tarjeta-mapa";
+        tarjeta.dataset.id = String(veterinaria.id);
 
-    document.querySelectorAll(".tarjeta-mapa")
-        .forEach((tarjeta) => {
-            tarjeta.classList.toggle(
-                "seleccionada",
-                tarjeta.dataset.id === String(id)
-            );
+        const titulo = document.createElement("h3");
+        titulo.textContent =
+            veterinaria.nombre || "Veterinaria";
+
+        const descripcion = document.createElement("p");
+        descripcion.className = "direccion-mapa";
+
+        descripcion.textContent =
+            Array.isArray(veterinaria.tipos)
+                ? veterinaria.tipos.join(", ")
+                : "Servicio veterinario";
+
+        const servicios = document.createElement("div");
+        servicios.className = "servicios-mapa";
+
+        const destacados = Array.isArray(
+            veterinaria.serviciosDestacados
+        )
+            ? veterinaria.serviciosDestacados
+            : [];
+
+        destacados.forEach((servicio) => {
+            const etiqueta = document.createElement("span");
+            etiqueta.className = "servicio-mapa";
+
+            etiqueta.textContent =
+                typeof servicio === "string"
+                    ? servicio
+                    : servicio.nombre || "Servicio";
+
+            servicios.appendChild(etiqueta);
         });
-}
 
-// =========================================
-// CREAR TARJETA
-// =========================================
+        if (veterinaria.urgencias24h) {
+            const etiqueta = document.createElement("span");
 
-function crearTarjetaMapa(veterinaria) {
-    const tarjeta = document.createElement("article");
+            etiqueta.className = "servicio-mapa urgencias";
+            etiqueta.textContent = "Urgencias 24 h";
 
-    tarjeta.className = "tarjeta-mapa";
-    tarjeta.dataset.id = String(veterinaria.id);
-
-    const titulo = document.createElement("h3");
-    titulo.textContent = veterinaria.nombre;
-
-    const direccion = document.createElement("p");
-    direccion.className = "direccion-mapa";
-    direccion.textContent = veterinaria.direccion;
-
-    const servicios = document.createElement("div");
-    servicios.className = "servicios-mapa";
-
-    veterinaria.servicios.forEach((servicio) => {
-        const etiqueta = document.createElement("span");
-
-        etiqueta.className = "servicio-mapa";
-
-        if (servicio === "urgencias") {
-            etiqueta.classList.add("urgencias");
+            servicios.appendChild(etiqueta);
         }
 
-        etiqueta.textContent =
-            etiquetasServiciosMapa[servicio] || servicio;
+        const acciones = document.createElement("div");
+        acciones.className = "acciones-mapa";
 
-        servicios.appendChild(etiqueta);
-    });
+        const botonUbicacion = document.createElement("button");
 
-    const acciones = document.createElement("div");
-    acciones.className = "acciones-mapa";
+        botonUbicacion.type = "button";
+        botonUbicacion.className = "btn-ver-ubicacion";
+        botonUbicacion.textContent = "Ver ubicación";
 
-    const botonUbicacion = document.createElement("button");
-    botonUbicacion.type = "button";
-    botonUbicacion.className = "btn-ver-ubicacion";
-    botonUbicacion.textContent = "Ver ubicación";
+        botonUbicacion.addEventListener("click", () => {
+            seleccionarVeterinaria(veterinaria.id);
+        });
 
-    botonUbicacion.addEventListener("click", () => {
-        seleccionarVeterinaria(veterinaria.id);
-    });
+        const botonDetalles = document.createElement("a");
 
-    const botonDetalles = document.createElement("a");
-    botonDetalles.className = "btn-ver-detalles";
-    botonDetalles.textContent = "Ver detalles";
+        botonDetalles.className = "btn-ver-detalles";
+        botonDetalles.textContent = "Ver detalles";
 
-    botonDetalles.href =
-        `detalle-veterinaria.html?id=${encodeURIComponent(veterinaria.id)}`;
+        botonDetalles.href =
+            `detalle-veterinaria.html?id=${encodeURIComponent(veterinaria.id)}`;
 
-    acciones.append(botonUbicacion, botonDetalles);
+        acciones.append(botonUbicacion, botonDetalles);
 
-    tarjeta.append(
-        titulo,
-        direccion,
-        servicios,
-        acciones
-    );
-
-    return tarjeta;
-}
-
-// =========================================
-// CREAR MARCADORES
-// =========================================
-
-function agregarMarcador(veterinaria) {
-    const marcador = L.marker([
-        veterinaria.latitud,
-        veterinaria.longitud
-    ]);
-
-    // Popup construido con DOM para evitar
-    // insertar HTML no confiable.
-    const popup = document.createElement("div");
-
-    const nombre = document.createElement("strong");
-    nombre.textContent = veterinaria.nombre;
-
-    const direccion = document.createElement("p");
-    direccion.className = "mb-1";
-    direccion.textContent = veterinaria.direccion;
-
-    const aviso = document.createElement("small");
-
-    if (MODO_DEMO_MAPA) {
-        aviso.textContent = "Ubicación de demostración";
-    }
-
-    popup.append(nombre, direccion, aviso);
-
-    marcador.bindPopup(popup);
-
-    marcador.on("click", () => {
-        seleccionarVeterinaria(veterinaria.id);
-    });
-
-    marcador.addTo(grupoMarcadores);
-
-    marcadoresPorId.set(
-        String(veterinaria.id),
-        marcador
-    );
-}
-
-// =========================================
-// MOSTRAR TODAS LAS UBICACIONES
-// =========================================
-
-function mostrarTodasLasUbicaciones() {
-    if (grupoMarcadores.getLayers().length === 0) {
-        return;
-    }
-
-    mapa.fitBounds(
-        grupoMarcadores.getBounds(),
-        {
-            padding: [35, 35],
-            maxZoom: 14
-        }
-    );
-}
-
-botonCentrar.addEventListener(
-    "click",
-    mostrarTodasLasUbicaciones
-);
-
-// =========================================
-// MOSTRAR RESULTADOS EN MAPA
-// =========================================
-
-function mostrarResultadosMapa(veterinarias) {
-    listaMapa.replaceChildren();
-
-    grupoMarcadores.clearLayers();
-    marcadoresPorId.clear();
-
-    veterinariasVisibles =
-        filtrarVeterinariasMapa(veterinarias);
-
-    contadorMapa.textContent =
-        `${veterinariasVisibles.length} veterinaria(s) encontrada(s)`;
-
-    if (veterinariasVisibles.length === 0) {
-        mostrarMensajeMapa(
-            "No hay veterinarias que coincidan con los filtros seleccionados."
+        tarjeta.append(
+            titulo,
+            descripcion,
+            servicios,
+            acciones
         );
 
-        return;
+        return tarjeta;
     }
 
-    veterinariasVisibles.forEach((veterinaria) => {
-        listaMapa.appendChild(
-            crearTarjetaMapa(veterinaria)
-        );
+    // =====================================
+    // CREAR MARCADORES
+    // =====================================
+
+    function agregarMarcador(veterinaria) {
+        const lat = Number(veterinaria.lat);
+        const lng = Number(veterinaria.lng);
 
         if (
-            Number.isFinite(veterinaria.latitud) &&
-            Number.isFinite(veterinaria.longitud)
+            veterinaria.lat == null ||
+            veterinaria.lng == null ||
+            !Number.isFinite(lat) ||
+            !Number.isFinite(lng) ||
+            lat < -90 ||
+            lat > 90 ||
+            lng < -180 ||
+            lng > 180
         ) {
-            agregarMarcador(veterinaria);
+            return;
         }
-    });
 
-    mostrarTodasLasUbicaciones();
-}
+        const marcador = L.marker([lat, lng]);
 
-// =========================================
-// OBTENER VETERINARIAS
-// =========================================
+        const popup = document.createElement("div");
 
-async function obtenerVeterinariasMapa() {
-    if (MODO_DEMO_MAPA) {
-        // Los datos demo no filtran por ubicación
-        // ni por radio: solo por servicios.
-        return veterinariasDemoMapa;
+        const nombre = document.createElement("strong");
+        nombre.textContent =
+            veterinaria.nombre || "Veterinaria";
+
+        const descripcion = document.createElement("p");
+        descripcion.className = "mb-1";
+
+        descripcion.textContent =
+            Array.isArray(veterinaria.tipos)
+                ? veterinaria.tipos.join(", ")
+                : "Servicio veterinario";
+
+        const enlace = document.createElement("a");
+
+        enlace.href =
+            `detalle-veterinaria.html?id=${encodeURIComponent(veterinaria.id)}`;
+
+        enlace.textContent = "Ver detalles";
+
+        popup.append(nombre, descripcion, enlace);
+
+        marcador.bindPopup(popup);
+
+        marcador.on("click", () => {
+            seleccionarVeterinaria(veterinaria.id);
+        });
+
+        marcador.addTo(grupoMarcadores);
+
+        marcadoresPorId.set(
+            String(veterinaria.id),
+            marcador
+        );
     }
 
-    const parametros = new URLSearchParams({
-        ubicacion,
-        radio_km: radio
-    });
+    // =====================================
+    // MOSTRAR TODAS LAS UBICACIONES
+    // =====================================
 
-    const respuesta = await fetch(
-        `${API_VETERINARIAS_MAPA}?${parametros.toString()}`,
-        {
-            method: "GET",
-            credentials: "include",
-            headers: {
-                Accept: "application/json"
-            }
+    function mostrarTodasLasUbicaciones() {
+        if (grupoMarcadores.getLayers().length === 0) {
+            return;
         }
+
+        mapa.fitBounds(
+            grupoMarcadores.getBounds(),
+            {
+                padding: [35, 35],
+                maxZoom: 14
+            }
+        );
+    }
+
+    botonCentrar.addEventListener(
+        "click",
+        mostrarTodasLasUbicaciones
     );
 
-    if (!respuesta.ok) {
-        throw new Error(
-            "No fue posible consultar las veterinarias."
-        );
-    }
+    // =====================================
+    // MOSTRAR RESULTADOS
+    // =====================================
 
-    const datos = await respuesta.json();
+    function mostrarResultadosMapa(veterinarias) {
+        listaMapa.replaceChildren();
 
-    // Confirmar estructura con el equipo backend.
-    if (!Array.isArray(datos)) {
-        throw new Error(
-            "El backend no devolvió una lista válida."
-        );
-    }
-
-    return datos;
-}
-
-// =========================================
-// INICIAR MAPA
-// =========================================
-
-async function iniciarMapa() {
-    contadorMapa.textContent = "Cargando veterinarias...";
-
-    try {
-        const veterinarias =
-            await obtenerVeterinariasMapa();
-
-        mostrarResultadosMapa(veterinarias);
-
-        if (MODO_DEMO_MAPA) {
-            const aviso = document.createElement("p");
-            aviso.className = "small text-muted mt-3 mb-0";
-            aviso.textContent =
-                "Modo demostración: las clínicas y sus ubicaciones son ficticias.";
-
-            listaMapa.after(aviso);
-        }
-
-    } catch (error) {
-        console.error(error);
+        grupoMarcadores.clearLayers();
+        marcadoresPorId.clear();
 
         contadorMapa.textContent =
-            "No se pudieron cargar las veterinarias.";
+            `${veterinarias.length} veterinaria(s) mostrada(s)`;
 
-        mostrarMensajeMapa(
-            "Ocurrió un error al cargar el mapa. Intenta nuevamente."
+        if (veterinarias.length === 0) {
+            mostrarMensajeMapa(
+                "No se encontraron veterinarias con los filtros seleccionados."
+            );
+
+            return;
+        }
+
+        veterinarias.forEach((veterinaria) => {
+            listaMapa.appendChild(
+                crearTarjetaMapa(veterinaria)
+            );
+
+            agregarMarcador(veterinaria);
+        });
+
+        mostrarTodasLasUbicaciones();
+
+        // Seleccionar automáticamente la clínica
+        // cuando llegamos desde Detalle.
+        const idSeleccionado = parametrosURL.get("id");
+
+        if (idSeleccionado) {
+            seleccionarVeterinaria(idSeleccionado);
+        }
+    }
+
+    // =====================================
+    // CONSULTAR FASTAPI
+    // =====================================
+
+    async function obtenerVeterinariasMapa() {
+        const parametros = construirParametros();
+
+        const datos = await apiRequest(
+            `/clinicas?${parametros.toString()}`
+        );
+
+        if (!Array.isArray(datos)) {
+            throw new Error(
+                "La API no devolvió una lista válida de clínicas."
+            );
+        }
+
+        return datos;
+    }
+
+    // =====================================
+    // OBTENER CLÍNICA POR ID
+    // =====================================
+
+    async function obtenerClinicaPorId(id) {
+        return await apiRequest(
+            `/clinicas/${encodeURIComponent(id)}`
         );
     }
-}
 
-iniciarMapa();
+    // =====================================
+    // INICIAR MAPA
+    // =====================================
+
+    async function iniciarMapa() {
+        configurarRegreso();
+
+        contadorMapa.textContent =
+            "Cargando veterinarias...";
+
+        mostrarMensajeMapa(
+            "Consultando ubicaciones..."
+        );
+
+        try {
+            const veterinarias =
+                await obtenerVeterinariasMapa();
+
+            const idSeleccionado =
+                parametrosURL.get("id");
+
+            if (
+                idSeleccionado &&
+                /^\d+$/.test(idSeleccionado) &&
+                !veterinarias.some(
+                    (veterinaria) =>
+                        String(veterinaria.id) === idSeleccionado
+                )
+            ) {
+                // La clínica podría no estar entre
+                // los primeros 50 resultados.
+                try {
+                    const clinica =
+                        await obtenerClinicaPorId(idSeleccionado);
+
+                    if (clinica) {
+                        veterinarias.push(clinica);
+                    }
+
+                } catch (error) {
+                    console.warn(
+                        "No se pudo cargar la clínica seleccionada:",
+                        error
+                    );
+                }
+            }
+
+            mostrarResultadosMapa(veterinarias);
+
+        } catch (error) {
+            console.error(
+                "Error al cargar mapa:",
+                error
+            );
+
+            contadorMapa.textContent =
+                "No se pudieron cargar las veterinarias.";
+
+            mostrarMensajeMapa(
+                "Ocurrió un error al consultar las ubicaciones. Intenta nuevamente."
+            );
+        }
+    }
+
+    iniciarMapa();
+});
