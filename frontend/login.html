@@ -1,389 +1,420 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vítalia - Ingresar y Registrarse</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
-        body {
-            background-color: #F8F7F3;
-            color: #2D2D2D;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 80px 20px 30px;
-            position: relative;
-        }
-        .top-left-logo {
-            position: absolute;
-            top: 22px;
-            left: 30px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            text-decoration: none;
-        }
-        .top-left-logo svg {
-            height: 44px;
-            width: auto;
-        }
-        .container {
-            background: #FFFFFF;
-            padding: 36px 40px;
-            border-radius: 20px;
-            border: 1px solid #E2E8F0;
-            box-shadow: 0 8px 25px rgba(45, 45, 45, 0.05);
-            width: 100%;
-            max-width: 480px;
-        }
-        .logo-area {
-            text-align: center;
-            margin-bottom: 22px;
-        }
-        .logo-area h1 {
-            color: #2E7D6B;
-            font-size: 28px;
-            font-weight: 700;
-        }
-        .logo-area p {
-            color: #6BAF8F;
-            font-size: 13px;
-        }
-        .tabs {
-            display: flex;
-            margin-bottom: 22px;
-            border-bottom: 2px solid #E2E8F0;
-        }
-        .tab {
-            flex: 1;
-            text-align: center;
-            padding: 10px;
-            cursor: pointer;
-            font-weight: 500;
-            color: #666;
-            transition: 0.2s;
-        }
-        .tab.active {
-            color: #2E7D6B;
-            font-weight: 600;
-            border-bottom: 2px solid #2E7D6B;
-            margin-bottom: -2px;
-        }
-        /* Selector de tipo de registro (Dueño vs Veterinaria) */
-        .role-selector {
-            display: flex;
-            background-color: #F8F7F3;
-            padding: 5px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            border: 1px solid #E2E8F0;
-        }
-        .role-pill {
-            flex: 1;
-            text-align: center;
-            padding: 8px 10px;
-            font-size: 13px;
-            font-weight: 500;
-            border-radius: 8px;
-            cursor: pointer;
-            color: #2D2D2D;
-            transition: 0.2s;
-        }
-        .role-pill.active {
-            background-color: #2E7D6B;
-            color: #FFFFFF;
-            font-weight: 600;
-        }
-        .form-group {
-            margin-bottom: 14px;
-        }
-        .form-group label {
-            display: block;
-            font-size: 12px;
-            margin-bottom: 5px;
-            font-weight: 500;
-            color: #2D2D2D;
-        }
-        .form-group input {
-            width: 100%;
-            padding: 11px 14px;
-            background-color: #FFFFFF;
-            border: 1px solid #CBD5E1;
-            border-radius: 10px;
-            font-size: 13px;
-            outline: none;
-            color: #2D2D2D;
-            transition: 0.2s;
-        }
-        .form-group input:focus {
-            border-color: #2E7D6B;
-            box-shadow: 0 0 0 3px rgba(107, 175, 143, 0.2);
-        }
-        .checkbox-group {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 12px;
-            margin-bottom: 14px;
-            color: #2D2D2D;
-        }
-        .btn {
-            width: 100%;
-            padding: 12px;
-            background-color: #2E7D6B;
-            color: #FFFFFF;
-            border: none;
-            border-radius: 10px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.2s;
-            margin-top: 6px;
-        }
-        .btn:hover {
-            background-color: #246355;
-        }
-        .form-section, .sub-form {
-            display: none;
-        }
-        .form-section.active, .sub-form.active {
-            display: block;
-        }
-        .alert-error {
-            background-color: #FEF2F2;
-            border: 1px solid #C84B3C;
-            color: #991B1B;
-            padding: 10px;
-            border-radius: 8px;
-            font-size: 12px;
-            margin-bottom: 15px;
-            display: none;
-        }
-        .helper-text {
-            font-size: 11px;
-            color: #666;
-            margin-top: 4px;
-        }
-    </style>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Vitalia | Ingresar y registrarse</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/login.css">
 </head>
-<body>
 
-    <a href="carnet.html" class="top-left-logo">
-        <svg viewBox="0 0 220 65" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M32 54C18 42 8 33 8 21C8 13 14 7 22 7C27 7 31 10 34 14C37 10 41 7 46 7C54 7 60 13 60 21C60 33 50 42 36 54L34 56L32 54Z" stroke="#2E7D6B" stroke-width="3.5" fill="none"/>
-            <circle cx="52" cy="8" r="2.2" fill="#2E7D6B"/>
-            <circle cx="57" cy="6" r="2.2" fill="#2E7D6B"/>
-            <circle cx="62" cy="8" r="2.2" fill="#2E7D6B"/>
-            <ellipse cx="57" cy="12" rx="4" ry="3" fill="#2E7D6B"/>
-            <path d="M16 42C16 30 22 21 31 21C36 21 39 25 42 28L45 30C46 31 45 34 42 35L35 36C33 41 31 48 31 53L16 42Z" fill="#2E7D6B"/>
-            <path d="M36 55L40 42L38 37L43 39L47 36L49 41C51 44 50 49 47 52L36 55Z" fill="#C49A76"/>
-            <text x="72" y="42" fill="#2E7D6B" font-family="Poppins, sans-serif" font-weight="700" font-size="30">Vítalia</text>
-        </svg>
-    </a>
+<body class="pagina-auth">
 
-    <div class="container">
-        <div class="logo-area">
-            <h1>Vítalia</h1>
-            <p>Todo para el bienestar de tu mascota</p>
-        </div>
+    <!-- Encabezado -->
+    <header class="navbar bg-white border-bottom sticky-top">
+        <div class="container py-3">
 
-        <div class="tabs">
-            <div class="tab active" onclick="switchTab('login')">Ingresar</div>
-            <div class="tab" onclick="switchTab('register')">Registrarse</div>
-        </div>
+            <a class="navbar-brand d-flex align-items-center gap-3"
+               href="index.html">
 
-        <!-- 1. INICIAR SESIÓN -->
-        <div id="login-section" class="form-section active">
-            <div id="login-error" class="alert-error"></div>
-            <form id="form-login" onsubmit="handleLogin(event)">
-                <div class="form-group">
-                    <label>Correo electrónico</label>
-                    <input type="email" id="login-email" placeholder="tu@correo.com" required>
-                </div>
-                <div class="form-group">
-                    <label>Contraseña</label>
-                    <input type="password" id="login-password" placeholder="••••••••" required>
-                </div>
-                <button type="submit" id="btn-login" class="btn">Ingresar</button>
-            </form>
-        </div>
+                <img src="assets/img/logo-vitalia.png"
+                     alt=""
+                     class="logo-vitalia">
 
-        <!-- 2. REGISTRARSE (SEPARADO EN DUEÑO Y VETERINARIA) -->
-        <div id="register-section" class="form-section">
-            <div class="role-selector">
-                <div class="role-pill active" onclick="switchRoleForm('dueno')">Soy Dueño</div>
-                <div class="role-pill" onclick="switchRoleForm('veterinaria')">Soy Veterinaria</div>
+                <img src="assets/img/nombre-vitalia.png"
+                     alt="Vitalia"
+                     class="nombre-vitalia">
+            </a>
+
+            <div class="d-flex align-items-center gap-2">
+
+                <a href="buscar.html?urgencias=true"
+                   class="btn btn-urgencias rounded-pill">
+                    <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                    Urgencias 24 h
+                </a>
+
+                <button class="btn border-0"
+                        type="button"
+                        data-bs-toggle="offcanvas"
+                        data-bs-target="#menuVitalia"
+                        aria-controls="menuVitalia"
+                        aria-label="Abrir menú">
+                    <i class="bi bi-list fs-2"></i>
+                </button>
+
             </div>
+        </div>
+    </header>
 
-            <div id="register-error" class="alert-error"></div>
+    <!-- Menú lateral -->
+    <div class="offcanvas offcanvas-end"
+         tabindex="-1"
+         id="menuVitalia">
 
-            <!-- SUB-FORMULARIO A: DUEÑO DE MASCOTA -->
-            <form id="form-reg-dueno" class="sub-form active" onsubmit="handleRegister(event, 'dueno')">
-                <div class="form-group">
-                    <label>Nombre completo</label>
-                    <input type="text" id="dueno-name" placeholder="Ej. Leslie Alvarado" required>
-                </div>
-                <div class="form-group">
-                    <label>Teléfono de contacto</label>
-                    <input type="tel" id="dueno-phone" placeholder="55 1234 5678" required>
-                </div>
-                <div class="form-group">
-                    <label>Correo electrónico</label>
-                    <input type="email" id="dueno-email" placeholder="tu@correo.com" required>
-                </div>
-                <div class="form-group">
-                    <label>Contraseña</label>
-                    <input type="password" id="dueno-password" placeholder="••••••••" required>
-                    <div class="helper-text">Mínimo 6 caracteres, una mayúscula y un número.</div>
-                </div>
-                <button type="submit" class="btn">Crear cuenta de Dueño</button>
-            </form>
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title fw-bold">
+                Menú Vitalia
+            </h5>
 
-            <!-- SUB-FORMULARIO B: CLÍNICA VETERINARIA -->
-            <form id="form-reg-vet" class="sub-form" onsubmit="handleRegister(event, 'clinica')">
-                <div class="form-group">
-                    <label>Nombre de la Clínica o Veterinaria</label>
-                    <input type="text" id="vet-name" placeholder="Ej. Hospital Veterinario San Ángel" required>
-                </div>
-                <div class="form-group">
-                    <label>Médico Responsable / Cédula Profesional</label>
-                    <input type="text" id="vet-license" placeholder="Nombre del MVZ o No. de cédula" required>
-                </div>
-                <div class="form-group">
-                    <label>Dirección de la clínica</label>
-                    <input type="text" id="vet-address" placeholder="Calle, número, colonia y alcaldía" required>
-                </div>
-                <div class="form-group">
-                    <label>Teléfono de atención / urgencias</label>
-                    <input type="tel" id="vet-phone" placeholder="55 9876 5432" required>
-                </div>
-                <div class="checkbox-group">
-                    <input type="checkbox" id="vet-24h">
-                    <label for="vet-24h">Ofrecemos servicio de Urgencias 24 horas</label>
-                </div>
-                <div class="form-group">
-                    <label>Correo institucional</label>
-                    <input type="email" id="vet-email" placeholder="contacto@tuveterinaria.com" required>
-                </div>
-                <div class="form-group">
-                    <label>Contraseña</label>
-                    <input type="password" id="vet-password" placeholder="••••••••" required>
-                    <div class="helper-text">Mínimo 6 caracteres, una mayúscula y un número.</div>
-                </div>
-                <button type="submit" class="btn">Registrar Clínica Veterinaria</button>
-            </form>
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="offcanvas"
+                    aria-label="Cerrar menú">
+            </button>
+        </div>
+
+        <div class="offcanvas-body">
+            <nav class="nav flex-column menu-vitalia">
+
+                <a href="index.html" class="menu-enlace">
+                    <i class="bi bi-house-door"></i>
+                    <span class="menu-texto">Inicio</span>
+                </a>
+
+                <a href="buscar.html" class="menu-enlace">
+                    <i class="bi bi-search"></i>
+                    <span class="menu-texto">
+                        Buscar veterinarias
+                    </span>
+                </a>
+
+                <a href="comunidad.html" class="menu-enlace">
+                    <i class="bi bi-people"></i>
+                    <span class="menu-texto">Comunidad</span>
+                </a>
+
+                <a href="negocios.html" class="menu-enlace">
+                    <i class="bi bi-building"></i>
+                    <span class="menu-texto">Para negocios</span>
+                </a>
+
+                <hr>
+
+                <a href="mi-perfil.html" class="menu-enlace">
+                    <i class="bi bi-person-circle"></i>
+                    <span class="menu-texto">Mi perfil</span>
+                </a>
+
+                <a href="mis-mascotas.html" class="menu-enlace">
+                    <i class="bi bi-heart"></i>
+                    <span class="menu-texto">Mis mascotas</span>
+                </a>
+
+            </nav>
         </div>
     </div>
 
-    <script>
-        function switchTab(tabName) {
-            const loginSection = document.getElementById('login-section');
-            const registerSection = document.getElementById('register-section');
-            const tabs = document.querySelectorAll('.tab');
+    <!-- Contenido -->
+    <main class="auth-main">
 
-            tabs.forEach(t => t.classList.remove('active'));
-            document.getElementById('login-error').style.display = 'none';
-            document.getElementById('register-error').style.display = 'none';
+        <section class="auth-card">
 
-            if (tabName === 'login') {
-                loginSection.classList.add('active');
-                registerSection.classList.remove('active');
-                tabs[0].classList.add('active');
-            } else {
-                registerSection.classList.add('active');
-                loginSection.classList.remove('active');
-                tabs[1].classList.add('active');
-            }
-        }
+            <div class="auth-intro text-center">
+                <div class="auth-icono">
+                    <i class="bi bi-heart-pulse"></i>
+                </div>
 
-        function switchRoleForm(role) {
-            const pills = document.querySelectorAll('.role-pill');
-            const formDueno = document.getElementById('form-reg-dueno');
-            const formVet = document.getElementById('form-reg-vet');
-            document.getElementById('register-error').style.display = 'none';
+                <h1>Bienvenido a Vitalia</h1>
 
-            pills.forEach(p => p.classList.remove('active'));
-            if (role === 'dueno') {
-                pills[0].classList.add('active');
-                formDueno.classList.add('active');
-                formVet.classList.remove('active');
-            } else {
-                pills[1].classList.add('active');
-                formVet.classList.add('active');
-                formDueno.classList.remove('active');
-            }
-        }
+                <p>
+                    Todo para el bienestar de tu mascota
+                </p>
+            </div>
 
-        async function handleLogin(event) {
-            event.preventDefault();
-            const email = document.getElementById('login-email').value;
-            const errorBox = document.getElementById('login-error');
-            const btn = document.getElementById('btn-login');
+            <!-- Pestañas -->
+            <div class="auth-tabs" role="tablist"
+                 aria-label="Acceso a Vitalia">
 
-            errorBox.style.display = 'none';
-            btn.innerText = 'Validando...';
-            btn.disabled = true;
+                <button type="button"
+                        id="tabLogin"
+                        class="auth-tab active"
+                        role="tab"
+                        aria-selected="true"
+                        aria-controls="loginSection">
+                    Ingresar
+                </button>
 
-            try {
-                await new Promise(resolve => setTimeout(resolve, 800));
-                const role = email.includes("clinica") || email.includes("vet") ? "clinica" : "dueno";
-                localStorage.setItem('token', 'jwt_vitalia_demo');
-                localStorage.setItem('userRole', role);
+                <button type="button"
+                        id="tabRegistro"
+                        class="auth-tab"
+                        role="tab"
+                        aria-selected="false"
+                        aria-controls="registroSection">
+                    Registrarse
+                </button>
 
-                if (role === 'dueno') {
-                    window.location.href = 'carnet.html';
-                } else {
-                    alert('Bienvenida Clínica Veterinaria. Redirigiendo a tu panel...');
-                    btn.innerText = 'Ingresar';
-                    btn.disabled = false;
-                }
-            } catch (error) {
-                errorBox.innerText = 'Credenciales incorrectas.';
-                errorBox.style.display = 'block';
-                btn.innerText = 'Ingresar';
-                btn.disabled = false;
-            }
-        }
+            </div>
 
-        async function handleRegister(event, role) {
-            event.preventDefault();
-            const errorBox = document.getElementById('register-error');
-            const password = role === 'dueno' 
-                ? document.getElementById('dueno-password').value 
-                : document.getElementById('vet-password').value;
+            <!-- Iniciar sesión -->
+            <section id="loginSection"
+                     role="tabpanel"
+                     aria-labelledby="tabLogin">
 
-            errorBox.style.display = 'none';
-            const passwordRegex = /^(?=.*[A-Z])(?=.*\d).{6,}$/;
-            if (!passwordRegex.test(password)) {
-                errorBox.innerText = 'La contraseña debe tener al menos 6 caracteres, una letra mayúscula y un número.';
-                errorBox.style.display = 'block';
-                return;
-            }
+                <div id="loginMensaje"
+                     class="auth-mensaje"
+                     role="status"
+                     aria-live="polite"
+                     hidden>
+                </div>
 
-            const btn = event.target.querySelector('button[type="submit"]');
-            const originalText = btn.innerText;
-            btn.innerText = 'Registrando...';
-            btn.disabled = true;
+                <form id="formLogin">
 
-            await new Promise(resolve => setTimeout(resolve, 800));
+                    <div class="mb-3">
+                        <label for="loginCorreo"
+                               class="form-label">
+                            Correo electrónico
+                        </label>
 
-            const msg = role === 'dueno'
-                ? '¡Cuenta de dueño creada con éxito! Ya puedes iniciar sesión.'
-                : '¡Clínica veterinaria registrada con éxito! Ya puedes iniciar sesión.';
-            alert(msg);
-            event.target.reset();
-            btn.innerText = originalText;
-            btn.disabled = false;
-            switchTab('login');
-        }
-    </script>
+                        <input type="email"
+                               id="loginCorreo"
+                               class="form-control"
+                               placeholder="tu@correo.com"
+                               autocomplete="email"
+                               required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="loginPassword"
+                               class="form-label">
+                            Contraseña
+                        </label>
+
+                        <input type="password"
+                               id="loginPassword"
+                               class="form-control"
+                               placeholder="Tu contraseña"
+                               autocomplete="current-password"
+                               required>
+                    </div>
+
+                    <button type="submit"
+                            class="btn-auth w-100">
+                        Ingresar
+                        <i class="bi bi-arrow-right ms-2"></i>
+                    </button>
+
+                </form>
+            </section>
+
+            <!-- Registro -->
+            <section id="registroSection"
+                     role="tabpanel"
+                     aria-labelledby="tabRegistro"
+                     hidden>
+
+                <div class="selector-rol">
+                    <button type="button"
+                            class="rol-boton active"
+                            data-rol="dueno"
+                            aria-pressed="true">
+                        <i class="bi bi-heart me-1"></i>
+                        Soy dueño
+                    </button>
+
+                    <button type="button"
+                            class="rol-boton"
+                            data-rol="clinica"
+                            aria-pressed="false">
+                        <i class="bi bi-hospital me-1"></i>
+                        Soy veterinaria
+                    </button>
+                </div>
+
+                <div id="registroMensaje"
+                     class="auth-mensaje"
+                     role="status"
+                     aria-live="polite"
+                     hidden>
+                </div>
+
+                <!-- Registro dueño -->
+                <form id="formRegistroDueno">
+
+                    <div class="mb-3">
+                        <label for="duenoNombre"
+                               class="form-label">
+                            Nombre completo
+                        </label>
+                        <input type="text"
+                               id="duenoNombre"
+                               class="form-control"
+                               autocomplete="name"
+                               required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="duenoTelefono"
+                               class="form-label">
+                            Teléfono
+                        </label>
+                        <input type="tel"
+                               id="duenoTelefono"
+                               class="form-control"
+                               autocomplete="tel"
+                               required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="duenoCorreo"
+                               class="form-label">
+                            Correo electrónico
+                        </label>
+                        <input type="email"
+                               id="duenoCorreo"
+                               class="form-control"
+                               autocomplete="email"
+                               required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="duenoPassword"
+                               class="form-label">
+                            Contraseña
+                        </label>
+                        <input type="password"
+                               id="duenoPassword"
+                               class="form-control"
+                               autocomplete="new-password"
+                               minlength="6"
+                               required>
+
+                        <div class="form-text">
+                            Mínimo 6 caracteres, una mayúscula
+                            y un número.
+                        </div>
+                    </div>
+
+                    <button type="submit"
+                            class="btn-auth w-100">
+                        Crear cuenta de dueño
+                    </button>
+
+                </form>
+
+                <!-- Registro veterinaria -->
+                <form id="formRegistroClinica" hidden>
+
+                    <div class="mb-3">
+                        <label for="clinicaNombre"
+                               class="form-label">
+                            Nombre de la clínica
+                        </label>
+                        <input type="text"
+                               id="clinicaNombre"
+                               class="form-control"
+                               required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="clinicaResponsable"
+                               class="form-label">
+                            Médico responsable / Cédula
+                        </label>
+                        <input type="text"
+                               id="clinicaResponsable"
+                               class="form-control"
+                               required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="clinicaDireccion"
+                               class="form-label">
+                            Dirección
+                        </label>
+                        <input type="text"
+                               id="clinicaDireccion"
+                               class="form-control"
+                               required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="clinicaTelefono"
+                               class="form-label">
+                            Teléfono
+                        </label>
+                        <input type="tel"
+                               id="clinicaTelefono"
+                               class="form-control"
+                               required>
+                    </div>
+
+                    <div class="form-check mb-3">
+                        <input type="checkbox"
+                               id="clinicaUrgencias"
+                               class="form-check-input">
+
+                        <label for="clinicaUrgencias"
+                               class="form-check-label">
+                            Ofrecemos urgencias 24 horas
+                        </label>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="clinicaCorreo"
+                               class="form-label">
+                            Correo institucional
+                        </label>
+                        <input type="email"
+                               id="clinicaCorreo"
+                               class="form-control"
+                               required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="clinicaPassword"
+                               class="form-label">
+                            Contraseña
+                        </label>
+                        <input type="password"
+                               id="clinicaPassword"
+                               class="form-control"
+                               minlength="6"
+                               required>
+
+                        <div class="form-text">
+                            Mínimo 6 caracteres, una mayúscula
+                            y un número.
+                        </div>
+                    </div>
+
+                    <button type="submit"
+                            class="btn-auth w-100">
+                        Registrar veterinaria
+                    </button>
+
+                </form>
+            </section>
+
+            <p class="auth-pie text-center">
+                <i class="bi bi-shield-check me-1"></i>
+                Tus mascotas, nuestra prioridad.
+            </p>
+
+        </section>
+
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/login.js"></script>
+    <script src="js/menu.js"></script>
+
 </body>
 </html>

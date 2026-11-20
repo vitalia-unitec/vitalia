@@ -1,0 +1,271 @@
+
+/* =========================================
+   VITALIA - CARNET DIGITAL
+========================================= */
+
+:root {
+    --carnet-verde: #2E7D6B;
+    --carnet-menta: #6BAF9F;
+    --carnet-crema: #F8F7F3;
+    --carnet-beige: #D9B59F;
+    --carnet-texto: #2D2D2D;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: var(--carnet-crema);
+    color: var(--carnet-texto);
+}
+
+.auth-invitado[hidden],
+.auth-usuario[hidden],
+#btnGuardarCarnet[hidden],
+#mensajeCarnet[hidden] {
+    display: none !important;
+}
+
+.carnet-main {
+    min-height: 75vh;
+}
+
+.carnet-volver {
+    display: inline-flex;
+    align-items: center;
+    color: var(--carnet-verde);
+    text-decoration: none;
+    font-weight: 600;
+    margin-bottom: 22px;
+}
+
+.carnet-volver:hover {
+    text-decoration: underline;
+}
+
+.carnet-card {
+    background: #FFFFFF;
+    border-radius: 24px;
+    padding: 35px 38px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+}
+
+.carnet-encabezado {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 32px;
+}
+
+.carnet-etiqueta {
+    color: var(--carnet-menta);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    margin-bottom: 8px;
+}
+
+.carnet-encabezado h1 {
+    color: var(--carnet-verde);
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.carnet-insignia {
+    background: #E8F3EF;
+    color: var(--carnet-verde);
+    padding: 10px 15px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.carnet-contenido {
+    display: grid;
+    grid-template-columns: 155px minmax(0, 1fr) 210px;
+    gap: 28px;
+    align-items: start;
+}
+
+.carnet-foto-columna {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.carnet-foto-contenedor {
+    position: relative;
+    width: 140px;
+    height: 140px;
+}
+
+.carnet-foto-contenedor img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid #E8F3EF;
+    background: #F4F7F4;
+}
+
+.carnet-cambiar-foto {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background: white;
+    color: var(--carnet-verde);
+    border: 1px solid var(--carnet-menta);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+}
+
+.carnet-enlace-foto {
+    color: var(--carnet-verde);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.carnet-estado {
+    background: #E8F3EF;
+    color: var(--carnet-verde);
+    border-radius: 999px;
+    padding: 6px 12px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.carnet-formulario .form-label {
+    font-size: 13px;
+    color: #53615A;
+    font-weight: 600;
+}
+
+.carnet-formulario .form-control,
+.carnet-formulario .form-select {
+    padding: 11px 13px;
+    border-radius: 12px;
+    border: 1px solid #DCE6E0;
+    font-size: 14px;
+}
+
+.carnet-formulario .form-control:focus,
+.carnet-formulario .form-select:focus {
+    border-color: var(--carnet-menta);
+    box-shadow: 0 0 0 3px rgba(107,175,159,0.15);
+}
+
+.carnet-formulario input:disabled,
+.carnet-formulario select:disabled {
+    background: #F8FAF8;
+    color: #4D5B54;
+    opacity: 1;
+}
+
+.carnet-whatsapp {
+    background: #F8F7F3;
+    border-radius: 20px;
+    padding: 25px 18px;
+    text-align: center;
+}
+
+.carnet-whatsapp-icono {
+    width: 55px;
+    height: 55px;
+    border-radius: 18px;
+    background: #E8F3EF;
+    color: var(--carnet-verde);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    margin: 0 auto 15px;
+}
+
+.carnet-whatsapp h2 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--carnet-verde);
+    margin-bottom: 10px;
+}
+
+.carnet-whatsapp p {
+    font-size: 12px;
+    color: #6C7971;
+    line-height: 1.7;
+    margin-bottom: 18px;
+}
+
+.carnet-acciones {
+    margin-top: 35px;
+    padding-top: 24px;
+    border-top: 1px solid #E7EDE9;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.carnet-acciones .btn {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+#mensajeCarnet {
+    margin-bottom: 25px;
+    border-radius: 12px;
+}
+
+/* MENÚ ACTIVO */
+
+.menu-vitalia .menu-enlace.active .menu-texto,
+.menu-vitalia .menu-enlace[aria-current="page"] .menu-texto {
+    color: var(--carnet-verde);
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 6px;
+    text-decoration-thickness: 2px;
+}
+
+/* RESPONSIVO */
+
+@media (max-width: 991px) {
+    .carnet-contenido {
+        grid-template-columns: 160px minmax(0, 1fr);
+    }
+
+    .carnet-whatsapp {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 767px) {
+    .carnet-card {
+        padding: 24px 20px;
+    }
+
+    .carnet-encabezado {
+        flex-direction: column;
+    }
+
+    .carnet-contenido {
+        grid-template-columns: 1fr;
+    }
+
+    .carnet-foto-columna {
+        margin-bottom: 10px;
+    }
+
+    .carnet-encabezado h1 {
+        font-size: 24px;
+    }
+}

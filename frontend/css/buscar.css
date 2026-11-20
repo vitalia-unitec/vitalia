@@ -1,0 +1,322 @@
+
+/* =========================================
+   VITALIA - BUSCAR VETERINARIAS
+========================================= */
+
+:root {
+    --buscar-verde: #2E7D6B;
+    --buscar-menta: #6BAF9F;
+    --buscar-beige: #D9B59F;
+    --buscar-crema: #F8F7F3;
+    --buscar-texto: #2D2D2D;
+}
+
+/* ESTILOS GENERALES */
+
+body {
+    background-color: var(--buscar-crema);
+    color: var(--buscar-texto);
+    font-family: 'Poppins', sans-serif;
+}
+
+main {
+    min-height: 75vh;
+}
+
+main h1,
+main h2 {
+    color: var(--buscar-verde);
+}
+
+/* =========================================
+   PANEL DE BÚSQUEDA
+========================================= */
+
+.busqueda-panel {
+    background-color: #FFFFFF;
+    padding: 30px;
+    border-radius: 22px;
+    border: 1px solid #E4EBE6;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.04);
+}
+
+.busqueda-panel .form-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--buscar-texto);
+}
+
+.busqueda-panel .form-control,
+.busqueda-panel .form-select {
+    min-height: 54px;
+    border: 1px solid #DCE5E0;
+    border-radius: 12px;
+    font-size: 14px;
+    background-color: #FCFCFA;
+}
+
+.busqueda-panel .form-control:focus,
+.busqueda-panel .form-select:focus {
+    border-color: var(--buscar-menta);
+    box-shadow: 0 0 0 0.2rem rgba(46, 125, 107, 0.12);
+}
+
+.busqueda-panel .input-group-text {
+    background-color: #E8F3EF;
+    color: var(--buscar-verde);
+    border: 1px solid #DCE5E0;
+    border-radius: 12px 0 0 12px;
+}
+
+.busqueda-panel .input-group .form-control {
+    border-radius: 0 12px 12px 0;
+}
+
+.busqueda-panel .btn-success {
+    background-color: var(--buscar-verde);
+    border-color: var(--buscar-verde);
+    font-weight: 600;
+    min-height: 54px;
+}
+
+.busqueda-panel .btn-success:hover {
+    background-color: #246656;
+    border-color: #246656;
+}
+
+/* =========================================
+   FILTROS
+========================================= */
+
+#filtrosBusqueda {
+    gap: 12px !important;
+}
+
+.filtro-buscar {
+    border: 1.5px solid var(--buscar-menta);
+    border-radius: 30px;
+    background-color: #FFFFFF;
+    color: var(--buscar-verde);
+    padding: 11px 19px;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.filtro-buscar:hover {
+    background-color: #E8F3EF;
+    border-color: var(--buscar-verde);
+    color: var(--buscar-verde);
+}
+
+.filtro-buscar.active,
+.filtro-buscar[aria-pressed="true"] {
+    background-color: var(--buscar-verde);
+    border-color: var(--buscar-verde);
+    color: #FFFFFF;
+}
+
+.filtro-buscar.active:hover {
+    background-color: #246656;
+    color: #FFFFFF;
+}
+
+.filtro-buscar:focus-visible {
+    outline: 3px solid var(--buscar-menta);
+    outline-offset: 3px;
+}
+
+/* =========================================
+   RESULTADOS DE BÚSQUEDA
+========================================= */
+
+#contadorResultados {
+    color: #777777;
+}
+
+#enlaceMapa {
+    border: 1.5px solid var(--buscar-verde);
+    color: var(--buscar-verde);
+    font-weight: 600;
+    padding: 11px 22px;
+}
+
+#enlaceMapa:hover {
+    background-color: var(--buscar-verde);
+    color: #FFFFFF;
+}
+
+/* =========================================
+   TARJETAS DE VETERINARIAS
+========================================= */
+
+.tarjeta-veterinaria {
+    background-color: #FFFFFF;
+    border: 1px solid #E4EBE6;
+    border-radius: 20px;
+    padding: 22px;
+    height: 100%;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+    transition: transform 0.2s ease,
+                box-shadow 0.2s ease;
+}
+
+.tarjeta-veterinaria:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+}
+
+.veterinaria-icono {
+    width: 75px;
+    height: 75px;
+    flex-shrink: 0;
+    background-color: #E8F3EF;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.veterinaria-icono i {
+    font-size: 35px;
+    color: var(--buscar-verde);
+}
+
+.veterinaria-nombre {
+    color: var(--buscar-verde);
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.veterinaria-direccion {
+    color: #777777;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.veterinaria-servicios {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-top: 14px;
+}
+
+.etiqueta-servicio {
+    background-color: #E8F3EF;
+    color: var(--buscar-verde);
+    border-radius: 20px;
+    padding: 6px 11px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.etiqueta-urgencias {
+    background-color: #FCEBE8;
+    color: #A83B30;
+}
+
+.veterinaria-acciones {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+.btn-detalle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 20px;
+    border-radius: 30px;
+    background-color: #F1E2D6;
+    color: var(--buscar-verde);
+    border: 1px solid #E7D2C3;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.btn-detalle:hover {
+    background-color: var(--buscar-beige);
+    color: #234F43;
+}
+
+/* =========================================
+   ESTADO DE BÚSQUEDA
+========================================= */
+
+.estado-busqueda {
+    background-color: #FFFFFF;
+    border: 1px dashed #C5DCD3;
+    border-radius: 20px;
+    color: #777777;
+    padding: 45px 20px;
+}
+
+.estado-busqueda i {
+    color: var(--buscar-menta);
+}
+
+/* =========================================
+   DISEÑO RESPONSIVO
+========================================= */
+
+@media (max-width: 991px) {
+
+    .busqueda-panel {
+        padding: 24px;
+    }
+
+    .tarjeta-veterinaria {
+        padding: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+
+    main h1 {
+        font-size: 28px;
+    }
+
+    .busqueda-panel {
+        padding: 20px;
+    }
+
+    .filtro-buscar {
+        font-size: 12px;
+        padding: 9px 14px;
+    }
+
+    .veterinaria-icono {
+        width: 60px;
+        height: 60px;
+    }
+
+    .veterinaria-icono i {
+        font-size: 28px;
+    }
+}
+
+@media (max-width: 480px) {
+
+    main h1 {
+        font-size: 25px;
+    }
+
+    .busqueda-panel {
+        padding: 17px;
+    }
+
+    .tarjeta-veterinaria {
+        padding: 17px;
+    }
+
+    #enlaceMapa {
+        width: 100%;
+        text-align: center;
+    }
+
+    .veterinaria-nombre {
+        font-size: 16px;
+    }
+}
