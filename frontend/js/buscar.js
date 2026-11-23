@@ -165,7 +165,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         // Categorías según el catálogo del backend.
-        const categorias = ["consulta", "vacunas", "estetica"];
+        const categorias = ["consulta-general", "vacunas", "estetica"];
         const categoriaSeleccionada = categorias.find(
             categoria => filtrosActivos.has(categoria)
         );
