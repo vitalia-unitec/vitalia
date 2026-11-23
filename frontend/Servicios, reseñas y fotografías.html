@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Servicios y Fotografías</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+        body { font-family: 'Poppins', sans-serif; margin: 0; padding: 20px; background-color: #F8F7F3; color: #2D2D2D; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .header-clinica { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e0e0e0; padding-bottom: 15px; margin-bottom: 20px; }
+        h1, h2 { color: #2E7D6B; margin-top: 0; }
+        
+        .btn-cita {
+            background-color: #25D366; /* Verde WhatsApp */ color: white; border: none; padding: 10px 20px;
+            border-radius: 20px; font-weight: 600; cursor: pointer; text-decoration: none; font-family: 'Poppins', sans-serif;
+        }
+        
+        .section { margin-bottom: 30px; border-bottom: 1px solid #e0e0e0; padding-bottom: 20px; }
+        ul li { margin-bottom: 10px; padding-left: 20px; position: relative; list-style: none;}
+        ul li::before { content: "•"; color: #6BAF8F; position: absolute; left: 0; font-weight: bold; font-size: 1.2em; }
+        
+        .gallery { display: flex; gap: 15px; overflow-x: auto; }
+        .foto {
+            min-width: 120px; height: 120px; background-color: #D9B59F; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;
+            cursor: pointer; transition: 0.2s;
+        }
+        .foto:hover { transform: scale(1.05); }
+
+        /* Estilos del Modal (Ventana emergente) */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(45, 45, 45, 0.8); display: none; align-items: center; justify-content: center; z-index: 1000;
+        }
+        .modal-content {
+            background: #F8F7F3; padding: 20px; border-radius: 12px; text-align: center; max-width: 400px; width: 90%;
+        }
+        .foto-grande { width: 100%; height: 250px; background-color: #D9B59F; border-radius: 8px; margin: 15px 0; display: flex; align-items: center; justify-content: center; color:white; font-size: 1.5em;}
+        .btn-cerrar { background: #2E7D6B; color: white; border: none; padding: 8px 20px; border-radius: 20px; cursor: pointer; font-family: 'Poppins', sans-serif; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-clinica">
+            <h1>Clínica Veterinaria Patitas</h1>
+            <!-- Botón que abre WhatsApp real -->
+            <a href="https://wa.me/1234567890?text=Hola,%20quiero%20agendar%20una%20cita" target="_blank" class="btn-cita">💬 Agendar por WhatsApp</a>
+        </div>
+        
+        <div class="section">
+            <h2>Servicios</h2>
+            <ul>
+                <li>Consulta General y Especialidad</li>
+                <li>Vacunación y Desparasitación</li>
+                <li>Rayos X y Ultrasonido</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>Fotografías</h2>
+            <div class="gallery">
+                <div class="foto" onclick="abrirModal('Fachada Principal')">Fachada</div>
+                <div class="foto" onclick="abrirModal('Consultorio 1')">Consultorio</div>
+                <div class="foto" onclick="abrirModal('Área de Estética')">Estética</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- El Modal Oculto -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal-content">
+            <h2 id="modal-titulo">Título Foto</h2>
+            <div class="foto-grande" id="modal-imagen">Imagen</div>
+            <button class="btn-cerrar" onclick="cerrarModal()">Cerrar Vista</button>
+        </div>
+    </div>
+
+    <script>
+        function abrirModal(nombreFoto) {
+            document.getElementById('modal-titulo').innerText = nombreFoto;
+            document.getElementById('modal-imagen').innerText = "Viendo: " + nombreFoto;
+            document.getElementById('modal').style.display = 'flex'; // Muestra el modal
+        }
+
+        function cerrarModal() {
+            document.getElementById('modal').style.display = 'none'; // Oculta el modal
+        }
+    </script>
+</body>
+</html>

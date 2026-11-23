@@ -1,681 +1,669 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vítalia - Carnet de mi mascota</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
-        body {
-            background-color: #F8F7F3;
-            color: #2D2D2D;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
-        /* BARRA SUPERIOR EXACTA A LA REFERENCIA */
-        .main-header {
-            width: 100%;
-            background-color: #FFFFFF;
-            border-bottom: 1px solid #EAEAEA;
-            padding: 14px 40px;
-            display: flex;
-            justify-content: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        .header-inner {
-            width: 100%;
-            max-width: 1100px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 16px;
-        }
-        .brand-logo {
-            display: flex;
-            align-items: center;
-            text-decoration: none;
-        }
-        .brand-logo svg {
-            height: 48px;
-            width: auto;
-        }
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-        .btn-urgencias {
-            background-color: #C84B3C;
-            color: #FFFFFF;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 999px;
-            font-size: 14px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            text-decoration: none;
-            transition: 0.2s;
-        }
-        .btn-urgencias:hover {
-            background-color: #B03D30;
-        }
-        .btn-outline-pill {
-            background-color: #FFFFFF;
-            color: #2E7D6B;
-            border: 1.5px solid #6BAF8F;
-            padding: 9px 22px;
-            border-radius: 999px;
-            font-size: 14px;
-            font-weight: 600;
-            text-decoration: none;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .btn-outline-pill:hover {
-            background-color: #F0F7F4;
-        }
-        .btn-solid-pill {
-            background-color: #2E7D6B;
-            color: #FFFFFF;
-            border: 1.5px solid #2E7D6B;
-            padding: 9px 22px;
-            border-radius: 999px;
-            font-size: 14px;
-            font-weight: 600;
-            text-decoration: none;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .btn-solid-pill:hover {
-            background-color: #246355;
-        }
-        .hamburger-btn {
-            background: transparent;
-            border: none;
-            cursor: pointer;
-            padding: 6px;
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-            margin-left: 6px;
-        }
-        .hamburger-btn span {
-            display: block;
-            width: 26px;
-            height: 2.5px;
-            background-color: #2E7D6B;
-            border-radius: 2px;
-        }
+    <title>Vitalia | Carnet de mi mascota</title>
 
-        /* MENÚ DESPLEGABLE LATERAL (DRAWER) */
-        .menu-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.35);
-            display: none;
-            z-index: 200;
-        }
-        .menu-overlay.open {
-            display: block;
-        }
-        .side-drawer {
-            position: fixed;
-            top: 0;
-            right: -340px;
-            width: 320px;
-            max-width: 85vw;
-            height: 100vh;
-            background-color: #F8F7F3;
-            box-shadow: -6px 0 25px rgba(0, 0, 0, 0.12);
-            z-index: 210;
-            transition: right 0.3s ease;
-            display: flex;
-            flex-direction: column;
-        }
-        .side-drawer.open {
-            right: 0;
-        }
-        .drawer-header {
-            background-color: #E7F3EE;
-            padding: 22px 26px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .drawer-header h2 {
-            color: #2E7D6B;
-            font-size: 20px;
-            font-weight: 700;
-        }
-        .drawer-close {
-            background: none;
-            border: none;
-            font-size: 24px;
-            color: #666;
-            cursor: pointer;
-            line-height: 1;
-        }
-        .drawer-nav {
-            padding: 28px 30px;
-            display: flex;
-            flex-direction: column;
-            gap: 24px;
-        }
-        .drawer-link {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            text-decoration: none;
-            color: #2D2D2D;
-            font-size: 16px;
-            font-weight: 500;
-            transition: 0.2s;
-        }
-        .drawer-link:hover {
-            color: #2E7D6B;
-        }
-        .drawer-link svg {
-            width: 22px;
-            height: 22px;
-            stroke: #2D2D2D;
-            flex-shrink: 0;
-        }
-        .drawer-divider {
-            height: 1px;
-            background-color: #E0DFDA;
-            margin: 6px 0;
-        }
-        .drawer-link.active-profile {
-            color: #2E7D6B;
-            font-weight: 700;
-        }
-        .drawer-link.active-profile span {
-            border-bottom: 2.5px solid #2E7D6B;
-            padding-bottom: 2px;
-        }
-        .drawer-link.active-profile svg {
-            stroke: #2E7D6B;
-        }
+    <!-- BOOTSTRAP -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet">
 
-        /* TARJETA PRINCIPAL DEL CARNET */
-        .window-card {
-            background: #FFFFFF;
-            width: 92%;
-            max-width: 950px;
-            border-radius: 24px;
-            padding: 34px 40px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.04);
-            margin: 34px 0 40px;
-        }
-        .back-link {
-            display: inline-block;
-            color: #666;
-            text-decoration: none;
-            font-size: 13px;
-            margin-bottom: 10px;
-        }
-        .page-title {
-            font-size: 24px;
-            font-weight: 700;
-            color: #2D2D2D;
-            margin-bottom: 30px;
-        }
+    <!-- FUENTE POPPINS -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
 
-        /* CONTENIDO DEL CARNET */
-        .carnet-layout {
-            display: grid;
-            grid-template-columns: 160px 1fr 200px;
-            gap: 30px;
-            align-items: start;
-        }
-        @media (max-width: 850px) {
-            .carnet-layout {
-                grid-template-columns: 1fr;
-            }
-            .btn-outline-pill, .btn-solid-pill {
-                display: none;
-            }
-            .main-header {
-                padding: 12px 20px;
-            }
-        }
+    <!-- ICONOS -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+        rel="stylesheet">
 
-        /* FOTO DE LA MASCOTA */
-        .photo-column {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-        }
-        .photo-wrapper {
-            position: relative;
-            width: 140px;
-            height: 140px;
-        }
-        .pet-photo-img {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            object-fit: cover;
-            background-color: #F8F7F3;
-            border: 1px solid #E5E5E5;
-        }
-        .upload-icon-badge {
-            position: absolute;
-            bottom: 5px;
-            right: 5px;
-            background: #FFFFFF;
-            border: 1px solid #6BAF8F;
-            border-radius: 50%;
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-        }
-        .change-photo-label {
-            font-size: 13px;
-            color: #2E7D6B;
-            font-weight: 500;
-            cursor: pointer;
-        }
-
-        /* FORMULARIO */
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px 20px;
-        }
-        .field-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-        .field-group label {
-            font-size: 12px;
-            color: #666666;
-            font-weight: 500;
-        }
-        .field-group input, .field-group select {
-            width: 100%;
-            padding: 10px 14px;
-            border: 1px solid #E2E8F0;
-            border-radius: 10px;
-            font-size: 14px;
-            color: #2D2D2D;
-            background-color: #FFFFFF;
-            outline: none;
-        }
-        .field-group input:focus, .field-group select:focus {
-            border-color: #6BAF8F;
-        }
-
-        .submit-container {
-            grid-column: span 2;
-            margin-top: 10px;
-        }
-        .btn-submit {
-            background-color: #2E7D6B;
-            color: #FFFFFF;
-            border: none;
-            padding: 12px 32px;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .btn-submit:hover {
-            background-color: #246355;
-        }
-
-        /* CUADRO WHATSAPP LATERAL */
-        .whatsapp-card {
-            background-color: #F8F7F3;
-            border-radius: 16px;
-            padding: 24px 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            justify-content: center;
-            gap: 20px;
-            min-height: 220px;
-        }
-        .whatsapp-text {
-            font-size: 13px;
-            color: #2D2D2D;
-            line-height: 1.5;
-            font-weight: 500;
-        }
-        .whatsapp-icon-btn {
-            width: 44px;
-            height: 44px;
-            background-color: #2E7D6B;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            cursor: pointer;
-            text-decoration: none;
-            transition: 0.2s;
-        }
-        .whatsapp-icon-btn:hover {
-            background-color: #6BAF8F;
-        }
-
-        /* BARRA SECUNDARIA DE ACCIONES DEL CARNET */
-        .team-toolbar {
-            margin-top: 36px;
-            padding-top: 20px;
-            border-top: 1px dashed #E2E8F0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        .action-mode-btn {
-            background-color: #F8F7F3;
-            border: 1px solid #6BAF8F;
-            color: #2D2D2D;
-            padding: 6px 14px;
-            border-radius: 8px;
-            font-size: 12px;
-            cursor: pointer;
-            font-weight: 500;
-        }
-        .action-mode-btn:hover {
-            background-color: #6BAF8F;
-            color: white;
-        }
-        .delete-carnet-btn {
-            color: #C84B3C;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            text-decoration: underline;
-            background: none;
-            border: none;
-        }
-        .delete-carnet-btn:hover {
-            color: #9E3629;
-        }
-    </style>
+    <!-- ESTILOS VITALIA -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/carnet.css">
 </head>
+
 <body>
 
-    <!-- BARRA SUPERIOR DE NAVEGACIÓN -->
-    <header class="main-header">
-        <div class="header-inner">
-            <a href="carnet.html" class="brand-logo">
-                <svg viewBox="0 0 220 65" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M32 54C18 42 8 33 8 21C8 13 14 7 22 7C27 7 31 10 34 14C37 10 41 7 46 7C54 7 60 13 60 21C60 33 50 42 36 54L34 56L32 54Z" stroke="#2E7D6B" stroke-width="3.5" fill="none"/>
-                    <circle cx="52" cy="8" r="2.2" fill="#2E7D6B"/>
-                    <circle cx="57" cy="6" r="2.2" fill="#2E7D6B"/>
-                    <circle cx="62" cy="8" r="2.2" fill="#2E7D6B"/>
-                    <ellipse cx="57" cy="12" rx="4" ry="3" fill="#2E7D6B"/>
-                    <path d="M16 42C16 30 22 21 31 21C36 21 39 25 42 28L45 30C46 31 45 34 42 35L35 36C33 41 31 48 31 53L16 42Z" fill="#2E7D6B"/>
-                    <path d="M36 55L40 42L38 37L43 39L47 36L49 41C51 44 50 49 47 52L36 55Z" fill="#C49A76"/>
-                    <text x="72" y="42" fill="#2E7D6B" font-family="Poppins, sans-serif" font-weight="700" font-size="30">Vítalia</text>
-                </svg>
+    <!-- =====================================
+         ENCABEZADO
+    ===================================== -->
+
+    <header class="navbar bg-white border-bottom sticky-top">
+        <div class="container py-3">
+
+            <a
+                class="navbar-brand d-flex align-items-center gap-3"
+                href="index.html">
+
+                <img
+                    src="assets/img/logo-vitalia.png"
+                    alt=""
+                    class="logo-vitalia">
+
+                <img
+                    src="assets/img/nombre-vitalia.png"
+                    alt="Vitalia"
+                    class="nombre-vitalia">
             </a>
 
-            <div class="header-actions">
-                <button class="btn-urgencias" onclick="alert('Mostrando clínicas veterinarias con atención de urgencias 24 horas cercanas...')">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
-                        <path d="M12 2L1 21h22L12 2zm1 15h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
-                    </svg>
+            <div class="d-flex align-items-center gap-2">
+
+                <!-- URGENCIAS -->
+                <a
+                    href="buscar.html?urgencias=true"
+                    class="btn btn-urgencias rounded-pill">
+
+                    <i class="bi bi-exclamation-triangle-fill me-1"></i>
                     Urgencias 24 h
+                </a>
+
+                <!-- REGISTRARSE -->
+                <a
+                    href="login.html?tab=registro"
+                    class="btn btn-outline-success rounded-pill auth-invitado">
+
+                    Registrarse
+                </a>
+
+                <!-- INICIAR SESIÓN -->
+                <a
+                    href="login.html"
+                    class="btn btn-success rounded-pill auth-invitado">
+
+                    Ingresar
+                </a>
+
+                <!-- CERRAR SESIÓN -->
+                <button
+                    type="button"
+                    class="btn btn-outline-success rounded-pill btn-cerrar-sesion auth-usuario"
+                    hidden>
+
+                    <i class="bi bi-box-arrow-right me-1"></i>
+                    Cerrar sesión
                 </button>
-                <a href="login.html" class="btn-outline-pill">Registrarse</a>
-                <a href="login.html" class="btn-solid-pill">Ingresar</a>
-                <button class="hamburger-btn" onclick="toggleMenu()" aria-label="Abrir menú">
-                    <span></span>
-                    <span></span>
-                    <span></span>
+
+                <!-- MENÚ -->
+                <button
+                    class="btn border-0"
+                    type="button"
+                    data-bs-toggle="offcanvas"
+                    data-bs-target="#menuVitalia"
+                    aria-controls="menuVitalia"
+                    aria-label="Abrir menú">
+
+                    <i class="bi bi-list fs-2"></i>
                 </button>
+
             </div>
         </div>
     </header>
 
-    <!-- FONDO OSCURO Y MENÚ LATERAL DESPLEGABLE -->
-    <div id="menu-overlay" class="menu-overlay" onclick="toggleMenu()"></div>
-    <aside id="side-drawer" class="side-drawer">
-        <div class="drawer-header">
-            <h2>Menú Vitalia</h2>
-            <button class="drawer-close" onclick="toggleMenu()">&times;</button>
+    <!-- =====================================
+         MENÚ LATERAL
+    ===================================== -->
+
+    <div
+        class="offcanvas offcanvas-end"
+        tabindex="-1"
+        id="menuVitalia"
+        aria-labelledby="tituloMenu">
+
+        <div class="offcanvas-header">
+
+            <h5
+                id="tituloMenu"
+                class="offcanvas-title fw-bold">
+
+                Menú Vitalia
+            </h5>
+
+            <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="offcanvas"
+                aria-label="Cerrar menú">
+            </button>
+
         </div>
-        <nav class="drawer-nav">
-            <a href="#" class="drawer-link" onclick="toggleMenu()">
-                <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                </svg>
-                <span>Inicio</span>
-            </a>
-            <a href="#" class="drawer-link" onclick="toggleMenu()">
-                <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                </svg>
-                <span>Buscar veterinarias</span>
-            </a>
-            <a href="#" class="drawer-link" onclick="toggleMenu()">
-                <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="9" cy="7" r="4"></circle>
-                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                </svg>
-                <span>Comunidad</span>
-            </a>
-            <a href="login.html" class="drawer-link">
-                <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect>
-                    <line x1="9" y1="6" x2="9.01" y2="6"></line>
-                    <line x1="15" y1="6" x2="15.01" y2="6"></line>
-                    <line x1="9" y1="10" x2="9.01" y2="10"></line>
-                    <line x1="15" y1="10" x2="15.01" y2="10"></line>
-                    <line x1="9" y1="14" x2="9.01" y2="14"></line>
-                    <line x1="15" y1="14" x2="15.01" y2="14"></line>
-                    <path d="M9 22v-4h6v4"></path>
-                </svg>
-                <span>Para negocios</span>
-            </a>
 
-            <div class="drawer-divider"></div>
+        <div class="offcanvas-body">
 
-            <a href="#" class="drawer-link active-profile" onclick="toggleMenu()">
-                <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="12" cy="7" r="4"></circle>
-                </svg>
-                <span>Mi perfil</span>
-            </a>
-            <a href="carnet.html" class="drawer-link" onclick="toggleMenu()">
-                <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                </svg>
-                <span>Mis mascotas</span>
-            </a>
-        </nav>
-    </aside>
+            <nav class="nav flex-column menu-vitalia">
 
-    <!-- TARJETA PRINCIPAL DEL CARNET -->
-    <div class="window-card">
-        <a href="#" class="back-link">← Volver</a>
-        <h1 class="page-title">Carnet de mi mascota</h1>
+                <!-- INICIO -->
+                <a
+                    href="index.html"
+                    class="menu-enlace">
 
-        <div class="carnet-layout">
-            <!-- COLUMNA FOTO -->
-            <div class="photo-column">
-                <div class="photo-wrapper">
-                    <img id="pet-photo-preview" src="https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&q=80&w=300" class="pet-photo-img" alt="Mascota">
-                    <label for="pet-photo-input" class="upload-icon-badge">📷</label>
-                </div>
-                <input type="file" id="pet-photo-input" accept="image/*" style="display: none;" onchange="previewPhoto(event)">
-                <label for="pet-photo-input" class="change-photo-label">Cambiar foto</label>
-            </div>
-
-            <!-- FORMULARIO 2 COLUMNAS -->
-            <form id="pet-form" class="form-grid" onsubmit="event.preventDefault(); guardarMascota();">
-                <div class="field-group">
-                    <label>Nombre</label>
-                    <input type="text" id="pet-name" value="Luna" required>
-                </div>
-
-                <div class="field-group">
-                    <label>Sexo</label>
-                    <select id="pet-gender" required>
-                        <option value="Hembra" selected>Hembra</option>
-                        <option value="Macho">Macho</option>
-                    </select>
-                </div>
-
-                <div class="field-group">
-                    <label>Especie</label>
-                    <select id="pet-species" required>
-                        <option value="Perro" selected>Perro</option>
-                        <option value="Gato">Gato</option>
-                        <option value="Otro">Otro</option>
-                    </select>
-                </div>
-
-                <div class="field-group">
-                    <label>Edad</label>
-                    <input type="text" id="pet-age" value="3 años" required>
-                </div>
-
-                <div class="field-group">
-                    <label>Raza</label>
-                    <input type="text" id="pet-breed" value="Golden Retriever" required>
-                </div>
-
-                <div class="field-group">
-                    <label>Color</label>
-                    <input type="text" id="pet-color" value="Dorado">
-                </div>
-
-                <div class="submit-container">
-                    <button type="submit" id="btn-save-carnet" class="btn-submit">Guardar carnet</button>
-                </div>
-            </form>
-
-            <!-- TARJETA LATERAL WHATSAPP -->
-            <div class="whatsapp-card">
-                <p class="whatsapp-text">
-                    Este carnet se envía automáticamente en los mensajes de WhatsApp.
-                </p>
-                <a href="#" class="whatsapp-icon-btn" onclick="compartirWhatsApp(event)">
-                    💬
+                    <i class="bi bi-house-door"></i>
+                    <span class="menu-texto">Inicio</span>
                 </a>
-            </div>
-        </div>
 
-        <!-- MÓDULOS DE GESTIÓN DEL CARNET -->
-        <div class="team-toolbar">
-            <div style="display: flex; gap: 8px;">
-                <button class="action-mode-btn" onclick="crearCarnet()">+ Crear</button>
-                <button class="action-mode-btn" onclick="consultarCarnet()">Consultar</button>
-                <button class="action-mode-btn" onclick="editarCarnet()">Editar</button>
-            </div>
-            <div>
-                <button type="button" class="delete-carnet-btn" onclick="borrarCarnet()">Borrar carnet</button>
-            </div>
+                <!-- BUSCAR VETERINARIAS -->
+                <a
+                    href="buscar.html"
+                    class="menu-enlace">
+
+                    <i class="bi bi-search"></i>
+                    <span class="menu-texto">
+                        Buscar veterinarias
+                    </span>
+                </a>
+
+                <!-- COMUNIDAD -->
+                <a
+                    href="comunidad.html"
+                    class="menu-enlace">
+
+                    <i class="bi bi-people"></i>
+                    <span class="menu-texto">
+                        Comunidad
+                    </span>
+                </a>
+
+                <!-- NEGOCIOS -->
+                <a
+                    href="negocios.html"
+                    class="menu-enlace">
+
+                    <i class="bi bi-building"></i>
+                    <span class="menu-texto">
+                        Para negocios
+                    </span>
+                </a>
+
+                <hr>
+
+                <!-- MI PERFIL -->
+                <a
+                    href="mi-perfil.html"
+                    class="menu-enlace">
+
+                    <i class="bi bi-person-circle"></i>
+                    <span class="menu-texto">
+                        Mi perfil
+                    </span>
+                </a>
+
+                <!-- MIS MASCOTAS -->
+                <a
+                    href="mis-mascotas.html"
+                    class="menu-enlace active"
+                    aria-current="page">
+
+                    <i class="bi bi-heart"></i>
+                    <span class="menu-texto">
+                        Mis mascotas
+                    </span>
+                </a>
+
+            </nav>
+
         </div>
     </div>
 
-    <script>
-        const inputs = document.querySelectorAll('#pet-form input, #pet-form select');
-        const btnSave = document.getElementById('btn-save-carnet');
+    <!-- =====================================
+         CONTENIDO PRINCIPAL
+    ===================================== -->
 
-        function toggleMenu() {
-            document.getElementById('side-drawer').classList.toggle('open');
-            document.getElementById('menu-overlay').classList.toggle('open');
-        }
+    <main class="container py-5 carnet-main">
 
-        function previewPhoto(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('pet-photo-preview').src = e.target.result;
-                }
-                reader.readAsDataURL(file);
-            }
-        }
+        <!-- VOLVER -->
+        <a
+            href="mis-mascotas.html"
+            class="carnet-volver">
 
-        function crearCarnet() {
-            document.getElementById('pet-form').reset();
-            setFormState(false);
-            btnSave.style.display = 'block';
-            alert('Formulario listo para registrar una nueva mascota.');
-        }
+            <i class="bi bi-arrow-left me-2"></i>
+            Volver a Mis mascotas
+        </a>
 
-        function consultarCarnet() {
-            setFormState(true);
-            btnSave.style.display = 'none';
-            alert('Modo consulta: los campos son de solo lectura.');
-        }
+        <!-- =================================
+             TARJETA DEL CARNET
+        ================================= -->
 
-        function editarCarnet() {
-            setFormState(false);
-            btnSave.style.display = 'block';
-            alert('Modo edición activo.');
-        }
+        <div class="carnet-card">
 
-        function setFormState(disabled) {
-            inputs.forEach(input => input.disabled = disabled);
-        }
+            <!-- ENCABEZADO DEL CARNET -->
+            <div class="carnet-encabezado">
 
-        async function guardarMascota() {
-            const name = document.getElementById('pet-name').value;
-            btnSave.innerText = 'Guardando...';
-            btnSave.disabled = true;
+                <div>
 
-            await new Promise(r => setTimeout(r, 700));
+                    <p class="carnet-etiqueta">
+                        EXPEDIENTE DE MASCOTA
+                    </p>
 
-            alert(`¡Carnet de ${name} guardado correctamente!`);
-            btnSave.innerText = 'Guardar carnet';
-            btnSave.disabled = false;
-        }
+                    <h1 id="tituloCarnet">
+                        Carnet de mi mascota
+                    </h1>
 
-        function compartirWhatsApp(e) {
-            e.preventDefault();
-            const name = document.getElementById('pet-name').value;
-            const breed = document.getElementById('pet-breed').value;
-            const mensaje = `¡Hola! Te comparto el carnet de mi mascota ${name} (${breed}) en Vítalia 🐾.`;
-            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(mensaje)}`, '_blank');
-        }
+                    <p class="text-muted mb-0">
+                        Consulta y administra la información
+                        de tu mascota.
+                    </p>
 
-        function borrarCarnet() {
-            const name = document.getElementById('pet-name').value || 'esta mascota';
-            if (confirm(`¿Estás segura de que deseas borrar el carnet de ${name}? Esta acción no se puede deshacer.`)) {
-                document.getElementById('pet-form').reset();
-                document.getElementById('pet-photo-preview').src = 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&q=80&w=300';
-                setFormState(false);
-                btnSave.style.display = 'block';
-                alert(`El carnet de ${name} ha sido eliminado.`);
-            }
-        }
-    </script>
+                </div>
+
+                <span class="carnet-insignia">
+
+                    <i class="bi bi-journal-medical me-1"></i>
+                    Carnet digital
+
+                </span>
+
+            </div>
+
+            <!-- MENSAJES -->
+            <div
+                id="mensajeCarnet"
+                class="alert"
+                role="status"
+                aria-live="polite"
+                hidden>
+            </div>
+
+            <!-- =================================
+                 CONTENIDO DEL CARNET
+            ================================= -->
+
+            <div class="carnet-contenido">
+
+                <!-- =================================
+                     FOTO DE LA MASCOTA
+                ================================= -->
+
+                <div class="carnet-foto-columna">
+
+                    <div class="carnet-foto-contenedor">
+
+                        <img
+                            id="fotoMascota"
+                            src="assets/img/logo-vitalia.png"
+                            alt="Fotografía de la mascota">
+
+                        <label
+                            for="inputFotoMascota"
+                            class="carnet-cambiar-foto"
+                            title="Cambiar fotografía">
+
+                            <i class="bi bi-camera-fill"></i>
+                        </label>
+
+                    </div>
+
+                    <input
+                        type="file"
+                        id="inputFotoMascota"
+                        accept="image/*"
+                        hidden>
+
+                    <label
+                        for="inputFotoMascota"
+                        class="carnet-enlace-foto">
+
+                        Cambiar fotografía
+                    </label>
+
+                    <span
+                        id="estadoCarnet"
+                        class="carnet-estado">
+
+                        Modo consulta
+                    </span>
+
+                </div>
+
+                <!-- =================================
+                     FORMULARIO DEL CARNET
+                ================================= -->
+
+                <form
+                    id="formCarnet"
+                    class="carnet-formulario">
+
+                    <div class="row g-3">
+
+                        <!-- NOMBRE -->
+                        <div class="col-md-6">
+
+                            <label
+                                for="mascotaNombre"
+                                class="form-label">
+
+                                Nombre
+                            </label>
+
+                            <input
+                                type="text"
+                                id="mascotaNombre"
+                                class="form-control"
+                                maxlength="50"
+                                required>
+
+                        </div>
+
+                        <!-- SEXO -->
+                        <div class="col-md-6">
+
+                            <label
+                                for="mascotaSexo"
+                                class="form-label">
+
+                                Sexo
+                            </label>
+
+                            <select
+                                id="mascotaSexo"
+                                class="form-select"
+                                required>
+
+                                <option value="">
+                                    Seleccionar
+                                </option>
+
+                                <option value="hembra">
+                                    Hembra
+                                </option>
+
+                                <option value="macho">
+                                    Macho
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                        <!-- ESPECIE -->
+                        <div class="col-md-6">
+
+                            <label
+                                for="mascotaEspecie"
+                                class="form-label">
+
+                                Especie
+                            </label>
+
+                            <select
+                                id="mascotaEspecie"
+                                class="form-select"
+                                required>
+
+                                <option value="">
+                                    Seleccionar
+                                </option>
+
+                                <option value="perro">
+                                    Perro
+                                </option>
+
+                                <option value="gato">
+                                    Gato
+                                </option>
+
+                                <option value="ave">
+                                    Ave
+                                </option>
+
+                                <option value="conejo">
+                                    Conejo
+                                </option>
+
+                                <option value="reptil">
+                                    Reptil
+                                </option>
+
+                                <option value="otro">
+                                    Otro
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                        <!-- EDAD EN AÑOS -->
+                        <div class="col-md-3">
+
+                            <label
+                                for="mascotaEdadAnios"
+                                class="form-label">
+
+                                Años
+                            </label>
+
+                            <input
+                                type="number"
+                                id="mascotaEdadAnios"
+                                class="form-control"
+                                min="0"
+                                max="40"
+                                step="1"
+                                placeholder="Ej. 3">
+
+                        </div>
+
+                        <!-- EDAD EN MESES -->
+                        <div class="col-md-3">
+
+                            <label
+                                for="mascotaEdadMeses"
+                                class="form-label">
+
+                                Meses
+                            </label>
+
+                            <input
+                                type="number"
+                                id="mascotaEdadMeses"
+                                class="form-control"
+                                min="0"
+                                max="11"
+                                step="1"
+                                placeholder="Ej. 6">
+
+                        </div>
+
+                        <!-- RAZA -->
+                        <div class="col-md-6">
+
+                            <label
+                                for="mascotaRaza"
+                                class="form-label">
+
+                                Raza
+                            </label>
+
+                            <input
+                                type="text"
+                                id="mascotaRaza"
+                                class="form-control"
+                                maxlength="60">
+
+                        </div>
+
+                        <!-- COLOR -->
+                        <div class="col-md-6">
+
+                            <label
+                                for="mascotaColor"
+                                class="form-label">
+
+                                Color
+                            </label>
+
+                            <input
+                                type="text"
+                                id="mascotaColor"
+                                class="form-control"
+                                maxlength="40">
+
+                        </div>
+
+                    </div>
+
+                    <!-- GUARDAR -->
+                    <button
+                        type="submit"
+                        id="btnGuardarCarnet"
+                        class="btn btn-success rounded-pill px-4 mt-4"
+                        hidden>
+
+                        <i class="bi bi-check-circle me-2"></i>
+                        Guardar carnet
+                    </button>
+
+                </form>
+
+                <!-- =================================
+                     COMPARTIR POR WHATSAPP
+                ================================= -->
+
+                <aside class="carnet-whatsapp">
+
+                    <div class="carnet-whatsapp-icono">
+
+                        <i class="bi bi-whatsapp"></i>
+
+                    </div>
+
+                    <h2>
+                        Comparte su carnet
+                    </h2>
+
+                    <p>
+                        Envía un resumen de la información
+                        de tu mascota por WhatsApp.
+                    </p>
+
+                    <button
+                        type="button"
+                        id="btnCompartirCarnet"
+                        class="btn btn-outline-success rounded-pill">
+
+                        <i class="bi bi-whatsapp me-2"></i>
+                        Compartir
+                    </button>
+
+                </aside>
+
+            </div>
+
+            <!-- =================================
+                 ACCIONES DEL CARNET
+            ================================= -->
+
+            <div class="carnet-acciones">
+
+                <div class="d-flex flex-wrap gap-2">
+
+                    <!-- CREAR -->
+                    <button
+                        type="button"
+                        id="btnCrearCarnet"
+                        class="btn btn-outline-success rounded-pill">
+
+                        <i class="bi bi-plus-circle me-1"></i>
+                        Crear
+                    </button>
+
+                    <!-- CONSULTAR -->
+                    <button
+                        type="button"
+                        id="btnConsultarCarnet"
+                        class="btn btn-outline-success rounded-pill">
+
+                        <i class="bi bi-eye me-1"></i>
+                        Consultar
+                    </button>
+
+                    <!-- EDITAR -->
+                    <button
+                        type="button"
+                        id="btnEditarCarnet"
+                        class="btn btn-outline-success rounded-pill">
+
+                        <i class="bi bi-pencil-square me-1"></i>
+                        Editar
+                    </button>
+
+                </div>
+
+                <!-- BORRAR -->
+                <button
+                    type="button"
+                    id="btnBorrarCarnet"
+                    class="btn btn-outline-danger rounded-pill">
+
+                    <i class="bi bi-trash me-1"></i>
+                    Borrar carnet
+                </button>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- =====================================
+         FOOTER
+    ===================================== -->
+
+    <footer class="py-4">
+
+        <div class="container">
+
+            <div class="row align-items-center g-3">
+
+                <div class="col-md-6">
+
+                    <h3 class="h5 fw-bold text-white">
+                        Vitalia
+                    </h3>
+
+                    <p class="mb-0">
+                        Todo para el bienestar de tu mascota.
+                    </p>
+
+                </div>
+
+                <div class="col-md-6 text-md-end">
+
+                    <p class="mb-0">
+                        &copy; 2026 Vitalia.
+                        Todos los derechos reservados.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </footer>
+
+    <!-- =====================================
+         SCRIPTS
+    ===================================== -->
+
+    <!-- BOOTSTRAP -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- API FASTAPI -->
+    <script src="js/api.js"></script>
+
+    <!-- AUTENTICACIÓN -->
+    <script src="js/auth.js"></script>
+
+    <!-- CARNET -->
+    <script src="js/carnet.js"></script>
+
+    <!-- MENÚ -->
+    <script src="js/menu.js"></script>
+
 </body>
 </html>

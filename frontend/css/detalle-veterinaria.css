@@ -1,0 +1,324 @@
+
+/* =========================================
+   VITALIA - DETALLE DE VETERINARIA
+========================================= */
+
+:root {
+    --detalle-verde: #2E7D6B;
+    --detalle-menta: #6BAF9F;
+    --detalle-beige: #D9B59F;
+    --detalle-crema: #F8F7F3;
+    --detalle-texto: #2D2D2D;
+}
+
+/* =========================================
+   ESTILOS GENERALES
+========================================= */
+
+body {
+    background-color: var(--detalle-crema);
+    color: var(--detalle-texto);
+    font-family: 'Poppins', sans-serif;
+}
+
+main {
+    min-height: 75vh;
+}
+
+main h1,
+main h2 {
+    color: var(--detalle-verde);
+}
+
+/* =========================================
+   BOTÓN VOLVER
+========================================= */
+
+main .btn-outline-success {
+    border: 1.5px solid var(--detalle-verde);
+    color: var(--detalle-verde);
+    font-weight: 600;
+    padding: 10px 20px;
+}
+
+main .btn-outline-success:hover {
+    background-color: var(--detalle-verde);
+    border-color: var(--detalle-verde);
+    color: #FFFFFF;
+}
+
+/* =========================================
+   ESTADO DE CARGA
+========================================= */
+
+#estadoDetalle {
+    background-color: #FFFFFF;
+    border-radius: 16px;
+    padding: 20px;
+    color: #777777;
+    font-size: 14px;
+}
+
+/* =========================================
+   PORTADA DE VETERINARIA
+========================================= */
+
+.detalle-portada {
+    width: 100%;
+    height: 300px;
+    background-color: #E8F3EF;
+    border-radius: 24px;
+    overflow: hidden;
+    border: 1px solid #DDE8E1;
+}
+
+#imagenVeterinaria {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+#imagenVeterinaria[hidden] {
+    display: none;
+}
+
+.detalle-imagen-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    color: var(--detalle-verde);
+}
+
+.detalle-imagen-placeholder i {
+    font-size: 65px;
+}
+
+.detalle-imagen-placeholder span {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* =========================================
+   INFORMACIÓN PRINCIPAL
+========================================= */
+
+#nombreVeterinaria {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--detalle-verde);
+}
+
+.detalle-direccion {
+    display: flex;
+    align-items: flex-start;
+    color: #777777;
+    font-size: 15px;
+    line-height: 1.7;
+}
+
+.detalle-direccion i {
+    color: var(--detalle-verde);
+    font-size: 20px;
+}
+
+/* =========================================
+   ETIQUETAS DE SERVICIOS
+========================================= */
+
+.detalle-servicios {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.detalle-servicio {
+    display: inline-flex;
+    align-items: center;
+    background-color: #E8F3EF;
+    color: var(--detalle-verde);
+    border-radius: 25px;
+    padding: 9px 15px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.detalle-servicio.urgencias {
+    background-color: #FCEBE8;
+    color: #A83B30;
+}
+
+/* =========================================
+   TARJETAS DE INFORMACIÓN
+========================================= */
+
+.detalle-tarjeta {
+    background-color: #FFFFFF;
+    border: 1px solid #E4EBE6;
+    border-radius: 22px;
+    padding: 26px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.04);
+}
+
+.detalle-tarjeta h2 {
+    color: var(--detalle-verde);
+    font-weight: 700;
+    margin-bottom: 18px;
+}
+
+.detalle-tarjeta h2 i {
+    color: var(--detalle-menta);
+}
+
+.detalle-tarjeta p {
+    color: #666666;
+    font-size: 14px;
+    line-height: 1.8;
+}
+
+/* =========================================
+   BOTÓN LLAMAR
+========================================= */
+
+#botonLlamar {
+    background-color: var(--detalle-verde);
+    border: 1px solid var(--detalle-verde);
+    color: #FFFFFF;
+    padding: 11px 22px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+#botonLlamar:hover {
+    background-color: #246656;
+    border-color: #246656;
+}
+
+#botonLlamar[hidden] {
+    display: none;
+}
+
+/* =========================================
+   MAPA DE LA VETERINARIA
+========================================= */
+
+#mapaDetalle {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 350px;
+    min-height: 300px;
+    border-radius: 16px;
+    border: 1px solid #DDE8E1;
+    background-color: #E8F3EF;
+    overflow: hidden;
+    z-index: 0;
+}
+
+/* Estilos de ventanas Leaflet */
+
+#mapaDetalle .leaflet-popup-content-wrapper {
+    border-radius: 14px;
+    font-family: 'Poppins', sans-serif;
+}
+
+#mapaDetalle .leaflet-popup-content {
+    font-size: 13px;
+}
+
+#mapaDetalle .leaflet-popup-content strong {
+    color: var(--detalle-verde);
+}
+
+/* =========================================
+   MENSAJE DE UBICACIÓN
+========================================= */
+
+#mensajeUbicacion {
+    color: #777777;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+/* =========================================
+   ESTILOS RESPONSIVOS
+========================================= */
+
+@media (max-width: 991px) {
+
+    .detalle-portada {
+        height: 260px;
+    }
+
+    .detalle-tarjeta {
+        padding: 22px;
+    }
+
+    #mapaDetalle {
+        height: 320px;
+    }
+}
+
+@media (max-width: 768px) {
+
+    #nombreVeterinaria {
+        font-size: 27px;
+    }
+
+    .detalle-portada {
+        height: 220px;
+        border-radius: 18px;
+    }
+
+    .detalle-imagen-placeholder i {
+        font-size: 50px;
+    }
+
+    .detalle-tarjeta {
+        padding: 20px;
+        border-radius: 18px;
+    }
+
+    .detalle-servicio {
+        font-size: 12px;
+        padding: 8px 12px;
+    }
+
+    #mapaDetalle {
+        height: 300px;
+    }
+}
+
+@media (max-width: 480px) {
+
+    #nombreVeterinaria {
+        font-size: 24px;
+    }
+
+    .detalle-portada {
+        height: 190px;
+    }
+
+    .detalle-direccion {
+        font-size: 13px;
+    }
+
+    .detalle-tarjeta {
+        padding: 17px;
+    }
+
+    #mapaDetalle {
+        height: 270px;
+        min-height: 270px;
+    }
+
+    #botonVerMapa {
+        width: 100%;
+        text-align: center;
+    }
+}

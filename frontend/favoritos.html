@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Favoritos</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+        body { font-family: 'Poppins', sans-serif; background-color: #F8F7F3; color: #2D2D2D; margin: 0; padding: 30px 20px; }
+        .container { max-width: 600px; margin: 0 auto; }
+        h2 { color: #2E7D6B; margin-bottom: 25px; font-weight: 600; }
+        .favorite-card {
+            background: white; padding: 20px; border-radius: 12px; margin-bottom: 15px;
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04); border-left: 6px solid #6BAF8F;
+            transition: all 0.3s ease;
+        }
+        .info h3 { margin: 0 0 8px 0; color: #2E7D6B; font-size: 1.1em; }
+        .info p { margin: 0 0 5px 0; color: #666; font-size: 0.9em; }
+        .btn-remove {
+            background-color: white; color: #D9B59F; border: 1px solid #D9B59F; padding: 8px 16px;
+            border-radius: 20px; cursor: pointer; font-weight: 600; font-family: 'Poppins', sans-serif;
+        }
+        .btn-remove:hover { background-color: #D9B59F; color: white; }
+        .empty-message { text-align: center; color: #666; margin-top: 40px; display: none; }
+        .btn-restaurar { display: block; margin: 20px auto; background: #6BAF8F; color: white; border: none; padding: 10px 20px; border-radius: 20px; cursor: pointer; font-family: 'Poppins', sans-serif;}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Mis Veterinarias Favoritas</h2>
+        <div id="lista-favoritos"></div>
+        <p class="empty-message" id="mensaje-vacio">Ya no tienes veterinarias en tus favoritos.</p>
+        <button class="btn-restaurar" id="btn-restaurar" style="display:none;">Restaurar lista de prueba</button>
+    </div>
+
+    <script>
+        const datosIniciales = [
+            { id: 1, nombre: "Clínica Veterinaria Patitas", dir: "📍 Av. Insurgentes 123 | ⭐ 4.8", estado: "Abierto ahora", color: "#2E7D6B" },
+            { id: 2, nombre: "Hospital Veterinario Sur 24 h", dir: "📍 Calle Luna 456 | ⭐ 4.6", estado: "Cerrado", color: "#D9B59F" }
+        ];
+
+        function cargarFavoritos() {
+            let favoritos = JSON.parse(localStorage.getItem('vitalia_favs'));
+            if (!favoritos) { favoritos = datosIniciales; localStorage.setItem('vitalia_favs', JSON.stringify(favoritos)); }
+            
+            const contenedor = document.getElementById('lista-favoritos');
+            contenedor.innerHTML = '';
+            
+            if (favoritos.length === 0) {
+                document.getElementById('mensaje-vacio').style.display = 'block';
+                document.getElementById('btn-restaurar').style.display = 'block';
+            } else {
+                document.getElementById('mensaje-vacio').style.display = 'none';
+                document.getElementById('btn-restaurar').style.display = 'none';
+                
+                favoritos.forEach(fav => {
+                    const card = document.createElement('div');
+                    card.className = 'favorite-card';
+                    card.innerHTML = `
+                        <div class="info">
+                            <h3>${fav.nombre}</h3>
+                            <p>${fav.dir}</p>
+                            <p style="color: ${fav.color}; font-weight: 500; font-size: 0.85em;">${fav.estado}</p>
+                        </div>
+                        <button class="btn-remove" onclick="eliminarFav(${fav.id})">Eliminar</button>
+                    `;
+                    contenedor.appendChild(card);
+                });
+            }
+        }
+
+        function eliminarFav(id) {
+            let favoritos = JSON.parse(localStorage.getItem('vitalia_favs'));
+            favoritos = favoritos.filter(f => f.id !== id);
+            localStorage.setItem('vitalia_favs', JSON.stringify(favoritos));
+            cargarFavoritos();
+        }
+
+        document.getElementById('btn-restaurar').addEventListener('click', () => {
+            localStorage.removeItem('vitalia_favs');
+            cargarFavoritos();
+        });
+
+        cargarFavoritos();
+    </script>
+</body>
+</html>

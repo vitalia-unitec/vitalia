@@ -1,0 +1,283 @@
+
+/* =========================================
+   VITALIA - MIS MASCOTAS
+========================================= */
+
+:root {
+    --mascotas-verde: #2E7D6B;
+    --mascotas-menta: #6BAF9F;
+    --mascotas-beige: #D9B59F;
+    --mascotas-crema: #F8F7F3;
+    --mascotas-texto: #2D2D2D;
+}
+
+/* ESTILOS GENERALES */
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--mascotas-crema);
+    color: var(--mascotas-texto);
+}
+
+main {
+    min-height: 80vh;
+}
+
+main h1,
+main h2 {
+    color: var(--mascotas-verde);
+}
+
+/* BOTONES */
+
+main .btn-success,
+.modal .btn-success {
+    background-color: var(--mascotas-verde);
+    border-color: var(--mascotas-verde);
+    font-weight: 600;
+}
+
+main .btn-success:hover,
+.modal .btn-success:hover {
+    background-color: #246656;
+    border-color: #246656;
+}
+
+main .btn-outline-success {
+    color: var(--mascotas-verde);
+    border-color: var(--mascotas-verde);
+    font-weight: 600;
+}
+
+main .btn-outline-success:hover {
+    background-color: var(--mascotas-verde);
+    color: white;
+}
+
+/* =========================================
+   VISTA DE VISITANTE
+========================================= */
+
+#vistaInvitado .card {
+    border-radius: 24px !important;
+    background-color: white;
+}
+
+#vistaInvitado .bi-lock {
+    color: var(--mascotas-verde) !important;
+}
+
+#vistaInvitado p {
+    line-height: 1.8;
+}
+
+/* =========================================
+   TARJETAS DE MASCOTAS
+========================================= */
+
+.tarjeta-mascota {
+    background-color: white;
+    border: 1px solid #E5EDE8;
+    border-radius: 22px;
+    padding: 28px 22px;
+    height: 100%;
+    text-align: center;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+    transition: transform 0.2s ease,
+                box-shadow 0.2s ease;
+}
+
+.tarjeta-mascota:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.avatar-mascota {
+    width: 95px;
+    height: 95px;
+    margin: 0 auto 18px;
+    border-radius: 50%;
+    background-color: #E8F3EF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.avatar-mascota i {
+    font-size: 45px;
+    color: var(--mascotas-verde);
+}
+
+.nombre-mascota {
+    color: var(--mascotas-verde);
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.detalle-mascota {
+    color: #777777;
+    font-size: 14px;
+    margin-bottom: 18px;
+}
+
+.btn-carnet {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background-color: #F1E2D6;
+    color: var(--mascotas-verde);
+    border: 1px solid #E7D2C3;
+    border-radius: 30px;
+    padding: 11px 22px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+}
+
+.btn-carnet:hover {
+    background-color: var(--mascotas-beige);
+    color: #234F43;
+}
+
+/* =========================================
+   ESTADO SIN MASCOTAS
+========================================= */
+
+#estadoSinMascotas {
+    border: 1px dashed #C5DCD3;
+    border-radius: 20px !important;
+}
+
+#estadoSinMascotas .bi-heart {
+    color: var(--mascotas-verde) !important;
+}
+
+/* =========================================
+   MODAL AGREGAR MASCOTA
+========================================= */
+
+#modalMascota .modal-content {
+    border: none;
+    border-radius: 22px !important;
+    overflow: hidden;
+}
+
+#modalMascota .modal-header {
+    background-color: #E8F3EF;
+    border-bottom: 1px solid #DCEAE2;
+    padding: 22px 25px;
+}
+
+#modalMascota .modal-title {
+    color: var(--mascotas-verde);
+    font-weight: 700;
+}
+
+#modalMascota .modal-body {
+    padding: 25px;
+}
+
+#modalMascota .modal-footer {
+    border-top: 1px solid #EAEAEA;
+    padding: 18px 25px;
+}
+
+#modalMascota .form-label {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+#modalMascota .form-control,
+#modalMascota .form-select {
+    border: 1px solid #DCE5E0;
+    border-radius: 12px;
+    padding: 12px 15px;
+    font-size: 14px;
+}
+
+#modalMascota .form-control:focus,
+#modalMascota .form-select:focus {
+    border-color: var(--mascotas-menta);
+    box-shadow: 0 0 0 0.2rem rgba(46, 125, 107, 0.12);
+}
+
+/* =========================================
+   CARNET DIGITAL
+   Estilos preparados para la siguiente etapa
+========================================= */
+
+.carnet-digital {
+    background-color: white;
+    border: 1px solid #E7DCD2;
+    border-radius: 22px;
+    overflow: hidden;
+}
+
+.carnet-encabezado {
+    background-color: var(--mascotas-verde);
+    color: white;
+    padding: 25px;
+}
+
+.carnet-encabezado h2 {
+    color: white;
+}
+
+.carnet-contenido {
+    padding: 25px;
+}
+
+.carnet-seccion {
+    border-bottom: 1px solid #EAEAEA;
+    padding: 18px 0;
+}
+
+.carnet-seccion:last-child {
+    border-bottom: none;
+}
+
+/* =========================================
+   DISEÑO RESPONSIVO
+========================================= */
+
+@media (max-width: 768px) {
+
+    .tarjeta-mascota {
+        padding: 22px 15px;
+    }
+
+    .avatar-mascota {
+        width: 75px;
+        height: 75px;
+    }
+
+    .avatar-mascota i {
+        font-size: 36px;
+    }
+
+    .nombre-mascota {
+        font-size: 19px;
+    }
+
+    .carnet-contenido {
+        padding: 18px;
+    }
+}
+
+@media (max-width: 480px) {
+
+    main h1 {
+        font-size: 27px;
+    }
+
+    #modalMascota .modal-body {
+        padding: 18px;
+    }
+
+    .tarjeta-mascota {
+        padding: 20px 12px;
+    }
+}
