@@ -405,7 +405,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // =====================================
+        // =====================================
     // PESTAÑA INICIAL
     // =====================================
 
@@ -415,6 +415,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (parametros.get("tab") === "registro") {
         cambiarTab("registro");
+
+        if (parametros.get("rol") === "clinica") {
+            cambiarRol("clinica");
+        }
     } else {
         cambiarTab("login");
     }

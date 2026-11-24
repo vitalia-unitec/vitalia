@@ -31,7 +31,12 @@ class Settings(BaseSettings):
     fotos_url_base: str = "http://localhost:8000/fotos"
 
     # CORS
-    cors_origenes: list[str] = ["http://localhost:3000", "http://localhost:5173"]
+    cors_origenes: list[str] = [
+        "http://localhost:3000",
+        "http://localhost:5173",
+        "http://localhost:5500",
+        "http://127.0.0.1:5500",
+    ]
 
     @property
     def db_ruta_absoluta(self) -> Path:
