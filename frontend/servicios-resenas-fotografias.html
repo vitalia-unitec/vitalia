@@ -1,0 +1,978 @@
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Vitalia | Servicios, reseñas y fotografías</title>
+
+    <!-- Bootstrap -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+        rel="stylesheet">
+
+    <!-- Fuente -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Estilos del proyecto -->
+    <link rel="stylesheet" href="css/styles.css">
+
+    <style>
+
+        :root {
+            --verde: #2E7D6B;
+            --menta: #6BAF9F;
+            --crema: #F8F7F3;
+            --beige: #D9B59F;
+            --texto: #2D2D2D;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--crema);
+            color: var(--texto);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        main {
+            flex: 1;
+        }
+
+        /* Estado de sesión */
+
+        .auth-invitado[hidden],
+        .auth-usuario[hidden] {
+            display: none !important;
+        }
+
+        /* Encabezado original */
+
+        .navbar-vitalia {
+            background: white;
+            border-bottom: 1px solid #E2EBE6;
+        }
+
+        .acciones-navbar {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn-vitalia {
+            border-radius: 50px;
+            padding: 10px 22px;
+            font-weight: 600;
+        }
+
+        .btn-ingresar {
+            background: var(--verde);
+            color: white;
+            border: 1px solid var(--verde);
+        }
+
+        .btn-ingresar:hover {
+            background: #246656;
+            color: white;
+        }
+
+        .btn-registrarse,
+        .btn-cerrar-sesion {
+            background: white;
+            color: var(--verde);
+            border: 1.5px solid var(--verde);
+        }
+
+        .btn-registrarse:hover,
+        .btn-cerrar-sesion:hover {
+            background: var(--verde);
+            color: white;
+        }
+
+        .btn-menu-vitalia {
+            color: var(--verde);
+            padding: 5px 10px;
+            flex-shrink: 0;
+        }
+
+        .btn-menu-vitalia:hover {
+            color: #246656;
+        }
+
+        /* Menú lateral original */
+
+        .menu-vitalia .menu-enlace {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 13px 16px;
+            color: var(--texto);
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+
+        .menu-vitalia .menu-enlace:hover {
+            background: #E8F3EF;
+            color: var(--verde);
+        }
+
+        .menu-vitalia .menu-enlace.active {
+            color: var(--verde);
+        }
+
+        .menu-vitalia .menu-enlace.active .menu-texto {
+            text-decoration: underline;
+            text-underline-offset: 6px;
+            text-decoration-thickness: 2px;
+        }
+
+        /* Contenido principal */
+
+        .titulo-seccion {
+            color: var(--verde);
+            font-weight: 700;
+        }
+
+        .enlace-volver {
+            color: var(--verde);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .enlace-volver:hover {
+            text-decoration: underline;
+        }
+
+        .panel-clinica {
+            background: white;
+            border: 1px solid #E2EAE5;
+            border-radius: 26px;
+            padding: 35px;
+        }
+
+        .icono-clinica {
+            width: 78px;
+            height: 78px;
+            background: #E8F3EF;
+            color: var(--verde);
+            border-radius: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            flex-shrink: 0;
+        }
+
+        /* Servicios */
+
+        .tarjeta-vitalia {
+            background: var(--crema);
+            border: 1px solid #E2EAE5;
+            border-radius: 24px;
+            padding: 25px;
+            height: 100%;
+            transition: transform .2s ease;
+        }
+
+        .tarjeta-vitalia:hover {
+            transform: translateY(-3px);
+        }
+
+        .icono-servicio {
+            width: 70px;
+            height: 70px;
+            background: #E8F3EF;
+            color: var(--verde);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+
+        .tarjeta-vitalia h3 {
+            color: var(--verde);
+            font-size: 17px;
+            font-weight: 600;
+            line-height: 1.5;
+        }
+
+        /* Reseñas */
+
+        .panel-resenas {
+            background: var(--crema);
+            border: 1px solid #E2EAE5;
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .panel-resenas i {
+            color: var(--menta);
+            font-size: 36px;
+        }
+
+        /* Fotografías */
+
+        .tarjeta-fotografia {
+            width: 100%;
+            background: #E8F3EF;
+            color: var(--verde);
+            border: 1px solid #D5E4DC;
+            border-radius: 20px;
+            min-height: 180px;
+            padding: 25px;
+            cursor: pointer;
+            transition: transform .2s ease;
+        }
+
+        .tarjeta-fotografia:hover {
+            transform: translateY(-3px);
+            background: #DCECE4;
+        }
+
+        .tarjeta-fotografia i {
+            font-size: 40px;
+        }
+
+        .tarjeta-fotografia span {
+            display: block;
+            font-weight: 600;
+            margin-top: 12px;
+        }
+
+        .tarjeta-fotografia small {
+            color: #666;
+        }
+
+        /* Modal */
+
+        .modal-content {
+            border: none;
+            border-radius: 24px;
+        }
+
+        .modal-title {
+            color: var(--verde);
+            font-weight: 600;
+        }
+
+        .foto-modal {
+            background: #E8F3EF;
+            color: var(--verde);
+            border-radius: 16px;
+            padding: 45px 20px;
+            text-align: center;
+        }
+
+        /* Pie de página original */
+
+        footer {
+            background: var(--verde);
+            color: white;
+        }
+
+        footer p {
+            color: #E7F1EC;
+        }
+
+        /* Diseño responsivo */
+
+        @media (max-width: 768px) {
+
+            .acciones-navbar {
+                gap: 7px;
+            }
+
+            .acciones-navbar .btn-vitalia {
+                font-size: 12px;
+                padding: 8px 11px;
+            }
+
+            .panel-clinica {
+                padding: 22px;
+            }
+
+            .tarjeta-vitalia {
+                padding: 20px;
+            }
+
+            .btn-whatsapp {
+                width: 100%;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<!-- =====================================
+     ENCABEZADO ORIGINAL
+===================================== -->
+
+<header class="navbar navbar-vitalia sticky-top">
+
+    <div class="container py-3">
+
+        <!-- Logo original -->
+
+        <a href="index.html"
+           class="navbar-brand d-flex align-items-center gap-3">
+
+            <img
+                src="assets/img/logo-vitalia.png"
+                alt=""
+                class="logo-vitalia">
+
+            <img
+                src="assets/img/nombre-vitalia.png"
+                alt="Vitalia"
+                class="nombre-vitalia">
+
+        </a>
+
+        <!-- Botones del encabezado -->
+
+        <div class="acciones-navbar">
+
+            <!-- Urgencias: siempre visible -->
+
+            <a
+                href="buscar.html?urgencias=true"
+                class="btn btn-urgencias btn-vitalia">
+
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+
+                Urgencias 24 h
+
+            </a>
+
+            <!-- Sin sesión -->
+
+            <a
+                href="registro.html"
+                class="btn btn-registrarse btn-vitalia auth-invitado">
+
+                Registrarse
+
+            </a>
+
+            <a
+                href="login.html"
+                class="btn btn-ingresar btn-vitalia auth-invitado">
+
+                Ingresar
+
+            </a>
+
+            <!-- Con sesión -->
+
+            <button
+                type="button"
+                class="btn btn-cerrar-sesion btn-vitalia auth-usuario"
+                hidden>
+
+                <i class="bi bi-box-arrow-right me-2"></i>
+
+                Cerrar sesión
+
+            </button>
+
+            <!-- Menú hamburguesa -->
+
+            <button
+                class="btn btn-menu-vitalia border-0"
+                type="button"
+                data-bs-toggle="offcanvas"
+                data-bs-target="#menuVitalia"
+                aria-controls="menuVitalia"
+                aria-label="Abrir menú">
+
+                <i class="bi bi-list fs-2"></i>
+
+            </button>
+
+        </div>
+
+    </div>
+
+</header>
+
+<!-- =====================================
+     MENÚ LATERAL ORIGINAL
+===================================== -->
+
+<div
+    class="offcanvas offcanvas-end"
+    tabindex="-1"
+    id="menuVitalia"
+    aria-labelledby="tituloMenu">
+
+    <div class="offcanvas-header">
+
+        <h5 id="tituloMenu"
+            class="offcanvas-title fw-bold">
+
+            Menú Vitalia
+
+        </h5>
+
+        <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="offcanvas"
+            aria-label="Cerrar menú">
+
+        </button>
+
+    </div>
+
+    <div class="offcanvas-body">
+
+        <nav class="nav flex-column menu-vitalia">
+
+            <a href="index.html" class="menu-enlace">
+
+                <i class="bi bi-house-door"></i>
+
+                <span class="menu-texto">Inicio</span>
+
+            </a>
+
+            <a href="buscar.html" class="menu-enlace">
+
+                <i class="bi bi-search"></i>
+
+                <span class="menu-texto">
+                    Buscar veterinarias
+                </span>
+
+            </a>
+
+            <!-- NUEVA OPCIÓN: RESEÑAS -->
+
+            <a href="servicios-resenas-fotografias.html"
+               class="menu-enlace active"
+               aria-current="page">
+
+                <i class="bi bi-star"></i>
+
+                <span class="menu-texto">Reseñas</span>
+
+            </a>
+
+            <a href="comunidad.html" class="menu-enlace">
+
+                <i class="bi bi-people"></i>
+
+                <span class="menu-texto">Comunidad</span>
+
+            </a>
+
+            <a href="negocios.html" class="menu-enlace">
+
+                <i class="bi bi-building"></i>
+
+                <span class="menu-texto">Para negocios</span>
+
+            </a>
+
+            <hr>
+
+            <a href="mi-perfil.html" class="menu-enlace">
+
+                <i class="bi bi-person-circle"></i>
+
+                <span class="menu-texto">Mi perfil</span>
+
+            </a>
+
+            <a href="mis-mascotas.html" class="menu-enlace">
+
+                <i class="bi bi-heart"></i>
+
+                <span class="menu-texto">Mis mascotas</span>
+
+            </a>
+
+        </nav>
+
+    </div>
+
+</div>
+
+<!-- =====================================
+     CONTENIDO PRINCIPAL
+===================================== -->
+
+<main class="container py-5">
+
+    <!-- Volver -->
+
+    <a href="buscar.html" class="enlace-volver">
+
+        <i class="bi bi-arrow-left me-2"></i>
+
+        Volver
+
+    </a>
+
+    <article class="panel-clinica mt-3">
+
+        <!-- Información de la clínica -->
+
+        <div class="d-flex flex-wrap align-items-center
+                    justify-content-between gap-4 mb-4">
+
+            <div class="d-flex align-items-center gap-3">
+
+                <div class="icono-clinica">
+
+                    <i class="bi bi-hospital"></i>
+
+                </div>
+
+                <div>
+
+                    <p class="text-muted mb-1">
+                        Clínica veterinaria · Ejemplo
+                    </p>
+
+                    <h1 class="titulo-seccion h3 mb-1"
+                        id="clinica-nombre">
+
+                        Clínica Veterinaria Patitas
+
+                    </h1>
+
+                    <p class="text-muted mb-0">
+
+                        Servicios, reseñas y fotografías
+
+                    </p>
+
+                </div>
+
+            </div>
+
+            <button
+                type="button"
+                class="btn btn-ingresar btn-vitalia btn-whatsapp"
+                id="btn-whatsapp"
+                data-telefono="">
+
+                <i class="bi bi-whatsapp me-2"></i>
+
+                Agendar por WhatsApp
+
+            </button>
+
+        </div>
+
+        <hr>
+
+        <!-- =================================
+             SERVICIOS
+        ================================= -->
+
+        <section class="py-4">
+
+            <h2 class="titulo-seccion h4 mb-4">
+
+                Servicios
+
+            </h2>
+
+            <div class="row g-4" id="lista-servicios">
+
+                <!-- Consulta -->
+
+                <div class="col-md-4">
+
+                    <div class="tarjeta-vitalia">
+
+                        <div class="icono-servicio">
+
+                            <i class="bi bi-heart-pulse"></i>
+
+                        </div>
+
+                        <h3>
+
+                            Consulta general y especialidad
+
+                        </h3>
+
+                    </div>
+
+                </div>
+
+                <!-- Vacunación -->
+
+                <div class="col-md-4">
+
+                    <div class="tarjeta-vitalia">
+
+                        <div class="icono-servicio">
+
+                            <i class="bi bi-shield-plus"></i>
+
+                        </div>
+
+                        <h3>
+
+                            Vacunación y desparasitación
+
+                        </h3>
+
+                    </div>
+
+                </div>
+
+                <!-- Rayos X -->
+
+                <div class="col-md-4">
+
+                    <div class="tarjeta-vitalia">
+
+                        <div class="icono-servicio">
+
+                            <i class="bi bi-clipboard2-pulse"></i>
+
+                        </div>
+
+                        <h3>
+
+                            Rayos X y ultrasonido
+
+                        </h3>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <hr>
+
+        <!-- =================================
+             RESEÑAS
+        ================================= -->
+
+        <section class="py-4">
+
+            <h2 class="titulo-seccion h4 mb-4">
+
+                Reseñas
+
+            </h2>
+
+            <div id="lista-resenas" class="panel-resenas">
+
+                <i class="bi bi-chat-square-text"></i>
+
+                <h3 class="h6 fw-bold mt-3">
+
+                    Aún no hay reseñas disponibles
+
+                </h3>
+
+                <p class="text-muted mb-0">
+
+                    Aquí podrás consultar las opiniones
+                    de otros usuarios sobre esta clínica.
+
+                </p>
+
+            </div>
+
+        </section>
+
+        <hr>
+
+        <!-- =================================
+             FOTOGRAFÍAS
+        ================================= -->
+
+        <section class="py-4">
+
+            <h2 class="titulo-seccion h4 mb-4">
+
+                Fotografías
+
+            </h2>
+
+            <div class="row g-4" id="galeria-fotografias">
+
+                <!-- Fachada -->
+
+                <div class="col-md-4">
+
+                    <button
+                        type="button"
+                        class="tarjeta-fotografia"
+                        data-bs-toggle="modal"
+                        data-bs-target="#fotoModal"
+                        data-foto="Fachada principal">
+
+                        <i class="bi bi-image"></i>
+
+                        <span>Fachada principal</span>
+
+                        <small>Fotografía pendiente</small>
+
+                    </button>
+
+                </div>
+
+                <!-- Consultorio -->
+
+                <div class="col-md-4">
+
+                    <button
+                        type="button"
+                        class="tarjeta-fotografia"
+                        data-bs-toggle="modal"
+                        data-bs-target="#fotoModal"
+                        data-foto="Consultorio">
+
+                        <i class="bi bi-image"></i>
+
+                        <span>Consultorio</span>
+
+                        <small>Fotografía pendiente</small>
+
+                    </button>
+
+                </div>
+
+                <!-- Estética -->
+
+                <div class="col-md-4">
+
+                    <button
+                        type="button"
+                        class="tarjeta-fotografia"
+                        data-bs-toggle="modal"
+                        data-bs-target="#fotoModal"
+                        data-foto="Área de estética">
+
+                        <i class="bi bi-image"></i>
+
+                        <span>Área de estética</span>
+
+                        <small>Fotografía pendiente</small>
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </article>
+
+</main>
+
+<!-- =====================================
+     MODAL DE FOTOGRAFÍAS
+===================================== -->
+
+<div
+    class="modal fade"
+    id="fotoModal"
+    tabindex="-1"
+    aria-labelledby="modal-titulo"
+    aria-hidden="true">
+
+    <div class="modal-dialog modal-dialog-centered">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h2 class="modal-title h5"
+                    id="modal-titulo">
+
+                    Fotografía
+
+                </h2>
+
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Cerrar">
+
+                </button>
+
+            </div>
+
+            <div class="modal-body">
+
+                <div class="foto-modal" id="modal-imagen">
+
+                    <i class="bi bi-image fs-1"></i>
+
+                    <p class="mt-3 mb-0">
+
+                        Fotografía pendiente
+
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button
+                    type="button"
+                    class="btn btn-ingresar btn-vitalia"
+                    data-bs-dismiss="modal">
+
+                    Cerrar vista
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- =====================================
+     FOOTER ORIGINAL
+===================================== -->
+
+<footer class="py-4 mt-5">
+
+    <div class="container">
+
+        <div class="row align-items-center g-3">
+
+            <div class="col-md-6">
+
+                <h3 class="h5 fw-bold">
+
+                    Vitalia
+
+                </h3>
+
+                <p class="mb-0">
+
+                    Todo para el bienestar de tu mascota.
+
+                </p>
+
+            </div>
+
+            <div class="col-md-6 text-md-end">
+
+                <p class="mb-0">
+
+                    &copy; 2026 Vitalia.
+                    Todos los derechos reservados.
+
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</footer>
+
+<!-- =====================================
+     SCRIPTS
+===================================== -->
+
+<!-- Bootstrap -->
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Menú y subrayado activo -->
+
+<script src="js/menu.js"></script>
+
+<!-- Sesión -->
+
+<script src="js/auth.js"></script>
+
+<!-- Funciones de la página -->
+
+<script>
+
+    // Modal de fotografías
+
+    const fotoModal = document.getElementById('fotoModal');
+
+    fotoModal.addEventListener('show.bs.modal', function(event) {
+
+        const boton = event.relatedTarget;
+
+        if (!boton) return;
+
+        const nombreFoto = boton.dataset.foto;
+
+        document.getElementById('modal-titulo').textContent =
+            nombreFoto;
+
+    });
+
+    // Agendar por WhatsApp
+
+    const btnWhatsApp = document.getElementById('btn-whatsapp');
+
+    btnWhatsApp.addEventListener('click', function() {
+
+        const telefono = this.dataset.telefono.replace(/\D/g, '');
+
+        if (!telefono) {
+
+            alert('El número de WhatsApp aún no está disponible.');
+
+            return;
+
+        }
+
+        const mensaje = 'Hola, quiero agendar una cita.';
+
+        const url =
+            'https://wa.me/' + telefono +
+            '?text=' + encodeURIComponent(mensaje);
+
+        window.open(url, '_blank', 'noopener,noreferrer');
+
+    });
+
+</script>
+
+</body>
+
+</html>
