@@ -131,6 +131,15 @@ def test_q_busca_en_colonia(client, crear_clinica):
     assert nombres(client, q="napoles") == ["Vet Nápoles"]
 
 
+def test_q_busca_en_alcaldia(client, crear_clinica):
+    _, cabeceras = crear_clinica()
+    otra_direccion = {**DATOS_CLINICA["direccion"], "alcaldiaMunicipio": "Coyoacán"}
+    crear_clinica(cabeceras, nombre="Vet del Sur", direccion=otra_direccion)
+
+    assert nombres(client, q="coyoacan") == ["Vet del Sur"]
+    assert nombres(client, q="benito juarez") == ["Clínica Veterinaria Patitas"]
+
+
 def test_q_trata_los_comodines_como_texto(client, crear_clinica):
     crear_clinica()
 
