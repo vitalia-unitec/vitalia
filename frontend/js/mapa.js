@@ -106,6 +106,8 @@ document.addEventListener("DOMContentLoaded", () => {
             ) {
                 parametros.set("lat", String(latNumero));
                 parametros.set("lng", String(lngNumero));
+                parametros.delete("q");
+                parametros.set("orden", "distancia");
 
                 const radio = Number(
                     parametrosURL.get("radioKm") ||
