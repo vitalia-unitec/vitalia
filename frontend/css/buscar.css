@@ -320,3 +320,153 @@ main h2 {
         font-size: 16px;
     }
 }
+
+/* =========================================
+   LISTA Y MAPA INTEGRADOS
+========================================= */
+
+.panel-lista-busqueda {
+    max-height: 720px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 5px 10px 8px 5px;
+}
+
+.panel-lista-busqueda::-webkit-scrollbar {
+    width: 6px;
+}
+
+.panel-lista-busqueda::-webkit-scrollbar-track {
+    background: #F1F4F2;
+    border-radius: 10px;
+}
+
+.panel-lista-busqueda::-webkit-scrollbar-thumb {
+    background: var(--buscar-menta);
+    border-radius: 10px;
+}
+
+.panel-mapa-busqueda {
+    background-color: #FFFFFF;
+    border: 1px solid #E4EBE6;
+    border-radius: 22px;
+    padding: 22px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.04);
+}
+
+.panel-mapa-busqueda h3 {
+    color: var(--buscar-verde);
+}
+
+#mapaBusqueda {
+    width: 100%;
+    height: 620px;
+    border-radius: 16px;
+    border: 1px solid #DDE8E1;
+    background-color: #E8F3EF;
+    z-index: 0;
+}
+
+.tarjeta-veterinaria.seleccionada {
+    border-color: var(--buscar-verde);
+    background-color: #F2F9F5;
+    box-shadow: 0 0 0 2px var(--buscar-verde);
+}
+
+.distancia-veterinaria {
+    color: var(--buscar-verde);
+    font-size: 13px;
+    font-weight: 600;
+    margin: 5px 0 0;
+}
+
+.veterinaria-icono {
+    overflow: hidden;
+}
+
+.veterinaria-acciones {
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.btn-ubicacion-busqueda {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 11px 16px;
+    border-radius: 30px;
+    border: 1px solid var(--buscar-verde);
+    background-color: var(--buscar-verde);
+    color: #FFFFFF;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.btn-ubicacion-busqueda:hover {
+    background-color: #246656;
+}
+
+.btn-ubicacion-busqueda:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+#botonCentrarBusqueda {
+    border: 1.5px solid var(--buscar-verde);
+    color: var(--buscar-verde);
+    font-weight: 600;
+    padding: 11px 22px;
+}
+
+#botonCentrarBusqueda:hover {
+    background-color: var(--buscar-verde);
+    color: #FFFFFF;
+}
+
+#mapaBusqueda .leaflet-popup-content {
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+}
+
+#mapaBusqueda .leaflet-popup-content strong {
+    color: var(--buscar-verde);
+}
+
+@media (max-width: 991px) {
+
+    .panel-lista-busqueda {
+        max-height: 420px;
+    }
+
+    #mapaBusqueda {
+        height: 450px;
+    }
+}
+
+@media (max-width: 768px) {
+
+    .panel-mapa-busqueda {
+        padding: 17px;
+    }
+
+    #mapaBusqueda {
+        height: 380px;
+    }
+}
+
+@media (max-width: 480px) {
+
+    #mapaBusqueda {
+        height: 350px;
+    }
+
+    .veterinaria-acciones > * {
+        width: 100%;
+        justify-content: center;
+    }
+
+    #botonCentrarBusqueda {
+        width: 100%;
+    }
+}

@@ -1,30 +1,29 @@
+document.addEventListener("DOMContentLoaded", () => {
 
-const formulario = document.getElementById("formBusqueda");
+    const formulario = document.getElementById("formBuscarHome");
+    const ubicacion = document.getElementById("ubicacionHome");
 
-formulario.addEventListener("submit", function(event) {
-    event.preventDefault();
+    if (formulario && ubicacion) {
 
-    const ubicacion = document.getElementById("ubicacion").value;
-    const radio = document.getElementById("radio").value;
+        formulario.addEventListener("submit", () => {
+            ubicacion.value = ubicacion.value.trim();
+        });
 
-    if (!ubicacion.trim()) {
-        alert("Por favor, ingresa tu ubicación.");
-        return;
     }
 
-    // Por ahora solo comprobamos los datos del formulario.
-    // Después conectaremos la búsqueda con FastAPI.
-    console.log("Ubicación:", ubicacion);
-    console.log("Radio:", radio);
-});
+    document.querySelectorAll(".filtro").forEach((boton) => {
 
-// Seleccionar y deseleccionar filtros visualmente
-document.querySelectorAll(".filtro").forEach(function(boton) {
-    boton.addEventListener("click", function() {
-        boton.classList.toggle("active");
-        boton.setAttribute(
-            "aria-pressed",
-            boton.classList.contains("active")
-        );
+        boton.addEventListener("click", () => {
+
+            boton.classList.toggle("active");
+
+            boton.setAttribute(
+                "aria-pressed",
+                String(boton.classList.contains("active"))
+            );
+
+        });
+
     });
+
 });

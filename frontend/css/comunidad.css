@@ -1,0 +1,435 @@
+
+:root {
+    --verde: #2E7D6B;
+    --menta: #6BAF9F;
+    --crema: #F8F7F3;
+    --beige: #D9B59F;
+    --texto: #2D2D2D;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: var(--crema);
+    color: var(--texto);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+[hidden] {
+    display: none !important;
+}
+
+/* ENCABEZADO */
+
+.navbar-vitalia {
+    background: white;
+    border-bottom: 1px solid #E2EBE6;
+}
+
+.acciones-navbar {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.btn-menu-vitalia {
+    color: var(--verde);
+}
+
+.btn-success {
+    background: var(--verde);
+    border-color: var(--verde);
+}
+
+.btn-success:hover {
+    background: #246656;
+    border-color: #246656;
+}
+
+.btn-outline-success {
+    color: var(--verde);
+    border-color: var(--verde);
+}
+
+.btn-outline-success:hover {
+    background: var(--verde);
+    border-color: var(--verde);
+    color: white;
+}
+
+/* MENÚ */
+
+.menu-vitalia .menu-enlace {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 13px 16px;
+    color: var(--texto);
+    text-decoration: none;
+    border-radius: 12px;
+    font-weight: 500;
+}
+
+.menu-vitalia .menu-enlace:hover {
+    background: #E8F3EF;
+    color: var(--verde);
+}
+
+.menu-vitalia .menu-enlace.active {
+    color: var(--verde);
+}
+
+.menu-vitalia .menu-enlace.active .menu-texto {
+    text-decoration: underline;
+    text-underline-offset: 6px;
+    text-decoration-thickness: 2px;
+}
+
+/* CONTENIDO */
+
+.comunidad-contenedor {
+    max-width: 900px;
+}
+
+.comunidad-introduccion {
+    text-align: center;
+    padding: 20px 10px;
+}
+
+.comunidad-introduccion h1,
+.titulo-comunidad {
+    color: var(--verde);
+}
+
+.comunidad-introduccion p {
+    color: #666;
+}
+
+.comunidad-icono {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    height: 80px;
+    border-radius: 24px;
+    background: #E8F3EF;
+    color: var(--verde);
+    font-size: 36px;
+    margin: 0 auto;
+}
+
+.panel-comunidad {
+    background: white;
+    border: 1px solid #E2EAE5;
+    border-radius: 24px;
+    padding: 26px;
+}
+
+.panel-comunidad h2 {
+    color: var(--verde);
+}
+
+/* FORMULARIOS */
+
+.campo-comunidad {
+    background: var(--crema);
+    border: 1px solid #D5E4DC;
+    border-radius: 14px;
+    padding: 14px;
+    resize: vertical;
+}
+
+.campo-comunidad:focus {
+    background: white;
+    border-color: var(--menta);
+    box-shadow: 0 0 0 3px rgba(107, 175, 159, .15);
+}
+
+/* PUBLICACIONES */
+
+.publicacion {
+    background: white;
+    border: 1px solid #E2EAE5;
+    border-radius: 24px;
+    padding: 26px;
+    margin-bottom: 20px;
+}
+
+.publicacion-encabezado {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.avatar-comunidad {
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #E8F3EF;
+    color: var(--verde);
+    border-radius: 50%;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.publicacion-autor {
+    flex: 1;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.publicacion-autor strong {
+    display: block;
+    color: var(--verde);
+}
+
+.publicacion-fecha {
+    font-size: 12px;
+    color: #777;
+}
+
+.publicacion-texto {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    line-height: 1.7;
+    margin: 20px 0;
+}
+
+.publicacion-acciones {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-accion-comunidad {
+    background: transparent;
+    border: none;
+    border-radius: 10px;
+    color: var(--verde);
+    padding: 8px 10px;
+}
+
+.btn-accion-comunidad:hover {
+    background: #E8F3EF;
+}
+
+.btn-eliminar-comunidad {
+    color: #B64B4B;
+}
+
+.btn-eliminar-comunidad:hover {
+    background: #FCEAEA;
+}
+
+/* COMENTARIOS */
+
+.comentarios-contenedor {
+    border-top: 1px solid #E2EAE5;
+    margin-top: 14px;
+    padding-top: 18px;
+}
+
+.comentario {
+    background: var(--crema);
+    border-radius: 16px;
+    padding: 14px;
+    margin-bottom: 12px;
+}
+
+.comentario-encabezado {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.comentario-autor {
+    color: var(--verde);
+    font-weight: 600;
+    font-size: 14px;
+    overflow-wrap: anywhere;
+}
+
+.comentario-texto {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    font-size: 14px;
+    margin: 10px 0 0;
+}
+
+.form-comentario {
+    margin-top: 16px;
+}
+
+.btn-comentarios {
+    color: var(--verde);
+    font-weight: 500;
+    border: none;
+    background: transparent;
+    padding: 8px 0;
+}
+
+.btn-comentarios:hover {
+    text-decoration: underline;
+}
+
+/* FOOTER */
+
+footer {
+    background: var(--verde);
+    color: white;
+}
+
+footer p {
+    color: #E7F1EC;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 768px) {
+
+    .acciones-navbar {
+        gap: 7px;
+    }
+
+    .acciones-navbar .btn {
+        font-size: 12px;
+    }
+
+    .panel-comunidad,
+    .publicacion {
+        padding: 18px;
+    }
+
+    .comunidad-introduccion h1 {
+        font-size: 28px;
+    }
+
+    .avatar-comunidad {
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+    }
+
+    .publicacion-acciones {
+        gap: 2px;
+    }
+}
+
+/* =========================================
+   ENCABEZADO ORIGINAL DE VITALIA
+========================================= */
+
+.auth-invitado[hidden],
+.auth-usuario[hidden] {
+    display: none !important;
+}
+
+.navbar-vitalia {
+    background: white;
+    border-bottom: 1px solid #E2EBE6;
+}
+
+.acciones-navbar {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.btn-vitalia {
+    border-radius: 50px;
+    padding: 10px 22px;
+    font-weight: 600;
+}
+
+.btn-ingresar {
+    background: var(--verde);
+    color: white;
+    border: 1px solid var(--verde);
+}
+
+.btn-ingresar:hover {
+    background: #246656;
+    color: white;
+}
+
+.btn-registrarse,
+.btn-cerrar-sesion {
+    background: white;
+    color: var(--verde);
+    border: 1.5px solid var(--verde);
+}
+
+.btn-registrarse:hover,
+.btn-cerrar-sesion:hover {
+    background: var(--verde);
+    color: white;
+}
+
+.btn-menu-vitalia {
+    color: var(--verde);
+    padding: 5px 10px;
+    flex-shrink: 0;
+}
+
+.btn-menu-vitalia:hover {
+    color: #246656;
+}
+
+/* MENÚ LATERAL ORIGINAL */
+
+.menu-vitalia .menu-enlace {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 13px 16px;
+    color: var(--texto);
+    text-decoration: none;
+    border-radius: 12px;
+    font-weight: 500;
+}
+
+.menu-vitalia .menu-enlace:hover {
+    background: #E8F3EF;
+    color: var(--verde);
+}
+
+.menu-vitalia .menu-enlace.active {
+    color: var(--verde);
+}
+
+.menu-vitalia .menu-enlace.active .menu-texto {
+    text-decoration: underline;
+    text-underline-offset: 6px;
+    text-decoration-thickness: 2px;
+}
+
+/* RESPONSIVE ORIGINAL */
+
+@media (max-width: 768px) {
+
+    .acciones-navbar {
+        gap: 7px;
+    }
+
+    .acciones-navbar .btn-vitalia {
+        font-size: 12px;
+        padding: 8px 11px;
+    }
+
+    .acciones-navbar .btn-menu-vitalia {
+        font-size: inherit;
+    }
+}
