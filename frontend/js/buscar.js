@@ -13,13 +13,28 @@ document.addEventListener("DOMContentLoaded", () => {
     const resultadosContenedor = document.getElementById("resultadosVeterinarias");
     const contadorResultados = document.getElementById("contadorResultados");
     const estadoBusqueda = document.getElementById("estadoBusqueda");
-    const enlaceMapa = document.getElementById("enlaceMapa");
+    const botonCentrarMapa = document.getElementById(
+        "botonCentrarBusqueda"
+    );
+
+    mapaBusquedaVitalia.inicializar();
+
+    botonCentrarMapa.addEventListener("click", () => {
+        mapaBusquedaVitalia.centrar();
+    });
 
     const filtrosActivos = new Set();
+
+    const categorias = [
+        "consulta-general",
+        "vacunas",
+        "estetica"
+    ];
     let busquedaRealizada = false;
     let veterinariasCargadas = [];
     let totalResultados = 0;
     let solicitudActual = 0;
+    let textoBusqueda = "";
 
     const nombresServicios = {
         consulta: "Consulta general",
@@ -70,10 +85,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function crearTarjeta(veterinaria) {
         const columna = document.createElement("div");
-        columna.className = "col-md-6";
+        columna.className = "col-12";
 
         const tarjeta = document.createElement("article");
         tarjeta.className = "tarjeta-veterinaria";
+        tarjeta.dataset.id = String(veterinaria.id);
 
         const encabezado = document.createElement("div");
         encabezado.className = "d-flex align-items-start gap-3";
@@ -107,6 +123,20 @@ document.addEventListener("DOMContentLoaded", () => {
         descripcion.textContent = veterinaria.tipos?.join(", ") || "Servicio veterinario";
 
         informacion.append(nombre, descripcion);
+
+        if (
+            veterinaria.distanciaKm != null &&
+            Number.isFinite(Number(veterinaria.distanciaKm))
+        ) {
+            const distancia = document.createElement("p");
+
+            distancia.className = "distancia-veterinaria";
+
+            distancia.textContent =
+                `${Number(veterinaria.distanciaKm).toFixed(1)} km`;
+
+            informacion.appendChild(distancia);
+        }
         encabezado.append(iconoContenedor, informacion);
 
         const servicios = document.createElement("div");
@@ -136,7 +166,23 @@ document.addEventListener("DOMContentLoaded", () => {
         flecha.className = "bi bi-arrow-right";
 
         detalle.appendChild(flecha);
-        acciones.appendChild(detalle);
+        const botonUbicacion = document.createElement("button");
+
+        botonUbicacion.type = "button";
+        botonUbicacion.className = "btn-ubicacion-busqueda";
+        botonUbicacion.textContent = "Ver ubicación";
+
+        botonUbicacion.disabled =
+            !mapaBusquedaVitalia.coordenadasValidas(veterinaria);
+
+        botonUbicacion.addEventListener("click", () => {
+            mapaBusquedaVitalia.seleccionar(
+                veterinaria.id,
+                true
+            );
+        });
+
+        acciones.append(botonUbicacion, detalle);
 
         tarjeta.append(encabezado, servicios, acciones);
         columna.appendChild(tarjeta);
@@ -148,11 +194,15 @@ document.addEventListener("DOMContentLoaded", () => {
     // CONSTRUIR PARÁMETROS DE LA API
     // =====================================
 
-    function construirParametros() {
+    function construirParametros(texto, coordenadas) {
         const parametros = new URLSearchParams();
-        const texto = ubicacionInput.value.trim();
 
-        if (texto.length >= 2) {
+        if (coordenadas) {
+            parametros.set("lat", String(coordenadas.lat));
+            parametros.set("lng", String(coordenadas.lng));
+            parametros.set("radioKm", radioSelect.value || "3");
+            parametros.set("orden", "distancia");
+        } else if (texto.length >= 2) {
             parametros.set("q", texto);
         }
 
@@ -165,7 +215,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         // Categorías según el catálogo del backend.
-        const categorias = ["consulta-general", "vacunas", "estetica"];
         const categoriaSeleccionada = categorias.find(
             categoria => filtrosActivos.has(categoria)
         );
@@ -186,8 +235,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // CONSULTAR FASTAPI
     // =====================================
 
-    async function obtenerVeterinarias() {
-        const parametros = construirParametros();
+    async function obtenerVeterinarias(parametros) {
 
         const datos = await apiRequest(
             `/clinicas?${parametros.toString()}`
@@ -237,9 +285,17 @@ document.addEventListener("DOMContentLoaded", () => {
     // =====================================
 
     async function ejecutarBusqueda() {
-        const texto = ubicacionInput.value.trim();
+        const texto = textoBusqueda;
+        const numeroSolicitud = ++solicitudActual;
 
-        if (texto.length < 2) {
+        if (texto.length === 1) {
+
+            resultadosContenedor.replaceChildren();
+
+            mapaBusquedaVitalia.limpiar(
+                "Ingresa una búsqueda válida."
+            );
+
             ubicacionInput.focus();
             contadorResultados.textContent =
                 "Escribe al menos dos caracteres.";
@@ -250,14 +306,27 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        const numeroSolicitud = ++solicitudActual;
-
         resultadosContenedor.replaceChildren();
+        mapaBusquedaVitalia.limpiar();
+
         contadorResultados.textContent = "Buscando...";
         mostrarEstado("Consultando veterinarias...");
 
         try {
-            const datos = await obtenerVeterinarias();
+            const coordenadas = texto.length >= 2
+                ? await geocodificarUbicacion(texto)
+                : null;
+
+            if (numeroSolicitud !== solicitudActual) {
+                return;
+            }
+
+            const parametros = construirParametros(
+                texto,
+                coordenadas
+            );
+
+            const datos = await obtenerVeterinarias(parametros);
 
             if (numeroSolicitud !== solicitudActual) {
                 return;
@@ -269,10 +338,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
             mostrarResultados();
 
-            const parametrosMapa = construirParametros();
-            parametrosMapa.set("ubicacion", texto);
-
-            enlaceMapa.href = `mapa.html?${parametrosMapa.toString()}`;
+            mapaBusquedaVitalia.actualizar(
+                veterinariasCargadas,
+                coordenadas
+            );
 
         } catch (error) {
             if (numeroSolicitud !== solicitudActual) {
@@ -280,6 +349,10 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             console.error("Error al buscar clínicas:", error);
+
+            mapaBusquedaVitalia.limpiar(
+                "No fue posible consultar las ubicaciones."
+            );
 
             veterinariasCargadas = [];
             totalResultados = 0;
@@ -300,6 +373,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     formulario.addEventListener("submit", (evento) => {
         evento.preventDefault();
+        textoBusqueda = ubicacionInput.value.trim();
         ejecutarBusqueda();
     });
 
@@ -320,14 +394,18 @@ document.addEventListener("DOMContentLoaded", () => {
             if (filtrosActivos.has(filtro)) {
                 filtrosActivos.delete(filtro);
             } else {
+                if (categorias.includes(filtro)) {
+                    categorias.forEach(categoria => {
+                        filtrosActivos.delete(categoria);
+                    });
+                }
+
                 filtrosActivos.add(filtro);
             }
 
-            actualizarBotonFiltro(boton);
+            filtrosBotones.forEach(actualizarBotonFiltro);
 
-            if (busquedaRealizada) {
-                ejecutarBusqueda();
-            }
+            ejecutarBusqueda();
         });
     });
 
@@ -382,17 +460,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
         filtrosBotones.forEach(actualizarBotonFiltro);
 
-        if (ubicacionInput.value.trim().length >= 2) {
-            ejecutarBusqueda();
-        } else if (urgencias) {
-            contadorResultados.textContent =
-                "Filtro de urgencias activado.";
-
-            mostrarEstado(
-                "Ingresa una colonia o nombre para buscar veterinarias con urgencias."
-            );
-        }
+        textoBusqueda = ubicacionInput.value.trim();
+        ejecutarBusqueda();
     }
+
+    radioSelect.addEventListener("change", () => {
+        ejecutarBusqueda();
+    });
 
     inicializarDesdeURL();
 });

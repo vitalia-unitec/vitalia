@@ -21,6 +21,7 @@ def buscar_activas(db: Session, filtros: FiltrosBusqueda) -> list[Clinica]:
             or_(
                 func.normalizar(Clinica.nombre).contains(texto, autoescape=True),
                 func.normalizar(Clinica.colonia).contains(texto, autoescape=True),
+                func.normalizar(Clinica.alcaldia_municipio).contains(texto, autoescape=True),
             )
         )
     if filtros.tipo:
